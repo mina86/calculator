@@ -1,6 +1,6 @@
 /** \file
  * Lexer reading from FILE stream implementation.
- * $Id: file-lexer.cpp,v 1.1 2008/02/08 21:47:32 mina86 Exp $
+ * $Id: file-lexer.cpp,v 1.2 2008/02/29 20:48:00 mina86 Exp $
  */
 #include "math.hpp"
 #include "exceptions.hpp"
@@ -144,7 +144,7 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 	/* Return number */
 	ungetchar(ch);
 	location.end = current;
-	value.dval = calc::ator(str.c_str());
+	value.dval = calc::m::ator(str.c_str());
 	return yy::Parser::token::NUMBER;
 }
 

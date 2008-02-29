@@ -84,7 +84,7 @@ assignment_expr
 	| ID "-=" assignment_expr	{ $$ = env.set(*$1, $3 - env.get(*$1)); }
 	| ID "*=" assignment_expr	{ $$ = env.set(*$1, $3 * env.get(*$1)); }
 	| ID "/=" assignment_expr	{ $$ = env.set(*$1, $3 / env.get(*$1)); }
-	| ID "^=" assignment_expr	{ $$ = env.set(*$1, calc::pow($3, env.get(*$1))); }
+	| ID "^=" assignment_expr	{ $$ = env.set(*$1, calc::m::pow($3, env.get(*$1))); }
 	| additive_expr			{ $$ = $1; }
 	;
 
@@ -100,7 +100,7 @@ multiplicative_expr
 	| pow_expr			{ $$ = $1; }
 	;
 
-pow_expr: prefix_expr '^' pow_expr	{ $$ = pow($1, $3); }
+pow_expr: prefix_expr '^' pow_expr	{ $$ = calc::m::pow($1, $3); }
 	| prefix_expr				{ $$ = $1; }
 	;
 
@@ -129,7 +129,7 @@ simple_expr
 
 arguments
 	: /* empty */			{ $$ = new calc::FunctionArguments(); }
-	| non_empty_arguments		{ $$ = $1 }
+	| non_empty_arguments		{ $$ = $1; }
 	;
 
 non_empty_arguments
