@@ -1,6 +1,6 @@
 ##
 ## Makefile
-## $Id: Makefile,v 1.1 2008/02/08 21:47:32 mina86 Exp $
+## $Id: Makefile,v 1.2 2008/02/29 20:40:50 mina86 Exp $
 ##
 
 LDFLAGS		+= -lm
@@ -13,6 +13,10 @@ all: main
 
 objs: $(OBJ_FILES) parser.o
 
+
+parser.o: parser.cpp
+
+parser.cpp: parser.hpp
 
 parser.hpp: parser.y
 	exec bison parser.y
