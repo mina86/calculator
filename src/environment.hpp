@@ -1,6 +1,6 @@
 /** \file
  * Enviroment declaration.
- * $Id: environment.hpp,v 1.1 2008/02/08 21:47:32 mina86 Exp $
+ * $Id: environment.hpp,v 1.2 2008/02/29 22:29:34 mina86 Exp $
  */
 #ifndef H_ENVIRONMENT_HPP
 #define H_ENVIRONMENT_HPP
@@ -73,7 +73,7 @@ struct Environment {
 	 * \return \a value.
 	 */
 	real set(const std::string &name, real value) {
-		return variables[name] = value;
+		return variables_trans[name] = value;
 	}
 
 	/**
@@ -81,9 +81,28 @@ struct Environment {
 	 * \param name variable's name.
 	 */
 	real get(const std::string &name) const {
-		Variables::const_iterator it = variables.find(name);
-		return it == variables.end() ? 0.0 : it->second;
+		Variables::const_iterator it = variables_trans.find(name);
+		return
+			it == variables_trans.end() &&
+			(it = variables.find(name)) == variables.end()
+			? 0.0 : it->second;
 	}
+
+	/** Commits changed variables. */
+	void commit() {
+		Variables::const_iterator it = variables_trans.begin();
+		Variables::const_iterator end = variables_trans.end();
+		for (; it != end; ++it) {
+			variables[it->first] = it->second;
+		}
+		variables_trans.clear();
+	}
+
+	/** Rejects changed variables. */
+	void reject() {
+		variables_trans.clear();
+	}
+
 
 	/**
 	 * Returns constant's value or zero if it does not exist.
@@ -116,6 +135,8 @@ struct Environment {
 
 	/** Stored variables. */
 	Variables variables;
+	/** Current transaction chagnes. */
+	Variables variables_trans;
 	/** Stored constants. */
 	Constants constants;
 	/** Pointers to functions. */

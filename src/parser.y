@@ -70,12 +70,12 @@ start	: start instruction
 	;
 
 instruction
-	: assignment_expr ';'
-	| assignment_expr '\n'		{ env.instruction($1); }
+	: assignment_expr ';'		{ env.commit(); }
+	| assignment_expr '\n'		{ env.commit(); env.instruction($1); }
 	| ';'
 	| '\n'
-	| error ';'
-	| error '\n'
+	| error ';'			{ env.reject(); }
+	| error '\n'			{ env.reject(); }
 	;
 
 assignment_expr
