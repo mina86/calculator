@@ -1,17 +1,13 @@
 ##
 ## Makefile
-## $Id: Makefile,v 1.3 2008/02/29 20:47:28 mina86 Exp $
+## $Id: Makefile,v 1.4 2008/02/29 20:51:36 mina86 Exp $
 ##
 
 LDFLAGS		+= -lm
 
-HPP_FILES	:= $(wildcard *.hpp) parser.hpp
-OBJ_FILES	 = $(addsuffix .o,$(basename $(wildcard *.cpp)))
-
-
 all: main
 
-objs: $(OBJ_FILES) parser.o
+objs: $(addsuffix .o,$(basename $(wildcard *.cpp))) parser.o
 
 
 parser.o: parser.cpp
@@ -21,11 +17,11 @@ parser.cpp: parser.hpp
 parser.hpp: parser.y
 	exec bison parser.y
 
-%.o: %.cpp $(HPP_FILES)
+%.o: %.cpp $(wildcard *.hpp) parser.hpp
 	exec $(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 main: objs
-	exec $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJ_FILES)
+	exec $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@ *.o
 
 
 doc:
