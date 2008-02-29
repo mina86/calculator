@@ -1,12 +1,12 @@
 ##
 ## Makefile
-## $Id: Makefile,v 1.2 2008/02/29 20:40:50 mina86 Exp $
+## $Id: Makefile,v 1.3 2008/02/29 20:47:28 mina86 Exp $
 ##
 
 LDFLAGS		+= -lm
 
 HPP_FILES	:= $(wildcard *.hpp) parser.hpp
-OBJ_FILES	:= $(addsuffix .o,$(basename $(wildcard *.cpp)))
+OBJ_FILES	 = $(addsuffix .o,$(basename $(wildcard *.cpp)))
 
 
 all: main
