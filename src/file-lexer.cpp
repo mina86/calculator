@@ -1,10 +1,12 @@
 /** \file
  * Lexer reading from FILE stream implementation.
- * $Id: file-lexer.cpp,v 1.2 2008/02/29 20:48:00 mina86 Exp $
+ * $Id: file-lexer.cpp,v 1.3 2008/03/13 09:54:37 kuba Exp $
  */
 #include "math.hpp"
 #include "exceptions.hpp"
 #include "file-lexer.hpp"
+
+#include <limits>
 
 
 namespace calc {
@@ -67,7 +69,7 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 		location.end = current;
 
 		if (id == "inf") {
-			value.dval = INFINITY;
+			value.dval = std::numeric_limits<calc::real>::infinity(); //INFINITY;
 			return yy::Parser::token::NUMBER;
 		} else {
 			value.sval = new std::string(id);

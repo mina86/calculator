@@ -1,6 +1,6 @@
 /** \file
  * Wrapper around C mathematical functions.
- * $Id: math.hpp,v 1.2 2008/02/29 20:48:00 mina86 Exp $
+ * $Id: math.hpp,v 1.3 2008/03/13 09:54:37 kuba Exp $
  */
 #ifndef H_MATH_HPP
 #define H_MATH_HPP
@@ -10,6 +10,12 @@
 #include <stdlib.h>
 #include <math.h>
 
+/* We must use boost library under Windows, through lack of many
+ * many functions.
+ */
+#ifdef _WIN32
+#include <boost/math/complex.hpp>
+#endif
 
 namespace calc {
 
@@ -34,11 +40,10 @@ namespace m {
 		return ::powl  (x, y);
 	}
 	inline long double sqrt (long double x) { return ::sqrtl (x); }
-	inline long double cbrt (long double x) { return ::cbrtl (x); }
 	inline long double exp  (long double x) { return ::expl  (x); }
 	inline long double log  (long double x) { return ::logl  (x); }
 	inline long double log10(long double x) { return ::log10l(x); }
-	inline long double log2 (long double x) { return ::log2l (x); }
+
 
 	inline long double cos  (long double x) { return ::cosl  (x); }
 	inline long double sin  (long double x) { return ::sinl  (x); }
@@ -53,15 +58,32 @@ namespace m {
 	inline long double cosh (long double x) { return ::coshl (x); }
 	inline long double sinh (long double x) { return ::sinhl (x); }
 	inline long double tanh (long double x) { return ::tanhl (x); }
+
+#	ifdef _WIN32
+	inline long double cbrt (long double x) { return ::powl (x, 1.0/3.0); }
+	inline long double log2 (long double x) { return ::logl(x)/::logl(2.0); }
+
+	inline long double acosh(long double x) { return boost::math::acosh<long double>(x).real(); }
+	inline long double asinh(long double x) { return boost::math::asinh<long double>(x).real(); }
+	inline long double atanh(long double x) { return boost::math::atanh<long double>(x).real(); }
+
+	inline long double ator (const char *str) {
+		return strtod(str, 0);
+	}
+#	else
+	inline long double cbrt (long double x) { return ::cbrtl (x); }
+	inline long double log2 (long double x) { return ::log2l (x); }
+
 	inline long double acosh(long double x) { return ::acoshl(x); }
 	inline long double asinh(long double x) { return ::asinhl(x); }
 	inline long double atanh(long double x) { return ::atanhl(x); }
 
 	inline long double ator (const char *str) { return strtold(str, 0); }
+#	endif
 #else
 
 #  if HAVE_LONG_DOUBLE
-	inline long double abs  (long double x) { return x < 0 ? -x : x}
+	inline long double abs  (long double x) { return x < 0 ? -x : x; }
 #  endif
 
 	inline double ator (const char *str) { return strtod(str, 0); }
@@ -71,11 +93,9 @@ namespace m {
 
 	inline double pow  (double x, double y) { return ::pow  (x, y); }
 	inline double sqrt (double x) { return ::sqrt  (x); }
-	inline double cbrt (double x) { return ::cbrt  (x); }
 	inline double exp  (double x) { return ::exp   (x); }
 	inline double log  (double x) { return ::log   (x); }
 	inline double log10(double x) { return ::log10 (x); }
-	inline double log2 (double x) { return ::log2  (x); }
 
 	inline double cos  (double x) { return ::cos   (x); }
 	inline double sin  (double x) { return ::sin   (x); }
@@ -88,9 +108,22 @@ namespace m {
 	inline double cosh (double x) { return ::cosh  (x); }
 	inline double sinh (double x) { return ::sinh  (x); }
 	inline double tanh (double x) { return ::tanh  (x); }
+
+#	ifdef _WIN32
+	inline double cbrt (double x) { return ::pow (x, 1.0/3.0); }
+	inline double log2 (double x) { return ::log(x)/::log(2.0); }
+
+	inline double acosh(double x) { return boost::math::acosh<double>(x).real(); }
+	inline double asinh(double x) { return boost::math::asinh<double>(x).real(); }
+	inline double atanh(double x) { return boost::math::atanh<double>(x).real(); }
+#	else
+	inline double cbrt (double x) { return ::cbrt (x); }
+	inline double log2 (double x) { return ::log2 (x); }
+
 	inline double acosh(double x) { return ::acosh (x); }
 	inline double asinh(double x) { return ::asinh (x); }
 	inline double atanh(double x) { return ::atanh (x); }
+#	endif
 }
 
 }

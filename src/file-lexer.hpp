@@ -1,6 +1,6 @@
 /** \file
  * Lexer reading from FILE stream declaration.
- * $Id: file-lexer.hpp,v 1.1 2008/02/08 21:47:32 mina86 Exp $
+ * $Id: file-lexer.hpp,v 1.2 2008/03/13 09:54:37 kuba Exp $
  */
 #ifndef H_FILE_LEXER_HPP
 #define H_FILE_LEXER_HPP
