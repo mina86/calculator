@@ -1,6 +1,6 @@
 ##                               -*- Mode: org; indent-tabs-mode: nil -*-
 ## TODO List
-## $Id: TODO,v 1.2 2008/04/12 14:12:44 mina86 Exp $
+## $Id: TODO,v 1.3 2008/04/12 14:15:53 mina86 Exp $
 ##
 
 * Ob³uga \<NL>
@@ -173,11 +173,28 @@
 
   ma niezdefiniowan± kolejno¶æ wykonywania wyra¿eñ, a
 
-  define foo(x, y, z) dlugi_i_zlozony_ciag_boliczen * \
+  define foo(x, y, z) = dlugi_i_zlozony_ciag_boliczen * \
       dlugi_i_zlozony_ciag_boliczen
 
   dwa razy wylicza co¶ bardzo z³o¿onego (tak, wiem ¿e mamy operacje
   potêgowania, ale to tylko przyk³ad).
+
+** Magiczne traktowanie przecinka przez lexer
+
+   Lexer móg³by traktowaæ przecinek w magiczny sposób, tzn. ignorowaæ
+   znak przej¶cia do nowej linii je¿eli wystêpuje on zaraz za
+   przecinkiem albo wrêcz ignorowaæ wszystkie bia³e znaki, a w tym
+   i znaki przej¶cia do nowej linii, wystêpuj±ce za przecinkiem,
+   a przed czymkolwiek innym, wówczas definiowanie funkcji by³oby
+   jeszcze prostrze:
+
+   define foo(x, y, z) = wyrazenie,
+      wyrazenie,
+      wyrazenie,
+      wyrazenie,
+      wyrazenie
+
+   bez konieczno¶ci pisania za ka¿dym razem "\ ".
 
 * Poprawienie kodu i zmiana std::string* na std::string gdzie siê da
 
