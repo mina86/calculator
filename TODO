@@ -1,6 +1,6 @@
 ##                               -*- Mode: org; indent-tabs-mode: nil -*-
 ## TODO List
-## $Id: TODO,v 1.1 2008/04/12 13:56:01 mina86 Exp $
+## $Id: TODO,v 1.2 2008/04/12 14:12:44 mina86 Exp $
 ##
 
 * Ob³uga \<NL>
@@ -40,7 +40,17 @@
 ** Nowe funkcje
 
    Nale¿y ponadto dodaæ kolejne funkcje takie jak floor(), celi(),
-   round() i co tam jeszcze przyjdzie do g³owy.
+   round(), gcd() (greatest common divisor), lcm() (least common
+   multiple) i co tam jeszcze przyjdzie do g³owy.
+
+** Nowe operatory
+
+   Zawsze mo¿na te¿ wymy¶laæ nowe operatory, np.:
+   - expr % expr -- dzielenie modulo
+   - expr ! -- silnia (nale¿y zwróciæ uwagê, czy u¿ycie '!' nie
+               spowoduje konfliktów z wyra¿eniami logicznymi
+   - ( expr expr ) -- dwumian Newtona
+
 
 * Dodanie obs³ugi linii poleceñ
 
@@ -145,6 +155,29 @@
   zmieniæ additive_expr na cond_expr.  Ponadto nie jestem pewny jak
   winno wygl±daæ cmp_expr, mo¿liwe ¿e u¿ycie tam expression jest
   b³êdne.
+
+  Operatory && i || nie bêd± rzecz jasna wyliczaæ prawego argumentu,
+  je¿eli wynik bêdzie mo¿na wywnioskowaæ z lewego.
+
+* Operator ,
+
+  Warto te¿ dodaæ operator ',', gdy¿ bêdzie on szczególnie przydatny
+  przy definiowaniu funkcji, np.:
+
+  define foo(x, y, z) tmp = dlugi_i_zlozony_ciag_boliczen, \
+      tmp * tmp
+
+  gdy¿:
+
+  define foo(x, y, z) (tmp = dlugi_i_zlozony_ciag_boliczen) * tmp
+
+  ma niezdefiniowan± kolejno¶æ wykonywania wyra¿eñ, a
+
+  define foo(x, y, z) dlugi_i_zlozony_ciag_boliczen * \
+      dlugi_i_zlozony_ciag_boliczen
+
+  dwa razy wylicza co¶ bardzo z³o¿onego (tak, wiem ¿e mamy operacje
+  potêgowania, ale to tylko przyk³ad).
 
 * Poprawienie kodu i zmiana std::string* na std::string gdzie siê da
 
