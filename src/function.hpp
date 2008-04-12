@@ -1,6 +1,6 @@
 /** \file
  * Function class declaration.
- * $Id: function.hpp,v 1.1 2008/04/12 02:15:52 mina86 Exp $
+ * $Id: function.hpp,v 1.2 2008/04/12 12:58:01 mina86 Exp $
  */
 #ifndef H_FUNCTION_HPP
 #define H_FUNCTION_HPP
@@ -18,12 +18,11 @@ struct Environment;
 
 
 struct Function {
-	typedef std::vector<real> Arguments;
-
 	virtual ~Function() { };
 
 	virtual bool argumentsCountOK(unsigned count) const = 0;
-	virtual real execute(Environment &env, const Arguments &args) const = 0;
+	virtual real execute(Environment &env, const real *args, unsigned count)
+		const = 0;
 	virtual void free() = 0;
 
 	Function() { }

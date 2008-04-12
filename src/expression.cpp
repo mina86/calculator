@@ -1,9 +1,11 @@
 /** \file
  * Expression method definitions.
- * $Id: expression.cpp,v 1.1 2008/04/12 02:13:31 mina86 Exp $
+ * $Id: expression.cpp,v 1.2 2008/04/12 12:58:01 mina86 Exp $
  */
 
 #include "config.hpp"
+
+#include <memory>
 
 #include "expression.hpp"
 #include "math.hpp"
@@ -102,13 +104,15 @@ real FunctionExpression::execute(Environment &env) const {
 		return 0;
 	}
 
-	Function::Arguments evaluatedArgs(args->size());
+	std::auto_ptr<real> values(new real[args->size()]);
+	real *v = values.get();
 	Arguments::const_iterator it = args->begin(), end = args->end();
 	while (it != end) {
-		evaluatedArgs.push_back((*it)->execute(env));
+		*v = (*it)->execute(env);
+		++it; ++v;
 	}
 
-	return func->execute(env, evaluatedArgs);
+	return func->execute(env, values.get(), args->size());
 }
 
 
