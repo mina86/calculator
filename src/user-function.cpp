@@ -1,6 +1,6 @@
 /** \file
  * User Function class definition.
- * $Id: user-function.cpp,v 1.1 2008/04/12 02:19:15 mina86 Exp $
+ * $Id: user-function.cpp,v 1.2 2008/04/12 12:58:46 mina86 Exp $
  */
 
 #include "config.hpp"
@@ -24,25 +24,13 @@ void UserFunction::free() {
 	delete this;
 }
 
-real UserFunction::execute(Environment &env, const Arguments &args) const {
-	if (args.size() != names.size()) {
+real UserFunction::execute(Environment &env, const real *args, 
+                           unsigned count) const {
+	if (count != names.size()) {
 		throw InvalidNumberOfArguments();
 	}
 
-	Environment::Variables &local = env.enter();
-	Names::const_iterator n = names.begin(), end = names.end();
-	Arguments::const_iterator a = args.begin();
-	while (n != end) {
-		local[*n] = *a;
-		++n;
-		++a;
-	}
-
-	real val = expr->execute(env);
-
-	env.leave();
-
-	return val;
+	return env.ExecuteInNewScope(expr, names, args);
 }
 
 
