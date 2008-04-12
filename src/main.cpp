@@ -24,93 +24,102 @@ int main(void) {
 	calc::Environment *env = new VerboseEnvironment();
 
 	/* Register constants */
+	{
+		calc::Environment::Variables &consts = env->constants();
 #if defined M_El
-	env->constants["e"] = M_El;
+		consts["e"] = M_El;
 #elif defined M_E
-	env->constants["e"] = M_E;
+		consts["e"] = M_E;
 #endif
 #if defined M_LOG2El
-	env->constants["log2e"] = M_LOG2El;
+		consts["log2e"] = M_LOG2El;
 #elif defined M_LOG2E
-	env->constants["log2e"] = M_LOG2E;
+		consts["log2e"] = M_LOG2E;
 #endif
 #if defined M_LOG10El
-	env->constants["log10e"] = M_LOG10El;
+		consts["log10e"] = M_LOG10El;
 #elif defined M_LOG10E
-	env->constants["log10e"] = M_LOG10E;
+		consts["log10e"] = M_LOG10E;
 #endif
 #if defined M_LN2l
-	env->constants["ln2"] = M_LN2l;
+		consts["ln2"] = M_LN2l;
 #elif defined M_LN2
-	env->constants["ln2"] = M_LN2;
+		consts["ln2"] = M_LN2;
 #endif
 #if defined M_LN10l
-	env->constants["ln10"] = M_LN10l;
+		consts["ln10"] = M_LN10l;
 #elif defined M_LN10
-	env->constants["ln10"] = M_LN10;
+		consts["ln10"] = M_LN10;
 #endif
 #if defined M_PIl
-	env->constants["pi"] = M_PIl;
+		consts["pi"] = M_PIl;
 #elif defined M_PI
-	env->constants["pi"] = M_PI;
+		consts["pi"] = M_PI;
 #endif
 #if defined M_PI_2l
-	env->constants["pi_2"] = M_PI_2l;
+		consts["pi_2"] = M_PI_2l;
 #elif defined M_PI_2
-	env->constants["pi_2"] = M_PI_2;
+		consts["pi_2"] = M_PI_2;
 #endif
 #if defined M_PI_4l
-	env->constants["pi_4"] = M_PI_4l;
+		consts["pi_4"] = M_PI_4l;
 #elif defined M_PI_4
-	env->constants["pi_4"] = M_PI_4;
+		consts["pi_4"] = M_PI_4;
 #endif
 #if defined M_1_PIl
-	env->constants["_1_PI"] = M_1_PIl;
+		consts["_1_pi"] = M_1_PIl;
 #elif defined M_1_PI
-	env->constants["_1_PI"] = M_1_PI;
+		consts["_1_pi"] = M_1_PI;
 #endif
 #if defined M_2_PIl
-	env->constants["_2_PI"] = M_2_PIl;
+		consts["_2_pi"] = M_2_PIl;
 #elif defined M_2_PI
-	env->constants["_2_PIl"] = M_2_PI;
+		consts["_2_pi"] = M_2_PI;
 #endif
 #if defined M_2_SQRTPIl
-	env->constants["_2_SQRTPI"] = M_2_SQRTPIl;
+		consts["_2_sqrtpi"] = M_2_SQRTPIl;
 #elif defined M_2_SQRTPI
-	env->constants["_2_SQRTPI"] = M_2_SQRTPI;
+		consts["_2_sqrtpi"] = M_2_SQRTPI;
 #endif
 #if defined M_SQRT2l
-	env->constants["sqrt2"] = M_SQRT2l;
+		consts["sqrt2"] = M_SQRT2l;
 #elif defined M_SQRT2
-	env->constants["sqrt2"] = M_SQRT2;
+		consts["sqrt2"] = M_SQRT2;
 #endif
 #if defined M_SQRT1_2l
-	env->constants["sqrt1_2"] = M_SQRT1_2l;
+		consts["sqrt1_2"] = M_SQRT1_2l;
 #elif defined M_SQRT1_2
-	env->constants["sqrt1_2"] = M_SQRT1_2;
+		consts["sqrt1_2"] = M_SQRT1_2;
 #endif
+	}
 
 	/* Register functions */
-	env->functions["sqrt" ] = calc::func_sqrt;
-	env->functions["cbrt" ] = calc::func_cbrt;
-	env->functions["e"    ] = calc::func_exp;
-	env->functions["exp"  ] = calc::func_exp;
-	env->functions["log"  ] = calc::func_log;
-	env->functions["ln"   ] = calc::func_log;
-	env->functions["log10"] = calc::func_log10;
-	env->functions["log2" ] = calc::func_log2;
-	env->functions["cos"  ] = calc::func_cos;
-	env->functions["sin"  ] = calc::func_sin;
-	env->functions["tan"  ] = calc::func_tan;
-	env->functions["acos" ] = calc::func_acos;
-	env->functions["asin" ] = calc::func_asin;
-	env->functions["atan" ] = calc::func_atan;
-	env->functions["cosh" ] = calc::func_cosh;
-	env->functions["sinh" ] = calc::func_sinh;
-	env->functions["tanh" ] = calc::func_tanh;
-	env->functions["acosh"] = calc::func_acosh;
-	env->functions["asinh"] = calc::func_asinh;
-	env->functions["atanh"] = calc::func_atanh;
+#if 0
+	{
+		/* FIXME: TODO */
+		Environment::Functions &funcs = env->funcs();
+		funcs["sqrt" ] = calc::func_sqrt;
+		funcs["cbrt" ] = calc::func_cbrt;
+		funcs["e"    ] = calc::func_exp;
+		funcs["exp"  ] = calc::func_exp;
+		funcs["log"  ] = calc::func_log;
+		funcs["ln"   ] = calc::func_log;
+		funcs["log10"] = calc::func_log10;
+		funcs["log2" ] = calc::func_log2;
+		funcs["cos"  ] = calc::func_cos;
+		funcs["sin"  ] = calc::func_sin;
+		funcs["tan"  ] = calc::func_tan;
+		funcs["acos" ] = calc::func_acos;
+		funcs["asin" ] = calc::func_asin;
+		funcs["atan" ] = calc::func_atan;
+		funcs["cosh" ] = calc::func_cosh;
+		funcs["sinh" ] = calc::func_sinh;
+		funcs["tanh" ] = calc::func_tanh;
+		funcs["acosh"] = calc::func_acosh;
+		funcs["asinh"] = calc::func_asinh;
+		funcs["atanh"] = calc::func_atanh;
+	}
+#endif
 
 	/* Run */
 	calc::FILELexer lexer;
@@ -118,8 +127,8 @@ int main(void) {
 	parser.parse();
 
 	/* Print variables */
-	calc::Environment::Variables::const_iterator it = env->variables.begin();
-	calc::Environment::Variables::const_iterator end = env->variables.end();
+	calc::Environment::Variables::const_iterator it = env->global().begin();
+	calc::Environment::Variables::const_iterator end = env->global().end();
 	for (; it != end; ++it) {
 		std::cout << it->first << " = " << it->second << '\n';
 	}
