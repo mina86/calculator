@@ -1,7 +1,7 @@
 /** \file
  * A configuration file which should be modified accordingly to host's
  * C++ implementation.
- * $Id: config.hpp,v 1.2 2008/03/13 09:54:37 kuba Exp $
+ * $Id: config.hpp,v 1.3 2008/04/12 02:03:34 mina86 Exp $
  */
 
 #ifndef H_CONFIG_HPP
@@ -24,20 +24,6 @@
  */
 #define HAVE_LONG_DOUBLE_FUNCTIONS 1
 
-/**
- * Whether C++ implementation has <tt>tr1/unordered_map</tt> header
- * file implementing <tt>std::tr1::unordered_map</tt> class template.
- * This is not essential for program execution and in fact should have
- * very little impact on performance.
- *
- * Windows libraries, however do not have this extension, so it is
- * disabled under WIN32.
- */
-#ifdef _WIN32
-#	define HAVE_TR1_UNORDERED_MAP 0
-#else
-#	define HAVE_TR1_UNORDERED_MAP 1
-#endif
 
 #if !HAVE_LONG_DOUBLE
 #  if HAVE_LONG_DOUBLE_FUNCTIONS
