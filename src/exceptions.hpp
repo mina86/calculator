@@ -1,55 +1,37 @@
 /** \file
  * Exception definitions.
- * $Id: exceptions.hpp,v 1.1 2008/02/08 21:47:32 mina86 Exp $
+ * $Id: exceptions.hpp,v 1.2 2008/04/12 02:12:04 mina86 Exp $
  */
 #ifndef H_EXCEPTIONS_HPP
 #define H_EXCEPTIONS_HPP
 
 
-#include <string>
+#include <stdexcept>
 
 
 namespace calc {
 
 
-/** A generic, abstract exception class. */
-struct Exception {
-	/** Returns error message. */
-	const std::string &getMessage() const { return message; }
-
-protected:
-	/**
-	 * Constructs exception and sets error message.
-	 * \param message_ error message.
-	 */
-	Exception(const std::string &message_) : message(message_) { }
-
-private:
-	/** Default constructor not allowed. */
-	Exception() { }
-
-	/** Stores error message. */
-	const std::string message;
-};
-
 
 /** An I/O exception class. */
-struct IOException : public Exception {
+struct IOException : public std::runtime_error {
 	/**
 	 * Constructs exception and sets error message.
 	 * \param message_ error message.
 	 */
-	IOException(const std::string &message_) : Exception(message_) { }
+	IOException(const std::string &message) throw()
+		: std::runtime_error(message) { }
 };
 
 
 /** Exception class regarding functions. */
-struct FunctionException : public Exception {
+struct FunctionException : public std::runtime_error {
 	/**
 	 * Constructs exception and sets error message.
 	 * \param message_ error message.
 	 */
-	FunctionException(const std::string &message_) : Exception(message_) { }
+	FunctionException(const std::string &message) throw()
+		: std::runtime_error(message) { }
 };
 
 
@@ -59,11 +41,8 @@ struct FunctionException : public Exception {
  */
 struct InvalidNumberOfArguments : public FunctionException {
 	/** Constructos exception. */
-	InvalidNumberOfArguments() : FunctionException(error_msg) { }
-
-private:
-	/** Exception error message. */
-	static const std::string error_msg;
+	InvalidNumberOfArguments() throw()
+		: FunctionException("invalid number of arguments") { }
 };
 
 
@@ -72,11 +51,7 @@ private:
  */
 struct NoSuchFunction : public FunctionException {
 	/** Constructos exception. */
-	NoSuchFunction() : FunctionException(error_msg) { }
-
-private:
-	/** Exception error message. */
-	static const std::string error_msg;
+	NoSuchFunction() throw() : FunctionException("no such function") { }
 };
 
 
