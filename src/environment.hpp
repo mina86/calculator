@@ -1,6 +1,6 @@
 /** \file
  * Enviroment declaration.
- * $Id: environment.hpp,v 1.3 2008/04/12 02:10:32 mina86 Exp $
+ * $Id: environment.hpp,v 1.4 2008/04/12 12:57:11 mina86 Exp $
  */
 #ifndef H_ENVIRONMENT_HPP
 #define H_ENVIRONMENT_HPP
@@ -12,13 +12,13 @@
 #include <map>
 
 #include "exceptions.hpp"
+#include "user-function.hpp"
 #include "position.hh"
 #include "location.hh"
 
 namespace calc {
 
 
-struct Function;
 
 
 /**
@@ -36,9 +36,7 @@ struct Environment {
 
 
 	/** Default constructor. */
-	Environment() {
-		enter();
-	}
+	Environment() : global_scope(_stack) { }
 
 
 	/** An empty virtual destructor. */
@@ -65,7 +63,7 @@ struct Environment {
 
 
 	/** Returns execution stack. */
-	Stack &stack() { return _stack; }
+	const Stack &stack() { return _stack; }
 
 	/** Returns local (the most nested) stack frame. */
 	Variables &local() { return *_stack.back(); }
@@ -98,20 +96,17 @@ struct Environment {
 
 
 
-	/** Creates new stack frame and returns it. */
-	Variables &enter() {
-		stack().push_back(new Variables());
-		return local();
-	}
-
-	/** Removes last stack frame (does nothing if there is only global
-	    frame). */
-	void leave() {
-		if (stack().size() != 1) {
-			delete stack().back();
-			stack().pop_back();
-		}
-	}
+	/**
+	 * Executes expression in new context.  Creates new stack frame,
+	 * assigns local variables and executes expression.
+	 *
+	 * \param expr expression to execute
+	 * \param names list of local variables names
+	 * \param values list of local variables values
+	 * \return value returned by expression.
+	 */
+	real ExecuteInNewScope(Expression *expr, const UserFunction::Names &names,
+	                       const real *values);
 
 
 	/** Returns functions map. */
@@ -139,11 +134,26 @@ private:
 	Functions _functions;
 
 
+	struct NewScope {
+		NewScope(Stack &s) : stack(s) {
+			stack.push_back(new Variables());
+		}
+
+		~NewScope() {
+			delete stack.back();
+			stack.pop_back();
+		}
+
+	private:
+		Stack &stack;
+	} global_scope;
+
+
 	/**
 	 * Copying not allowed (yet).
 	 * \param env object to copy.
 	 */
-	Environment(const Environment &env) {
+	Environment(const Environment &env) : global_scope(_stack) {
 		(void)env;
 	}
 };
