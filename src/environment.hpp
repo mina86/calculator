@@ -1,6 +1,6 @@
 /** \file
  * Enviroment declaration.
- * $Id: environment.hpp,v 1.2 2008/02/29 22:29:34 mina86 Exp $
+ * $Id: environment.hpp,v 1.3 2008/04/12 02:10:32 mina86 Exp $
  */
 #ifndef H_ENVIRONMENT_HPP
 #define H_ENVIRONMENT_HPP
@@ -10,10 +10,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#if HAVE_TR1_UNORDERED_MAP
-#  include <tr1/unordered_map>
-#endif
-#include <ostream>
 
 #include "exceptions.hpp"
 #include "position.hh"
@@ -22,10 +18,7 @@
 namespace calc {
 
 
-/** Type used to pass arguments to calculator functions. */
-typedef std::vector<real> FunctionArguments;
-/** A pointer to calculator function. */
-typedef real (*Function)(const FunctionArguments &arguments);
+struct Function;
 
 
 /**
@@ -34,19 +27,18 @@ typedef real (*Function)(const FunctionArguments &arguments);
  * instructions are printed.
  */
 struct Environment {
-#if HAVE_TR1_UNORDERED_MAP
-	/** Type used to store constants. */
-	typedef std::tr1::unordered_map<std::string, real> Constants;
 	/** Type used to store functions. */
-	typedef std::tr1::unordered_map<std::string, Function> Functions;
-#else
-	/** Type used to store constants. */
-	typedef std::map<std::string, real> Constants;
-	/** Type used to store functions. */
-	typedef std::map<std::string, Function> Functions;
-#endif
+	typedef std::map<std::string, Function*> Functions;
 	/** Type used to store variables. */
 	typedef std::map<std::string, real> Variables;
+	/** Type used to store execution stack. */
+	typedef std::vector<Variables*> Stack;
+
+
+	/** Default constructor. */
+	Environment() {
+		enter();
+	}
 
 
 	/** An empty virtual destructor. */
@@ -60,112 +52,101 @@ struct Environment {
 	virtual void error(const yy::position &pos, const std::string &msg);
 
 	/**
+	 * Prints error message.
+	 * \param msg error message
+	 */
+	virtual void error(const std::string &msg);
+
+	/**
 	 * Prints result of executed instruction.
 	 * \param value instruction's result.
 	 */
 	virtual void instruction(real value);
 
 
-	/**
-	 * Sets variable's value.
-	 * \param name variable's name.
-	 * \param value value to set.
-	 * \return \a value.
-	 */
-	real set(const std::string &name, real value) {
-		return variables_trans[name] = value;
-	}
+	/** Returns execution stack. */
+	Stack &stack() { return _stack; }
+
+	/** Returns local (the most nested) stack frame. */
+	Variables &local() { return *_stack.back(); }
+
+	/** Returns local (the most nested) stack frame. */
+	const Variables &local() const { return *_stack.back(); }
+
+	/** Returns global (outer) stack frame. */
+	Variables &global() { return *_stack.front(); }
+
+	/** Returns global (outer) stack frame. */
+	const Variables &global() const { return *_stack.front(); }
+
+	/** Returns constants. */
+	Variables &constants() { return _constants; }
+
+	/** Returns constants. */
+	const Variables &constants() const { return _constants; }
+
 
 	/**
-	 * Returns variable's value or zero if it does not exist.
+	 * Returns value from given map or zero if it does not exist.
+	 * \param map  map to search in.
 	 * \param name variable's name.
 	 */
-	real get(const std::string &name) const {
-		Variables::const_iterator it = variables_trans.find(name);
-		return
-			it == variables_trans.end() &&
-			(it = variables.find(name)) == variables.end()
-			? 0.0 : it->second;
+	static real get(const Variables &map, const std::string &name) {
+		Variables::const_iterator it = map.find(name);
+		return it == map.end() ? 0 : it->second;
 	}
 
-	/** Commits changed variables. */
-	void commit() {
-		Variables::const_iterator it = variables_trans.begin();
-		Variables::const_iterator end = variables_trans.end();
-		for (; it != end; ++it) {
-			variables[it->first] = it->second;
+
+
+	/** Creates new stack frame and returns it. */
+	Variables &enter() {
+		stack().push_back(new Variables());
+		return local();
+	}
+
+	/** Removes last stack frame (does nothing if there is only global
+	    frame). */
+	void leave() {
+		if (stack().size() != 1) {
+			delete stack().back();
+			stack().pop_back();
 		}
-		variables_trans.clear();
 	}
 
-	/** Rejects changed variables. */
-	void reject() {
-		variables_trans.clear();
-	}
 
+	/** Returns functions map. */
+	Functions &functions() { return _functions; }
+
+	/** Returns functions map. */
+	const Functions &functions() const { return _functions; }
 
 	/**
-	 * Returns constant's value or zero if it does not exist.
-	 * \param name constant's name.
-	 */
-	real getConst(const std::string &name) const {
-		Constants::const_iterator it = constants.find(name);
-		return it == constants.end() ? 0.0 : it->second;
-	}
-
-	/**
-	 * Executes function with given arguments.
+	 * Returns function with given name or 0 if it does not exist.
 	 * \param name function's name.
-	 * \param arguments arguments passed to function.
-	 * \return function's result.
-	 * \throw NoSuchFunction if function does not exist.
-	 * \throw FunctionException if function exist but there are other
-	 *                          errors like wrong number of arguments.
 	 */
-	real run(const std::string &name,
-	         const std::vector<real> &arguments) const {
-		Functions::const_iterator it = functions.find(name);
-		if (it == functions.end()) {
-			throw NoSuchFunction();
-		} else {
-			return it->second(arguments);
-		}
+	const Function *getFunction(const std::string &name) const {
+		Functions::const_iterator it = functions().find(name);
+		return it == functions().end() ? 0 : it->second;
 	}
 
 
-	/** Stored variables. */
-	Variables variables;
-	/** Current transaction chagnes. */
-	Variables variables_trans;
+private:
+	/** Execution stack. */
+	Stack _stack;
 	/** Stored constants. */
-	Constants constants;
+	Variables _constants;
 	/** Pointers to functions. */
-	Functions functions;
+	Functions _functions;
+
+
+	/**
+	 * Copying not allowed (yet).
+	 * \param env object to copy.
+	 */
+	Environment(const Environment &env) {
+		(void)env;
+	}
 };
-
-}
-
-namespace std {
-
-/**
- * Prints function arguments.
- * \param o output stream to print to.
- * \param a arguments to print.
- * \return \a o.
- */
-inline std::ostream &operator<<(std::ostream &o,
-                                const calc::FunctionArguments &a) {
-	calc::FunctionArguments::const_iterator it = a.begin(), end = a.end();
-	if (it == end) {
-		return o << "()";
-	}
-
-	o << '(' << *it;
-	while (++it != end) {
-		o << ", " << *it;
-	}
-	return o << ')';
-}
 
 }
 
