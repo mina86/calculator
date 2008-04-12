@@ -1,6 +1,6 @@
 /** \file
  * Calculator functions.
- * $Id: functions.hpp,v 1.2 2008/04/12 02:16:23 mina86 Exp $
+ * $Id: functions.hpp,v 1.3 2008/04/12 12:59:08 mina86 Exp $
  */
 #ifndef H_FUNCTIONS_HPP
 #define H_FUNCTIONS_HPP
@@ -13,7 +13,7 @@
 
 namespace calc {
 
-typedef Function::Arguments FunctionArguments;
+typedef  std::vector<real> FunctionArguments;
 
 
 /**
