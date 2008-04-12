@@ -1,6 +1,6 @@
 /** \file
  * Function class declaration.
- * $Id: function.hpp,v 1.2 2008/04/12 12:58:01 mina86 Exp $
+ * $Id: function.hpp,v 1.3 2008/04/12 13:54:37 mina86 Exp $
  */
 #ifndef H_FUNCTION_HPP
 #define H_FUNCTION_HPP
@@ -9,6 +9,8 @@
 
 #include <string>
 #include <vector>
+
+#include "exceptions.hpp"
 
 
 namespace calc {
@@ -24,6 +26,12 @@ struct Function {
 	virtual real execute(Environment &env, const real *args, unsigned count)
 		const = 0;
 	virtual void free() = 0;
+
+	void throwIfArgumentsCountNotOK(unsigned count) const {
+		if (!argumentsCountOK(count)) {
+			throw InvalidNumberOfArguments();
+		}
+	}
 
 	Function() { }
 

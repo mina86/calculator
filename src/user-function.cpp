@@ -1,6 +1,6 @@
 /** \file
  * User Function class definition.
- * $Id: user-function.cpp,v 1.2 2008/04/12 12:58:46 mina86 Exp $
+ * $Id: user-function.cpp,v 1.3 2008/04/12 13:54:37 mina86 Exp $
  */
 
 #include "config.hpp"
@@ -24,12 +24,9 @@ void UserFunction::free() {
 	delete this;
 }
 
-real UserFunction::execute(Environment &env, const real *args, 
+real UserFunction::execute(Environment &env, const real *args,
                            unsigned count) const {
-	if (count != names.size()) {
-		throw InvalidNumberOfArguments();
-	}
-
+	throwIfArgumentsCountNotOK(count);
 	return env.ExecuteInNewScope(expr, names, args);
 }
 
