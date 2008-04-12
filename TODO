@@ -1,0 +1,171 @@
+##                               -*- Mode: org; indent-tabs-mode: nil -*-
+## TODO List
+## $Id: TODO,v 1.1 2008/04/12 13:56:01 mina86 Exp $
+##
+
+* Ob³uga \<NL>
+
+  Lexer powinien traktowaæ backslash jako specialny znak.  Je¿eli
+  nastêpnym znakiem po backslashu bêdzie drugi backslash lexer
+  powinien zwróciæ pojedynczy token okre¶laj±cy znak backslash.
+  Je¿eli nastêpnym znakiem bêdzie znak przej¶cia do nowej linii lexer
+  winien traktowaæ sekwencjê tych dwóch znaków jako bia³y znak.  Inne
+  sekwencje powinny (na razie) zwracaæ oba znaki, w przysz³o¶ci mog±
+  mieæ inne znaczenie.
+
+* Wbudowane funkcje
+
+  Nale¿y stworzyæ serjê klas reprezentuj±cych wbudowane funkcje, czyli
+  to co obecnie jest w functions.hpp/cpp nale¿y przerobiæ na klasy
+  dziedzicz±ce po BuiltInFunction.  Jedyne co metoda BuiltInFunction
+  bêdzie robiæ to nadpisywaæ metodê free(), tak aby nie robi³a ona
+  nic.  Wynika to faktu, i¿ obiekty te powinny byæ singletonami,
+  tzn. udostêpniaæ statyczn± metodê get(), która wygl±daæ bêdzie mniej
+  wiêcej tak:
+
+    FooFunction *FooFunction::get() {
+        static FooFunction foo;
+        return &foo;
+    }
+
+  Pewnie dobrze by by³o, gdyby klasa BuiltInFunction udostêpnia³a
+  ponadto konstruktor przyjmuj±cy minimaln± i maksymaln± liczbê
+  argumentów, jak± funkcja przyjmuje oraz napisywa³a metode
+  argumentsCountOK() tak, aby porównywa³a liczbê argumentów
+  z dopuszczalnym przedzia³em (wówczas ka¿da klasa z osobna nie bêdzie
+  musia³a tago robiæ (choæ z drugiej strony bêdzie musia³a wo³aæ
+  konstruktor klasy bazowej, ale to chyba bardziej czytelne
+  i zwiêz³e)).
+
+** Nowe funkcje
+
+   Nale¿y ponadto dodaæ kolejne funkcje takie jak floor(), celi(),
+   round() i co tam jeszcze przyjdzie do g³owy.
+
+* Dodanie obs³ugi linii poleceñ
+
+** -v - wypisywanie wyników instrukcji
+
+   W chwili obecnej, za ka¿dym razem, gdy jest wykonana instrukcja
+   (niezakoñczona ¶rednikiem) jej wynik wypisywany jest na standardowe
+   wyj¶cie.  W wersji finalnej powinno tak siê dziaæ tylko, gdy dodany
+   zostanie prze³±cznik -v.
+
+   Zrealizowaæ to mo¿na do¶æ prosto tworz±c klasê dziedzicz±c± po
+   Enviroment nazwan± SilentEnviroment, która bêdzie nadpisywaæ metodê
+   instruction(), tak aby tak nic nie robi³a.  Wówczas zale¿nie od
+   tego czy dany prze³±cznik zosta³ podany czy nie funkcja main()
+   bêdzie alo tworzyæ obiekt Enviroment albo SilentEnviroment.  Mo¿na
+   te¿ zrobiæ na odwrót, tzn. Enviroment nie bêdzie wypisywaæ
+   i stworzyæ klasê VerboseEnviroment.
+
+** -q - wypisywanie zmiennych po zakoñczeniu
+
+   Obecnie po napotkaniu koñca pliku program wypisuje warto¶ci
+   wszystkich zmiennych globalnych.  Prze³±cznik -q powinien takie
+   zachowanie wy³±czaæ.
+
+** -h - wypisywanie pomocy
+
+   Chyba nie trzeba komentowaæ, powinnien siê tu znale¿æ opis
+   prze³±czników oraz sk³adni.
+
+** -l - wypisywanie wbudowanych funkcji
+
+   Prze³±cznik ten powinien spowodowaæ, ¿e program wypiszê listê
+   wbudowanych funkcji i zakoñczy dzia³anie.
+
+** -L - wypisanie sta³ych
+
+   Prze³±cznik ten powinien spowodowaæ, ¿e program wypiszê listê
+   sta³ych (wraz z warto¶cami) i zakoñczy dzia³anie.
+
+* Obs³uga wyj±tków rzucanych przez Expression::execute()
+
+  Obecnie wyj±tki rzucane przez Expression::execute() nie s±
+  obs³ugiwane.  Nale¿y dodaæ t± obs³ugê do pliku parser.y.  Je¿eli
+  wyj±tek zostanie rzucony powinien zostaæ wypisany komunikat.  Stan
+  ¶rodowiska bêdzie w chwili obecnej niezdefiniowany (tzn. nadal
+  wszystko ma dzia³aæ dobrze, ale to czy niektóre efekty uboczne
+  wyra¿enia, które rzuci³o wyj±tek zosta³y wykonanie czy nie nie jest
+  okre¶lone).
+
+** B³êdne wo³ania funkcji powinny rzucaæ wyj±tek
+
+   Obecnie, FunctionExpression::exception() zamiast rzucaæ wyj±tek,
+   gdy jest b³êdna liczba argumentów lub nieistniej±ca funkcja
+   wypisuje komunikat.  Nalezy to zmieniæ.
+
+* Definiowanie funkcji
+
+  Nale¿y dodaæ mo¿liwo¶æ definiowania funkcji.  Ogólna sk³adnia bêdzie
+  wygl±daæ jako¶ tak:
+
+
+    define_instruction: DEFINE ID '(' formal_arguments ')' = assignment_expr
+    formal_arguments: /* empty */
+                    | non_empty_formal_arguments
+    non_empty_formal_arguments: ID
+                              | non_empty_formal_arguments ',' ID
+
+  formal_arguments i non_empty_formal_arguments winny budowaæ
+  std::vector<std::string> (czyli UserFunction::Names),
+  a define_instruction tworzyæ nowy obiekt UserFunction.
+
+* Operator ?:
+
+  Nale¿y dodaæ obs³ugê oepratora ?:.  Zasadniczo, aby to uczyniæ
+  nale¿y dodaæ nowy obiekt BooleanExpression, na którego bazie nale¿y
+  zrobiæ wyra¿enia dla operatorów porównania (==, !=, <, >, <=, >=;
+  przy czym dla <= i < nie nale¿y tworzyæ obiektów, zamiast tego
+  lepiej zastoowaæ >= i > z odwrotn± kolejno¶ci± argumentów)
+  przyjmuj±cych jako argument dwa wska¼niki na Expression oraz
+  operatorów logicznych !, ||, &&, które przyjmowaæ bêd± wksa¼niki na
+  BooleanExpression.  Operator ?: bêdzie przyjmowa³ jeden
+  BooleanExpression oraz dwa Expression i w metodzie execute() bêdzie
+  wykonywa³ tylko jedno z wyra¿eñ zale¿nie od wyniku wyra¿enia
+  logicznego.
+
+  Postaram siê naprêdce zdefiniowaæ sk³adniê, tak, aby zachowana by³a
+  ³±czno¶æ i kolejno¶æ wykonywania dzia³añ zgodna z C:
+
+  cond_expr: additive_expr
+           | logic_or_expr '?' assignment_expr : cond_expr
+  logic_or_expr: logic_and_expr
+               | logic_or_expr "||" logic_and_expr
+  logic_and_expr: logic_expr
+                | logic_and_expr "&&" logic_expr
+  logic_expr: cmp_expr
+            | '(' logic_expr ')'
+            | '!' logic_expr
+  cmp_expr: expression cmp_operator expression
+  cmp_operator: "==" | "!=" | "<" | "<=" | ">" | ">="
+
+  W assignment_expr w ostatniej alternatywie bêdzie trzeba oczywi¶cie
+  zmieniæ additive_expr na cond_expr.  Ponadto nie jestem pewny jak
+  winno wygl±daæ cmp_expr, mo¿liwe ¿e u¿ycie tam expression jest
+  b³êdne.
+
+* Poprawienie kodu i zmiana std::string* na std::string gdzie siê da
+
+  Poniewa¿ bison by³ pierwotnie pisany dla C to niezbyt sobie radzi
+  z czym¶ takim jak destruktory.  Z tego powodu je¿eli chcemy wywo³aæ
+  w nim destruktor to trzeba korzytaæ ze wska¼ników i obiektów
+  tworzonych na stercie.  Tak te¿ jest z std::string.  Jednak, pisz±c
+  na szybko, wyra¿enia w expression.hpp, które przyjmuj± nazwê
+  zmiennej/funkcji te¿ operuj± na wska¼nikach do std::string, co jest
+  raczej niedobre.  Dlatego trzeba wyczy¶ciæ kod, tak aby obiekty
+  w expression.hpp trzyma³y bezpo¶rednio obiekty std::string, a nie
+  wska¼niki do nich.  Nale¿y wówczas zwróciæ uwagê na odpowiednie
+  zmodyfikowanie parser.y w ten sposób, aby wska¼niki nie by³y
+  zerowane, gdy¿ wówczas destruktory bêd± musia³y byæ wywo³ywane
+  (obecnie w parser.y widaæ instrukcje typu $1 = 0 czy $1.name = 0,
+  gdy¿ imituj± one zachowanie sprytnych wska¼ników;  w przypadku
+  wyra¿eñ (obiektów Expression) zachowanie takie jest nadal konieczne,
+  lecz je¿eli obiekty dziedzicz±ce po Expression bêd± trzyma³y w³asn±
+  kopiê std::string to w odniesieniu do ci±gów znaków zachowanie takie
+  mo¿e byæ ju¿ b³êdne).
+
+* Uzupe³niæ dokumentacjê
+
+  Na koniec nale¿y tak¿e uzupe³niæ dokumentacjê w plikach ¼ród³owych.
