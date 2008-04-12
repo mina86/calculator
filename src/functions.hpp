@@ -1,6 +1,6 @@
 /** \file
  * Calculator functions.
- * $Id: functions.hpp,v 1.1 2008/02/08 21:47:32 mina86 Exp $
+ * $Id: functions.hpp,v 1.2 2008/04/12 02:16:23 mina86 Exp $
  */
 #ifndef H_FUNCTIONS_HPP
 #define H_FUNCTIONS_HPP
@@ -8,9 +8,13 @@
 #include "config.hpp"
 
 #include "environment.hpp"
+#include "function.hpp"
 
 
 namespace calc {
+
+typedef Function::Arguments FunctionArguments;
+
 
 /**
  * Returns the squere root of its argument.
