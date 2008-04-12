@@ -9,17 +9,19 @@
 
 #include <string>
 
-#include "environment.hpp"
+#include "expression.hpp"
 
 namespace calc {
 	struct Lexer;
+	struct Environment;
 }
 %}
 
 %union {
-	calc::real               dval;
-	std::string             *sval;
-	calc::FunctionArguments *vval;
+	calc::real                           num;
+	calc::Variable                       var;
+	calc::Expression                    *expr;
+	calc::FunctionExpression::Arguments *args;
 };
 
 %parse-param { calc::Lexer       &lexer }
@@ -45,24 +47,28 @@ int yylex(yy::Parser::semantic_type *yylval,
 %}
 
 
-%token	<sval>	ID
-%token	<dval>	NUMBER
+%token	<var.name>	ID
+%token	<num>	NUMBER
 %token		ADD_EQ		"+="
 %token		SUB_EQ		"-="
 %token		MUL_EQ		"*="
 %token		DIV_EQ		"/="
 %token		POW_EQ		"^="
+%token		GE		">="
+%token		LE		"<="
+%token		NE		"!="
+%token		EQ		"=="
 
-%type	<dval>	assignment_expr additive_expr multiplicative_expr
-%type	<dval>	pow_expr prefix_expr simple_expr
-%type	<vval>	arguments non_empty_arguments
+
+%type	<expr>	assignment_expr additive_expr multiplicative_expr
+%type	<expr>	pow_expr prefix_expr simple_expr
+%type	<var>	var
+%type	<args>	arguments non_empty_arguments
 
 %destructor	{ delete $$; } ID arguments non_empty_arguments
-
-%printer	{ debug_stream() << *$$; } ID arguments non_empty_arguments
-%printer	{ debug_stream() <<  $$; } assignment_expr additive_expr
-%printer	{ debug_stream() <<  $$; } multiplicative_expr pow_expr
-%printer	{ debug_stream() <<  $$; } prefix_expr simple_expr NUMBER
+%destructor	{ delete $$; } assignment_expr additive_expr simple_expr
+%destructor	{ delete $$; } multiplicative_expr pow_expr prefix_expr
+%destructor	{ delete $$.name; } var
 
 %%
 start	: start instruction
@@ -70,75 +76,140 @@ start	: start instruction
 	;
 
 instruction
-	: assignment_expr ';'		{ env.commit(); }
-	| assignment_expr '\n'		{ env.commit(); env.instruction($1); }
+	: assignment_expr ';'		{ $1->execute(env) }
+	| assignment_expr '\n'		{ env.instruction($1->execute(env)); }
 	| ';'
 	| '\n'
-	| error ';'			{ env.reject(); }
-	| error '\n'			{ env.reject(); }
+	| error ';'
+	| error '\n'
 	;
 
 assignment_expr
-	: ID '='  assignment_expr	{ $$ = env.set(*$1, $3); }
-	| ID "+=" assignment_expr	{ $$ = env.set(*$1, $3 + env.get(*$1)); }
-	| ID "-=" assignment_expr	{ $$ = env.set(*$1, $3 - env.get(*$1)); }
-	| ID "*=" assignment_expr	{ $$ = env.set(*$1, $3 * env.get(*$1)); }
-	| ID "/=" assignment_expr	{ $$ = env.set(*$1, $3 / env.get(*$1)); }
-	| ID "^=" assignment_expr	{ $$ = env.set(*$1, calc::m::pow($3, env.get(*$1))); }
-	| additive_expr			{ $$ = $1; }
+	: var '='  assignment_expr	{
+		$$ = calc::SetExpression::create($1, $3);
+		$1.name = 0; $3 = 0;
+	}
+	| var "+=" assignment_expr	{
+		calc::Expression *expr;
+		expr = new calc::AddExpression($1, $3);
+		$1.name = new std::string(*$1.name);
+		$$ = calc::SetExpression::create($1, expr);
+		$1.name = 0; $3 = 0;
+	}
+	| var "-=" assignment_expr	{
+		calc::Expression *expr;
+		expr = new calc::SubExpression($1, $3);
+		$1.name = new std::string(*$1.name);
+		$$ = calc::SetExpression::create($1, expr);
+		$1.name = 0; $3 = 0;
+	}
+	| var "*=" assignment_expr	{
+		calc::Expression *expr;
+		expr = new calc::MulExpression($1, $3);
+		$1.name = new std::string(*$1.name);
+		$$ = calc::SetExpression::create($1, expr);
+		$1.name = 0; $3 = 0;
+	}
+	| var "/=" assignment_expr	{
+		calc::Expression *expr;
+		expr = new calc::DivExpression($1, $3);
+		$1.name = new std::string(*$1.name);
+		$$ = calc::SetExpression::create($1, expr);
+		$1.name = 0; $3 = 0;
+	}
+	| var "^=" assignment_expr	{
+		calc::Expression *expr;
+		expr = new calc::PowExpression($1, $3);
+		$1.name = new std::string(*$1.name);
+		$$ = calc::SetExpression::create($1, expr);
+		$1.name = 0; $3 = 0;
+	}
+	| additive_expr			{ $$ = $1; $1 = 0; }
 	;
 
 additive_expr
-	: additive_expr '+' multiplicative_expr	{ $$ = $1 + $3; }
-	| additive_expr '-' multiplicative_expr	{ $$ = $1 - $3; }
-	| multiplicative_expr		{ $$ = $1; }
+	: additive_expr '+' multiplicative_expr	{
+		$$ = new calc::AddExpression($1, $3);
+		$1 = $3 = 0;
+	}
+	| additive_expr '-' multiplicative_expr	{
+		$$ = new calc::SubExpression($1, $3);
+		$1 = $3 = 0;
+	}
+	| multiplicative_expr		{ $$ = $1; $1 = 0; }
 	;
 
 multiplicative_expr
-	: multiplicative_expr '*' pow_expr	{ $$ = $1 * $3; }
-	| multiplicative_expr '/' pow_expr	{ $$ = $1 / $3; }
-	| pow_expr			{ $$ = $1; }
+	: multiplicative_expr '*' pow_expr	{
+		$$ = new calc::MulExpression($1, $3);
+		$1 = $3 = 0;
+	}
+	| multiplicative_expr '/' pow_expr	{
+		$$ = new calc::DivExpression($1, $3);
+		$1 = $3 = 0;
+	}
+	| pow_expr			{ $$ = $1; $1 = 0; }
 	;
 
-pow_expr: prefix_expr '^' pow_expr	{ $$ = calc::m::pow($1, $3); }
-	| prefix_expr				{ $$ = $1; }
+pow_expr: prefix_expr '^' pow_expr	{
+		$$ = new calc::PowExpression($1, $3);
+		$1 = $3 = 0;
+	}
+	| prefix_expr			{ $$ = $1; $1 = 0; }
 	;
 
 prefix_expr
-	: '+' prefix_expr		{ $$ = $2; }
-	| '-' prefix_expr		{ $$ = -$2; }
-	| simple_expr
+	: '+' prefix_expr		{ $$ = $2; $2 = 0; }
+	| '-' prefix_expr		{
+		$$ = new calc::NegExpression($2);
+		$2 = 0;
+	}
+	| simple_expr                   { $$ = $1; $1 = 0; }
 	;
 
 simple_expr
-	: NUMBER			{ $$ = $1; }
-	| '(' assignment_expr ')'	{ $$ = $2; }
-	| ID				{ $$ = env.get(*$1); }
-	| '#' ID			{ $$ = env.getConst(*$2); }
-	| ID '(' arguments ')'
-	{
-		try {
-			$$ = env.run(*$1, *$3);
-		}
-		catch (const calc::FunctionException &e) {
-			error(@$, *$1 + ": " + e.getMessage());
-			YYERROR;
-		}
+	: NUMBER			{
+		$$ = new calc::NumberExpression($1);
 	}
-		;
+	| '(' assignment_expr ')'	{ $$ = $2; $2 = 0; }
+	| var				{
+		$$ = calc::GetExpression::create($1);
+		$1.name = 0;
+	}
+	| '#' ID			{
+		$$ = new calc::GetConstExpression($2);
+		$2 = 0;
+	}
+	| ID '(' arguments ')' {
+		$$ = new calc::FunctionExpression($1, $3);
+		$1 = 0; $3 = 0;
+	}
+	;
+
+var	: ID				{
+		$$.name = $1; $$.scope = ' '; $1 = 0;
+	}
+	| '$' ID			{
+		$$.name = $2; $$.scope = '$'; $2 = 0;
+	}
+	;
 
 arguments
-	: /* empty */			{ $$ = new calc::FunctionArguments(); }
-	| non_empty_arguments		{ $$ = $1; }
+	: /* empty */			{
+		$$ = new calc::FunctionExpression::Arguments();
+	}
+	| non_empty_arguments		{ $$ = $1; $1 = 0; }
 	;
 
 non_empty_arguments
 	: assignment_expr		{
-		$$ = new calc::FunctionArguments();
+		$$ = new calc::FunctionExpression::Arguments();
 		$$->push_back($1);
+		$1 = 0;
 	}
 	| non_empty_arguments ',' assignment_expr	{
 		$$ = $1; $$->push_back($3);
+		$1 = 0; $3 = 0;
 	}
 	;
 
