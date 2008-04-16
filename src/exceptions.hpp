@@ -1,6 +1,6 @@
 /** \file
  * Exception definitions.
- * $Id: exceptions.hpp,v 1.2 2008/04/12 02:12:04 mina86 Exp $
+ * $Id: exceptions.hpp,v 1.3 2008/04/16 11:43:09 mina86 Exp $
  */
 #ifndef H_EXCEPTIONS_HPP
 #define H_EXCEPTIONS_HPP
@@ -24,14 +24,37 @@ struct IOException : public std::runtime_error {
 };
 
 
+/** Base Exception thrown by Expression classes. */
+struct ExpressionException : public std::runtime_error {
+protected:
+	/**
+	 * Constructs exception and sets error message.
+	 * \param message_ error message.
+	 */
+	ExpressionException(const std::string &message) throw()
+		: std::runtime_error(message) { }
+};
+
+/**
+ * Thrown by SetConstExpression when trying to set already defined
+ * constant's value.
+ */
+struct ConstAlreadyDefined : public ExpressionException {
+	/** Constructos exception. */
+	ConstAlreadyDefined() throw()
+		: ExpressionException("constant already defined") { }
+};
+
+
 /** Exception class regarding functions. */
-struct FunctionException : public std::runtime_error {
+struct FunctionException : public ExpressionException {
+protected:
 	/**
 	 * Constructs exception and sets error message.
 	 * \param message_ error message.
 	 */
 	FunctionException(const std::string &message) throw()
-		: std::runtime_error(message) { }
+		: ExpressionException(message) { }
 };
 
 
