@@ -1,6 +1,6 @@
 /** \file
  * Enviroment declaration.
- * $Id: environment.hpp,v 1.4 2008/04/12 12:57:11 mina86 Exp $
+ * $Id: environment.hpp,v 1.5 2008/04/16 11:42:26 mina86 Exp $
  */
 #ifndef H_ENVIRONMENT_HPP
 #define H_ENVIRONMENT_HPP
@@ -134,19 +134,37 @@ private:
 	Functions _functions;
 
 
+	/**
+	 * A private class for running expressions in their own scope.
+	 * It's constructor creates new scope and destructor removes it.
+	 */
 	struct NewScope {
+		/**
+		 * Constructor creating new scope on stack.
+		 * \param s stack to create new scope on.
+		 */
 		NewScope(Stack &s) : stack(s) {
 			stack.push_back(new Variables());
 		}
 
+		/** Discards top-level scope from the stack. */
 		~NewScope() {
 			delete stack.back();
 			stack.pop_back();
 		}
 
 	private:
+		/** Stack class operats on. */
 		Stack &stack;
-	} global_scope;
+	};
+
+	/**
+	 * Since Environment class has instance of NewScope class when
+	 * Environment is created a new local (which is global at the same
+	 * time) scope is created and it is later discarded when
+	 * Environment object is destroyed.
+	 */
+	NewScope global_scope;
 
 
 	/**
