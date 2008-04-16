@@ -1,6 +1,6 @@
 /** \file
  * Expression method definitions.
- * $Id: expression.cpp,v 1.2 2008/04/12 12:58:01 mina86 Exp $
+ * $Id: expression.cpp,v 1.3 2008/04/16 11:44:13 mina86 Exp $
  */
 
 #include "config.hpp"
@@ -29,20 +29,16 @@ real NegExpression::execute(Environment &env) const {
 	return -expr->execute(env);
 }
 
-NameExpression::~NameExpression() {
-	delete name;
-}
-
 real GetLocalExpression::execute(Environment &env) const {
-	return Environment::get(env.local(), *name);
+	return Environment::get(env.local(), name);
 }
 
 real GetGlobalExpression::execute(Environment &env) const {
-	return Environment::get(env.global(), *name);
+	return Environment::get(env.global(), name);
 }
 
 real GetConstExpression::execute(Environment &env) const {
-	return Environment::get(env.constants(), *name);
+	return Environment::get(env.constants(), name);
 }
 
 
@@ -52,12 +48,22 @@ SetExpression::~SetExpression() {
 
 real SetLocalExpression::execute(Environment &env) const {
 	real val = expr->execute(env);
-	return env.local()[*name] = val;
+	return env.local()[name] = val;
 }
 
 real SetGlobalExpression::execute(Environment &env) const {
 	real val = expr->execute(env);
-	return env.global()[*name] = val;
+	return env.global()[name] = val;
+}
+
+real SetConstExpression::execute(Environment &env) const {
+	real val = expr->execute(env);
+	std::pair<Environment::Variables::iterator, bool> ret =
+		env.constants().insert(std::make_pair(name, val));
+	if (!ret.second) {
+		throw ConstAlreadyDefined();
+	}
+	return val;
 }
 
 
@@ -93,14 +99,14 @@ FunctionExpression::~FunctionExpression() {
 }
 
 real FunctionExpression::execute(Environment &env) const {
-	const Function *func = env.getFunction(*name);
+	const Function *func = env.getFunction(name);
 	if (!func) {
-		env.error("no such function: " + *name);
+		env.error("no such function: " + name);
 		return 0;
 	}
 
 	if (func->argumentsCountOK(args->size())) {
-		env.error("invalid number of arguments for function: " + *name);
+		env.error("invalid number of arguments for function: " + name);
 		return 0;
 	}
 
