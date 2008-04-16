@@ -1,9 +1,12 @@
 ##                               -*- Mode: org; indent-tabs-mode: nil -*-
 ## TODO List
-## $Id: TODO,v 1.3 2008/04/12 14:15:53 mina86 Exp $
+## $Id: TODO,v 1.4 2008/04/16 10:43:55 mina86 Exp $
 ##
 
-* Ob³uga \<NL>
+Liczba w nawiasach kwadratowych oznacza piorytet -- [0] najwy¿szy, [5]
+najni¿szy.
+
+* [3] Obs³uga \<NL>
 
   Lexer powinien traktowaæ backslash jako specialny znak.  Je¿eli
   nastêpnym znakiem po backslashu bêdzie drugi backslash lexer
@@ -13,7 +16,7 @@
   sekwencje powinny (na razie) zwracaæ oba znaki, w przysz³o¶ci mog±
   mieæ inne znaczenie.
 
-* Wbudowane funkcje
+* [0] Wbudowane funkcje
 
   Nale¿y stworzyæ serjê klas reprezentuj±cych wbudowane funkcje, czyli
   to co obecnie jest w functions.hpp/cpp nale¿y przerobiæ na klasy
@@ -37,13 +40,13 @@
   konstruktor klasy bazowej, ale to chyba bardziej czytelne
   i zwiêz³e)).
 
-** Nowe funkcje
+** [4] Nowe funkcje
 
    Nale¿y ponadto dodaæ kolejne funkcje takie jak floor(), celi(),
    round(), gcd() (greatest common divisor), lcm() (least common
    multiple) i co tam jeszcze przyjdzie do g³owy.
 
-** Nowe operatory
+** [4] Nowe operatory
 
    Zawsze mo¿na te¿ wymy¶laæ nowe operatory, np.:
    - expr % expr -- dzielenie modulo
@@ -52,9 +55,9 @@
    - ( expr expr ) -- dwumian Newtona
 
 
-* Dodanie obs³ugi linii poleceñ
+* [1] Dodanie obs³ugi linii poleceñ
 
-** -v - wypisywanie wyników instrukcji
+** [1] -v - wypisywanie wyników instrukcji
 
    W chwili obecnej, za ka¿dym razem, gdy jest wykonana instrukcja
    (niezakoñczona ¶rednikiem) jej wynik wypisywany jest na standardowe
@@ -69,28 +72,28 @@
    te¿ zrobiæ na odwrót, tzn. Enviroment nie bêdzie wypisywaæ
    i stworzyæ klasê VerboseEnviroment.
 
-** -q - wypisywanie zmiennych po zakoñczeniu
+** [1] -q - wypisywanie zmiennych po zakoñczeniu
 
    Obecnie po napotkaniu koñca pliku program wypisuje warto¶ci
    wszystkich zmiennych globalnych.  Prze³±cznik -q powinien takie
    zachowanie wy³±czaæ.
 
-** -h - wypisywanie pomocy
+** [1] -h - wypisywanie pomocy
 
    Chyba nie trzeba komentowaæ, powinnien siê tu znale¿æ opis
    prze³±czników oraz sk³adni.
 
-** -l - wypisywanie wbudowanych funkcji
+** [2] -l - wypisywanie wbudowanych funkcji
 
    Prze³±cznik ten powinien spowodowaæ, ¿e program wypiszê listê
    wbudowanych funkcji i zakoñczy dzia³anie.
 
-** -L - wypisanie sta³ych
+** [2] -L - wypisanie sta³ych
 
    Prze³±cznik ten powinien spowodowaæ, ¿e program wypiszê listê
    sta³ych (wraz z warto¶cami) i zakoñczy dzia³anie.
 
-* Obs³uga wyj±tków rzucanych przez Expression::execute()
+* [0] Obs³uga wyj±tków rzucanych przez Expression::execute()
 
   Obecnie wyj±tki rzucane przez Expression::execute() nie s±
   obs³ugiwane.  Nale¿y dodaæ t± obs³ugê do pliku parser.y.  Je¿eli
@@ -100,13 +103,13 @@
   wyra¿enia, które rzuci³o wyj±tek zosta³y wykonanie czy nie nie jest
   okre¶lone).
 
-** B³êdne wo³ania funkcji powinny rzucaæ wyj±tek
+** [0] B³êdne wo³ania funkcji powinny rzucaæ wyj±tek
 
    Obecnie, FunctionExpression::exception() zamiast rzucaæ wyj±tek,
    gdy jest b³êdna liczba argumentów lub nieistniej±ca funkcja
    wypisuje komunikat.  Nalezy to zmieniæ.
 
-* Definiowanie funkcji
+* [0] Definiowanie funkcji
 
   Nale¿y dodaæ mo¿liwo¶æ definiowania funkcji.  Ogólna sk³adnia bêdzie
   wygl±daæ jako¶ tak:
@@ -122,44 +125,61 @@
   std::vector<std::string> (czyli UserFunction::Names),
   a define_instruction tworzyæ nowy obiekt UserFunction.
 
-* Operator ?:
+* [1] Operator ?: i operatory logiczne
 
-  Nale¿y dodaæ obs³ugê oepratora ?:.  Zasadniczo, aby to uczyniæ
-  nale¿y dodaæ nowy obiekt BooleanExpression, na którego bazie nale¿y
-  zrobiæ wyra¿enia dla operatorów porównania (==, !=, <, >, <=, >=;
-  przy czym dla <= i < nie nale¿y tworzyæ obiektów, zamiast tego
-  lepiej zastoowaæ >= i > z odwrotn± kolejno¶ci± argumentów)
-  przyjmuj±cych jako argument dwa wska¼niki na Expression oraz
-  operatorów logicznych !, ||, &&, które przyjmowaæ bêd± wksa¼niki na
-  BooleanExpression.  Operator ?: bêdzie przyjmowa³ jeden
-  BooleanExpression oraz dwa Expression i w metodzie execute() bêdzie
-  wykonywa³ tylko jedno z wyra¿eñ zale¿nie od wyniku wyra¿enia
-  logicznego.
+  Nale¿y dodaæ obs³ugê oepratora ?: oraz operatorów logicznych.
+  Poprzednio pisa³em, aby zastosowaæ odrêbn± klasê wyra¿eñ
+  BooleanExpresson, ale chyba mo¿na to wszystko za³atwiæ jako zwyk³e
+  Expression--wówczas bez problemu bêdzie mo¿na definiowaæ funkcje
+  które zwracaj± warto¶ci true/false.
 
-  Postaram siê naprêdce zdefiniowaæ sk³adniê, tak, aby zachowana by³a
-  ³±czno¶æ i kolejno¶æ wykonywania dzia³añ zgodna z C:
+  Proponujê nastêpuj±ca gramatykê:
 
-  cond_expr: additive_expr
-           | logic_or_expr '?' assignment_expr : cond_expr
+  cond_expr: logic_or_expr
+           | logic_or_expr '?' expr ':' cond_expr
   logic_or_expr: logic_and_expr
                | logic_or_expr "||" logic_and_expr
-  logic_and_expr: logic_expr
-                | logic_and_expr "&&" logic_expr
-  logic_expr: cmp_expr
-            | '(' logic_expr ')'
-            | '!' logic_expr
-  cmp_expr: expression cmp_operator expression
-  cmp_operator: "==" | "!=" | "<" | "<=" | ">" | ">="
+  logic_and_expr: cmp_expr
+                | logic_and_expr "&&" cmp_expr
+  cmp_expr: rel_expr
+          | cmp_expr cmp_op rel_expr
+  rel_expr: additive_expr
+          | rel_expr rel_op additive_expr
+  cmp_op: "==" | "!="
+  rel_op: "<=" | ">=" | '<' | '>'
 
   W assignment_expr w ostatniej alternatywie bêdzie trzeba oczywi¶cie
-  zmieniæ additive_expr na cond_expr.  Ponadto nie jestem pewny jak
-  winno wygl±daæ cmp_expr, mo¿liwe ¿e u¿ycie tam expression jest
-  b³êdne.
+  zmieniæ additive_expr na cond_expr.
 
   Operatory && i || nie bêd± rzecz jasna wyliczaæ prawego argumentu,
   je¿eli wynik bêdzie mo¿na wywnioskowaæ z lewego.
 
-* Operator ,
+  Operatory logiczne bêd± zwracaæ 0 w przypadku fa³szu i 1 w przypadku
+  prawdy.  Co wiêcej, wyra¿enie bêdzie uznawane, ¿e ma warto¶æ
+  prawdziw± je¿eli bêdzie ona ró¿na od 0.  Co¶ takiego powinno
+  zadzia³aæ, gdy¿ w typie double mo¿na bez przeszkód przechowywaæ
+  warto¶æ zero.
+
+** [3] Porównywanie liczb z pewn± dok³adno¶ci± ("Fuzzy Comparison")
+
+   Proponujê dodaæ jeszcze nastêpuj±ce operatory:
+
+    Operator | Typ    | Przyk³ad | Znaczenie
+     =~      | cmp_op | a =~ b   | abs(a - b) <= p
+     !~      | cmp_op | a !~ b   | abs(a - b) >  p
+     <~      | rel_op | a <~ b   | a <  b - p
+     <=~     | rel_op | a <=~ b  | a <= b + p
+     >~      | rel_op | a >~ b   | a - p > b
+     >=~     | rel_op | a >=~ b  | a + p >= b
+
+   Gdzie p bêdzie z góry ustalon± sta³±.
+
+*** [5] Parametr wywo³ania -p
+
+    Przy wywo³aniu programu z parametrem -p i liczb± rzeczywist± mo¿na
+    ustaliæ parametr p, z którym "Fuzzy Comparison" jest wykonywane.
+
+* [1] Operator ,
 
   Warto te¿ dodaæ operator ',', gdy¿ bêdzie on szczególnie przydatny
   przy definiowaniu funkcji, np.:
@@ -179,7 +199,7 @@
   dwa razy wylicza co¶ bardzo z³o¿onego (tak, wiem ¿e mamy operacje
   potêgowania, ale to tylko przyk³ad).
 
-** Magiczne traktowanie przecinka przez lexer
+** [4] Magiczne traktowanie przecinka przez lexer
 
    Lexer móg³by traktowaæ przecinek w magiczny sposób, tzn. ignorowaæ
    znak przej¶cia do nowej linii je¿eli wystêpuje on zaraz za
@@ -196,7 +216,7 @@
 
    bez konieczno¶ci pisania za ka¿dym razem "\ ".
 
-* Poprawienie kodu i zmiana std::string* na std::string gdzie siê da
+* [2] Poprawienie kodu i zmiana std::string* na std::string gdzie siê da
 
   Poniewa¿ bison by³ pierwotnie pisany dla C to niezbyt sobie radzi
   z czym¶ takim jak destruktory.  Z tego powodu je¿eli chcemy wywo³aæ
@@ -216,6 +236,6 @@
   kopiê std::string to w odniesieniu do ci±gów znaków zachowanie takie
   mo¿e byæ ju¿ b³êdne).
 
-* Uzupe³niæ dokumentacjê
+* [2] Uzupe³niæ dokumentacjê
 
   Na koniec nale¿y tak¿e uzupe³niæ dokumentacjê w plikach ¼ród³owych.
