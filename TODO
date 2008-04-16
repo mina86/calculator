@@ -1,20 +1,21 @@
 ##                               -*- Mode: org; indent-tabs-mode: nil -*-
 ## TODO List
-## $Id: TODO,v 1.5 2008/04/16 11:45:11 mina86 Exp $
+## $Id: TODO,v 1.6 2008/04/16 19:56:03 mina86 Exp $
 ##
 
 Liczba w nawiasach kwadratowych oznacza piorytet -- [0] najwy¿szy, [5]
-najni¿szy.
+najni¿szy.  [DONE] oznacza, i¿ rzecz zosta³a zroiona.
 
-* [3] Obs³uga \<NL>
+* [DONE] Obs³uga \<NL>
 
-  Lexer powinien traktowaæ backslash jako specialny znak.  Je¿eli
+  Lexer powinien traktowaæ backslash jako specialny znak.  <del>Je¿eli
   nastêpnym znakiem po backslashu bêdzie drugi backslash lexer
-  powinien zwróciæ pojedynczy token okre¶laj±cy znak backslash.
+  powinien zwróciæ pojedynczy token okre¶laj±cy znak backslash.</del>
   Je¿eli nastêpnym znakiem bêdzie znak przej¶cia do nowej linii lexer
-  winien traktowaæ sekwencjê tych dwóch znaków jako bia³y znak.  Inne
-  sekwencje powinny (na razie) zwracaæ oba znaki, w przysz³o¶ci mog±
-  mieæ inne znaczenie.
+  winien traktowaæ sekwencjê tych dwóch znaków jako bia³y znak.
+  <del>Inne sekwencje powinny (na razie) zwracaæ oba znaki,
+  w przysz³o¶ci mog± mieæ inne znaczenie.</del> Inne znaki powinny byæ
+  zwracane "as is".
 
 * [0] Wbudowane funkcje
 
@@ -216,7 +217,7 @@ najni¿szy.
 
    bez konieczno¶ci pisania za ka¿dym razem "\ ".
 
-* [DONE] [2] Poprawienie kodu i zmiana std::string* na std::string
+* [DONE] Poprawienie kodu i zmiana std::string* na std::string
 
   Poniewa¿ bison by³ pierwotnie pisany dla C to niezbyt sobie radzi
   z czym¶ takim jak destruktory.  Z tego powodu je¿eli chcemy wywo³aæ

@@ -1,6 +1,6 @@
 /** \file
  * Lexer reading from FILE stream implementation.
- * $Id: file-lexer.cpp,v 1.4 2008/04/12 02:14:20 mina86 Exp $
+ * $Id: file-lexer.cpp,v 1.5 2008/04/16 19:56:03 mina86 Exp $
  */
 #include "math.hpp"
 #include "exceptions.hpp"
@@ -55,8 +55,16 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
                          yy::location &location) {
 	int ch;
 
-	while ((ch = getchar()) != EOF && ch != '\n' && isspace(ch)) /* nop */;
-	location.begin = previous;
+	for(;;){
+		while ((ch = getchar()) != EOF && ch != '\n' && isspace(ch)) /*nop*/;
+		location.begin = previous;
+
+		if (ch != '\\') break;
+		ch = getchar();
+		if (ch != '\n') {
+			return ch;
+		}
+	}
 
 	/* Identifier or 'e' */
 	if (isalpha(ch) || ch == '_') {
