@@ -1,6 +1,6 @@
 ##                               -*- Mode: org; indent-tabs-mode: nil -*-
 ## TODO List
-## $Id: TODO,v 1.4 2008/04/16 10:43:55 mina86 Exp $
+## $Id: TODO,v 1.5 2008/04/16 11:45:11 mina86 Exp $
 ##
 
 Liczba w nawiasach kwadratowych oznacza piorytet -- [0] najwy¿szy, [5]
@@ -216,7 +216,7 @@ najni¿szy.
 
    bez konieczno¶ci pisania za ka¿dym razem "\ ".
 
-* [2] Poprawienie kodu i zmiana std::string* na std::string gdzie siê da
+* [DONE] [2] Poprawienie kodu i zmiana std::string* na std::string
 
   Poniewa¿ bison by³ pierwotnie pisany dla C to niezbyt sobie radzi
   z czym¶ takim jak destruktory.  Z tego powodu je¿eli chcemy wywo³aæ

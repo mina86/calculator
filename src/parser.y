@@ -87,42 +87,37 @@ instruction
 assignment_expr
 	: var '='  assignment_expr	{
 		$$ = calc::SetExpression::create($1, $3);
-		$1.name = 0; $3 = 0;
+		$3 = 0;
 	}
 	| var "+=" assignment_expr	{
 		calc::Expression *expr;
 		expr = new calc::AddExpression($1, $3);
-		$1.name = new std::string(*$1.name);
 		$$ = calc::SetExpression::create($1, expr);
-		$1.name = 0; $3 = 0;
+		$3 = 0;
 	}
 	| var "-=" assignment_expr	{
 		calc::Expression *expr;
 		expr = new calc::SubExpression($1, $3);
-		$1.name = new std::string(*$1.name);
 		$$ = calc::SetExpression::create($1, expr);
-		$1.name = 0; $3 = 0;
+		$3 = 0;
 	}
 	| var "*=" assignment_expr	{
 		calc::Expression *expr;
 		expr = new calc::MulExpression($1, $3);
-		$1.name = new std::string(*$1.name);
 		$$ = calc::SetExpression::create($1, expr);
-		$1.name = 0; $3 = 0;
+		$3 = 0;
 	}
 	| var "/=" assignment_expr	{
 		calc::Expression *expr;
 		expr = new calc::DivExpression($1, $3);
-		$1.name = new std::string(*$1.name);
 		$$ = calc::SetExpression::create($1, expr);
-		$1.name = 0; $3 = 0;
+		$3 = 0;
 	}
 	| var "^=" assignment_expr	{
 		calc::Expression *expr;
 		expr = new calc::PowExpression($1, $3);
-		$1.name = new std::string(*$1.name);
 		$$ = calc::SetExpression::create($1, expr);
-		$1.name = 0; $3 = 0;
+		$3 = 0;
 	}
 	| additive_expr			{ $$ = $1; $1 = 0; }
 	;
@@ -174,15 +169,10 @@ simple_expr
 	| '(' assignment_expr ')'	{ $$ = $2; $2 = 0; }
 	| var				{
 		$$ = calc::GetExpression::create($1);
-		$1.name = 0;
-	}
-	| '#' ID			{
-		$$ = new calc::GetConstExpression($2);
-		$2 = 0;
 	}
 	| ID '(' arguments ')' {
-		$$ = new calc::FunctionExpression($1, $3);
-		$1 = 0; $3 = 0;
+		$$ = new calc::FunctionExpression(*$1, $3);
+		$3 = 0;
 	}
 	;
 
@@ -191,6 +181,9 @@ var	: ID				{
 	}
 	| '$' ID			{
 		$$.name = $2; $$.scope = '$'; $2 = 0;
+	}
+	| '#' ID			{
+		$$.name = $2; $$.scope = '#'; $2 = 0;
 	}
 	;
 
