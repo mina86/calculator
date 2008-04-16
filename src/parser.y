@@ -18,9 +18,13 @@ namespace calc {
 %}
 
 %union {
+	/** A literal number. */
 	calc::real                           num;
+	/** A variable (name + scope). */
 	calc::Variable                       var;
+	/** An expression. */
 	calc::Expression                    *expr;
+	/** List of arguments for function call. */
 	calc::FunctionExpression::Arguments *args;
 };
 

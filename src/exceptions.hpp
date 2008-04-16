@@ -1,6 +1,6 @@
 /** \file
  * Exception definitions.
- * $Id: exceptions.hpp,v 1.3 2008/04/16 11:43:09 mina86 Exp $
+ * $Id: exceptions.hpp,v 1.4 2008/04/16 11:57:16 mina86 Exp $
  */
 #ifndef H_EXCEPTIONS_HPP
 #define H_EXCEPTIONS_HPP
@@ -17,7 +17,7 @@ namespace calc {
 struct IOException : public std::runtime_error {
 	/**
 	 * Constructs exception and sets error message.
-	 * \param message_ error message.
+	 * \param message error message.
 	 */
 	IOException(const std::string &message) throw()
 		: std::runtime_error(message) { }
@@ -29,7 +29,7 @@ struct ExpressionException : public std::runtime_error {
 protected:
 	/**
 	 * Constructs exception and sets error message.
-	 * \param message_ error message.
+	 * \param message error message.
 	 */
 	ExpressionException(const std::string &message) throw()
 		: std::runtime_error(message) { }
@@ -51,7 +51,7 @@ struct FunctionException : public ExpressionException {
 protected:
 	/**
 	 * Constructs exception and sets error message.
-	 * \param message_ error message.
+	 * \param message error message.
 	 */
 	FunctionException(const std::string &message) throw()
 		: ExpressionException(message) { }

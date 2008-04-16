@@ -1,6 +1,6 @@
 /** \file
  * Expression declarations.
- * $Id: expression.hpp,v 1.2 2008/04/16 11:44:13 mina86 Exp $
+ * $Id: expression.hpp,v 1.3 2008/04/16 11:57:16 mina86 Exp $
  */
 #ifndef H_EXPRESSION_HPP
 #define H_EXPRESSION_HPP
@@ -63,7 +63,10 @@ struct NumberExpression : public Expression {
 	 */
 	NumberExpression(real v) : val(v) { }
 
-	/** Returns val. */
+	/**
+	 * Returns val.
+	 * \param env ignored.
+	 */
 	virtual real execute(Environment &env) const;
 
 private:
@@ -81,7 +84,10 @@ struct NegExpression : public Expression {
 	NegExpression(Expression *e) : expr(e) { }
 	/** Deletes expr. */
 	~NegExpression();
-	/** Returns negated value of expr. */
+	/**
+	 * Returns negated value of expr.
+	 * \param env environment to run expression in.
+	 */
 	virtual real execute(Environment &env) const;
 
 private:
@@ -190,7 +196,7 @@ inline Variable::operator Expression*() const {
 struct SetExpression : public NameExpression {
 	/**
 	 * A factory creating a SetExpression based on variable's scope.
-	 * \param v variable to access.
+	 * \param var variable to access.
 	 * \param e expression to set variable's value to value of.
 	 * \return SetExpression setting given variable.
 	 */
