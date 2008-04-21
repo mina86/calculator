@@ -1,6 +1,6 @@
 /** \file
  * Expression declarations.
- * $Id: expression.hpp,v 1.3 2008/04/16 11:57:16 mina86 Exp $
+ * $Id: expression.hpp,v 1.4 2008/04/21 08:26:41 mina86 Exp $
  */
 #ifndef H_EXPRESSION_HPP
 #define H_EXPRESSION_HPP
@@ -8,11 +8,15 @@
 #include "config.hpp"
 
 #include <string>
+#include <vector>
 
-#include "environment.hpp"
 
 
 namespace calc {
+
+struct Environment;
+struct BooleanExpression;
+
 
 /** An abstract expression class. */
 struct Expression {
@@ -22,6 +26,17 @@ struct Expression {
 	 * \return expression's result.
 	 */
 	virtual real execute(Environment &env) const = 0;
+
+	/**
+	 * Evaluats expression in given environment and interpretes its
+	 * result as boolean value.
+	 * \param env environment to execute expression in.
+	 * \return expression's result interpreted as boolean value.
+	 */
+	virtual bool boolean(Environment &env) const;
+
+	/** Returns BooleanExpression interpreting value of this Expression. */
+	virtual BooleanExpression *booleanExpression();
 
 	/** Virtual destructor. */
 	virtual ~Expression();
@@ -424,6 +439,130 @@ private:
 	Arguments *args;
 };
 
+
+
+struct BooleanExpression : public Expression {
+	/**
+	 * Default constructor.
+	 * \param _t expression's value that should be interpreted as
+	 *           true; if this is set to \c false expression's result
+	 *           will be negated; it can be altered with neg()
+	 */
+	BooleanExpression(bool _t = true) : t(_t) { };
+
+	/** Makes expression negate its result. */
+	void neg() { t = !t; }
+
+	virtual real execute(Environment &env) const;
+
+	/**
+	 * Evaluats a boolean expression in given environment.  It calls
+	 * _boolean(() and compare's its result with \a t thus making it
+	 * easy to negate expression's result by negating t.  Derived
+	 * classes shall not overwrite this method and instead shall
+	 * implement _boolean().
+	 *
+	 * \param env environment to execute expression in.
+	 * \return boolean expression's result.
+	 */
+	virtual bool boolean(Environment &env) const;
+
+	virtual BooleanExpression *booleanExpression();
+
+protected:
+	/**
+	 * Evaluates a boolean expression in given environment.
+	 * \param env environment to execute expression in.
+	 * \return boolean expression's result.
+	 */
+	virtual bool _boolean(Environment &env) const = 0;
+
+private:
+	bool t;
+};
+
+
+struct ExpressionAsBoolean : public BooleanExpression {
+	~ExpressionAsBoolean();
+
+protected:
+	virtual bool _boolean(Environment &env) const;
+
+private:
+	Expression *expr;
+
+	ExpressionAsBoolean(Expression *e) : expr(e) { }
+
+	friend struct Expression;
+};
+
+
+/** Base class for boolean expressions taking at least two arguments. */
+struct AtLeast2ArgBooleanExpression : public BooleanExpression {
+	/** Deltes expressions. */
+	~AtLeast2ArgBooleanExpression();
+
+protected:
+	/** First operand. */
+	Expression *expr1;
+	/** Second operand. */
+	Expression *expr2;
+
+	/**
+	 * Constructor.
+	 * \param e1 first operand.
+	 * \param e2 second operand.
+	 * \param _t if \c false result of expression will be negated
+	 */
+	AtLeast2ArgBooleanExpression(Expression *e1, Expression *e2,
+	                             bool _t = true)
+		: BooleanExpression(_t), expr1(e1), expr2(e2) { }
+};
+
+
+/**
+ * Class representing equality comparison of two real numbers.  To get
+ * a expression which represents situation when two numbers are not
+ * equal give \c false as a 3rd constructor arguemnt.
+ */
+struct EqualExpression : public AtLeast2ArgBooleanExpression {
+	/**
+	 * Constructor.
+	 * \param e1 first operand.
+	 * \param e2 second operand.
+	 * \param _t if \c false result of expression will be negated
+	 */
+	EqualExpression(Expression *e1, Expression *e2, bool _t = true)
+		: AtLeast2ArgBooleanExpression(e1, e2, _t) { }
+
+protected:
+	virtual bool _boolean(Environment &env) const;
+};
+
+
+/**
+ * Class representing comparison of two real numbers.  As name sugests
+ * it checks if first operand is greater then the second, however this
+ * class is enough to represent all four possible relations (greater,
+ * lower, lower equal and greater equal).  Lower is simply greater
+ * with operands switched.  Lower equal is negation of greater and to
+ * get negation pass \c false as 3rd argument to constructor.  Greater
+ * equal is negation of lower thus it's enough to switch arguemnts and
+ * give \c false as 3rd argument.
+ */
+struct GreaterExpression : public AtLeast2ArgBooleanExpression {
+	/**
+	 * Constructor.
+	 * \param e1 first operand.
+	 * \param e2 second operand.
+	 * \param _t if \c false result of expression will be negated
+	 */
+	GreaterExpression(Expression *e1, Expression *e2, bool _t = true)
+		: AtLeast2ArgBooleanExpression(e1, e2, _t) { }
+
+protected:
+	virtual bool _boolean(Environment &env) const;
+};
 
 }
 

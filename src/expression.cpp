@@ -1,20 +1,29 @@
 /** \file
  * Expression method definitions.
- * $Id: expression.cpp,v 1.3 2008/04/16 11:44:13 mina86 Exp $
+ * $Id: expression.cpp,v 1.4 2008/04/21 08:26:41 mina86 Exp $
  */
 
 #include "config.hpp"
 
-#include <memory>
-
 #include "expression.hpp"
 #include "math.hpp"
 #include "function.hpp"
+#include "environment.hpp"
 
 
 namespace calc {
 
+bool Expression::boolean(Environment &env) const {
+	return execute(env) != 0.0;
+}
+
+/** Returns BooleanExpression interpreting value of this Expression. */
+BooleanExpression *Expression::booleanExpression() {
+	return new ExpressionAsBoolean(this);
+}
+
 Expression::~Expression() { }
+
 
 real NumberExpression::execute(Environment &env) const {
 	(void)env;
@@ -110,16 +119,55 @@ real FunctionExpression::execute(Environment &env) const {
 		return 0;
 	}
 
-	std::auto_ptr<real> values(new real[args->size()]);
-	real *v = values.get();
+	Function::Arguments values(args->size());
+	real *v = &values[0];
 	Arguments::const_iterator it = args->begin(), end = args->end();
 	while (it != end) {
 		*v = (*it)->execute(env);
 		++it; ++v;
 	}
 
-	return func->execute(env, values.get(), args->size());
+	return func->execute(env, values);
 }
+
+
+
+real BooleanExpression::execute(Environment &env) const {
+	return _boolean(env) == t ? 1.0 : 0.0;
+}
+
+bool BooleanExpression::boolean(Environment &env) const {
+	return _boolean(env) == t;
+}
+
+BooleanExpression *BooleanExpression::booleanExpression() {
+	return this;
+}
+
+
+bool ExpressionAsBoolean::_boolean(Environment &env) const {
+	return expr->boolean(env);
+}
+
+ExpressionAsBoolean::~ExpressionAsBoolean() {
+	delete expr;
+}
+
+
+AtLeast2ArgBooleanExpression::~AtLeast2ArgBooleanExpression() {
+	delete expr1;
+	delete expr2;
+}
+
+
+bool EqualExpression::_boolean(Environment &env) const {
+	return expr1->execute(env) == expr2->execute(env);
+}
+
+bool GreaterExpression::_boolean(Environment &env) const {
+	return expr1->execute(env) > expr2->execute(env);
+}
+
 
 
 }
