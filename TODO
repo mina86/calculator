@@ -1,6 +1,6 @@
 ##                               -*- Mode: org; indent-tabs-mode: nil -*-
 ## TODO List
-## $Id: TODO,v 1.6 2008/04/16 19:56:03 mina86 Exp $
+## $Id: TODO,v 1.7 2008/04/21 10:25:56 mina86 Exp $
 ##
 
 Liczba w nawiasach kwadratowych oznacza piorytet -- [0] najwy¿szy, [5]
@@ -54,7 +54,6 @@ najni¿szy.  [DONE] oznacza, i¿ rzecz zosta³a zroiona.
    - expr ! -- silnia (nale¿y zwróciæ uwagê, czy u¿ycie '!' nie
                spowoduje konfliktów z wyra¿eniami logicznymi
    - ( expr expr ) -- dwumian Newtona
-
 
 * [1] Dodanie obs³ugi linii poleceñ
 
@@ -114,7 +113,6 @@ najni¿szy.  [DONE] oznacza, i¿ rzecz zosta³a zroiona.
 
   Nale¿y dodaæ mo¿liwo¶æ definiowania funkcji.  Ogólna sk³adnia bêdzie
   wygl±daæ jako¶ tak:
-
 
     define_instruction: DEFINE ID '(' formal_arguments ')' = assignment_expr
     formal_arguments: /* empty */
@@ -180,7 +178,7 @@ najni¿szy.  [DONE] oznacza, i¿ rzecz zosta³a zroiona.
     Przy wywo³aniu programu z parametrem -p i liczb± rzeczywist± mo¿na
     ustaliæ parametr p, z którym "Fuzzy Comparison" jest wykonywane.
 
-* [1] Operator ,
+* [DONE] Operator ,
 
   Warto te¿ dodaæ operator ',', gdy¿ bêdzie on szczególnie przydatny
   przy definiowaniu funkcji, np.:
@@ -200,7 +198,7 @@ najni¿szy.  [DONE] oznacza, i¿ rzecz zosta³a zroiona.
   dwa razy wylicza co¶ bardzo z³o¿onego (tak, wiem ¿e mamy operacje
   potêgowania, ale to tylko przyk³ad).
 
-** [4] Magiczne traktowanie przecinka przez lexer
+** [DONE] Magiczne traktowanie przecinka przez lexer
 
    Lexer móg³by traktowaæ przecinek w magiczny sposób, tzn. ignorowaæ
    znak przej¶cia do nowej linii je¿eli wystêpuje on zaraz za
@@ -215,7 +213,7 @@ najni¿szy.  [DONE] oznacza, i¿ rzecz zosta³a zroiona.
       wyrazenie,
       wyrazenie
 
-   bez konieczno¶ci pisania za ka¿dym razem "\ ".
+   bez konieczno¶ci koñczenia ka¿dej linijki backslashem.
 
 * [DONE] Poprawienie kodu i zmiana std::string* na std::string
 
