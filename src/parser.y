@@ -41,6 +41,7 @@ namespace calc {
 %{
 #include "math.hpp"
 #include "exceptions.hpp"
+#include "environment.hpp"
 #include "lexer.hpp"
 
 static const std::string string_e("e");
