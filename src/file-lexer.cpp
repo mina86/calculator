@@ -1,6 +1,6 @@
 /** \file
  * Lexer reading from FILE stream implementation.
- * $Id: file-lexer.cpp,v 1.5 2008/04/16 19:56:03 mina86 Exp $
+ * $Id: file-lexer.cpp,v 1.6 2008/04/21 10:24:59 mina86 Exp $
  */
 #include "math.hpp"
 #include "exceptions.hpp"
@@ -62,6 +62,7 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 		if (ch != '\\') break;
 		ch = getchar();
 		if (ch != '\n') {
+			location.end = current;
 			return ch;
 		}
 	}
@@ -104,6 +105,11 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 	/* Not a number */
 	if (!isdigit(ch) && ch != '.') {
 		location.end = current;
+		if (ch == ',') {
+			int c;
+			while ((c = getchar()) != EOF && isspace(c)) /*nop*/;
+			ungetchar(c);
+		}
 		return ch;
 	}
 
