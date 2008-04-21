@@ -1,6 +1,6 @@
 /** \file
  * Expression declarations.
- * $Id: expression.hpp,v 1.5 2008/04/21 08:35:26 mina86 Exp $
+ * $Id: expression.hpp,v 1.6 2008/04/21 10:12:44 mina86 Exp $
  */
 #ifndef H_EXPRESSION_HPP
 #define H_EXPRESSION_HPP
@@ -16,6 +16,7 @@ namespace calc {
 
 struct Environment;
 struct BooleanExpression;
+struct CommaExpression;
 
 
 /** An abstract expression class. */
@@ -35,8 +36,16 @@ struct Expression {
 	 */
 	virtual bool boolean(Environment &env) const;
 
+
 	/** Returns BooleanExpression interpreting value of this Expression. */
 	virtual BooleanExpression *booleanExpression();
+
+	/**
+	 * If this is a CommaExpression returns it otherwise returns new
+	 * CommaExpression with this expression as the only one.
+	 */
+	virtual CommaExpression *commaExpression();
+
 
 	/** Virtual destructor. */
 	virtual ~Expression();
@@ -409,38 +418,9 @@ struct PowExpression : public AtLeast2ArgExpression {
 
 
 
-/** A function call expression. */
-struct FunctionExpression : public NameExpression {
-	/** Vector of not yet evaluated function's arguments. */
-	typedef std::vector<Expression*> Arguments;
-
-	/**
-	 * Constructor.
-	 * \param n function's name.
-	 * \param a function's call arguments.
-	 */
-	FunctionExpression(const std::string &n, Arguments *a)
-		: NameExpression(n), args(a) { }
-
-	/** Deletes arguments. */
-	~FunctionExpression();
-
-	/**
-	 * Calls function and return's it return value.
-	 * \param env Environment to run expression in.
-	 * \throw InvalidNumberOfArguments if wrong number of arguments
-	 *                                 was given.
-	 * \throw NoSuchFunction if non-existing function was called.
-	 */
-	virtual real execute(Environment &env) const;
-
-private:
-	/** Vector of not yet evaluated function's arguments. */
-	Arguments *args;
-};
 
 
-
+/** An abstract class for boolean expressions. */
 struct BooleanExpression : public Expression {
 	/**
 	 * Default constructor.
@@ -563,6 +543,61 @@ struct GreaterExpression : public AtLeast2ArgBooleanExpression {
 protected:
 	virtual bool _boolean(Environment &env) const;
 };
+
+
+
+/** Expression representing comma operator. */
+struct CommaExpression : public Expression {
+	typedef std::vector<Expression *> Expressions;
+
+	CommaExpression() { }
+	explicit CommaExpression(Expression *e) { push(e); }
+	explicit CommaExpression(const Expressions &exprs) : vec(exprs) { }
+	~CommaExpression();
+
+	virtual real execute(Environment &env) const;
+	virtual CommaExpression *commaExpression();
+
+	Expressions::size_type size() const { return vec.size(); }
+	const Expressions &expressions() const { return vec; }
+	void push(Expression *e) { vec.push_back(e); }
+
+private:
+	Expressions vec;
+};
+
+
+
+/** A function call expression. */
+struct FunctionExpression : public NameExpression {
+	typedef CommaExpression Arguments;
+
+	/**
+	 * Constructor.
+	 * \param n function's name.
+	 * \param a function's call arguments.
+	 */
+	explicit FunctionExpression(const std::string &n,
+	                            Arguments *a = new Arguments())
+		: NameExpression(n), args(a) { }
+
+	/** Deletes arguments. */
+	~FunctionExpression();
+
+	/**
+	 * Calls function and return's it return value.
+	 * \param env Environment to run expression in.
+	 * \throw InvalidNumberOfArguments if wrong number of arguments
+	 *                                 was given.
+	 * \throw NoSuchFunction if non-existing function was called.
+	 */
+	virtual real execute(Environment &env) const;
+
+private:
+	/** Vector of not yet evaluated function's arguments. */
+	Arguments *args;
+};
+
 
 }
 

@@ -1,6 +1,6 @@
 /** \file
  * Expression method definitions.
- * $Id: expression.cpp,v 1.4 2008/04/21 08:26:41 mina86 Exp $
+ * $Id: expression.cpp,v 1.5 2008/04/21 10:12:44 mina86 Exp $
  */
 
 #include "config.hpp"
@@ -17,9 +17,12 @@ bool Expression::boolean(Environment &env) const {
 	return execute(env) != 0.0;
 }
 
-/** Returns BooleanExpression interpreting value of this Expression. */
 BooleanExpression *Expression::booleanExpression() {
 	return new ExpressionAsBoolean(this);
+}
+
+CommaExpression *Expression::commaExpression() {
+	return new CommaExpression(this);
 }
 
 Expression::~Expression() { }
@@ -119,15 +122,7 @@ real FunctionExpression::execute(Environment &env) const {
 		return 0;
 	}
 
-	Function::Arguments values(args->size());
-	real *v = &values[0];
-	Arguments::const_iterator it = args->begin(), end = args->end();
-	while (it != end) {
-		*v = (*it)->execute(env);
-		++it; ++v;
-	}
-
-	return func->execute(env, values);
+	return func->execute(env, args->expressions());
 }
 
 
@@ -166,6 +161,28 @@ bool EqualExpression::_boolean(Environment &env) const {
 
 bool GreaterExpression::_boolean(Environment &env) const {
 	return expr1->execute(env) > expr2->execute(env);
+}
+
+
+
+CommaExpression::~CommaExpression() {
+	Expressions::const_iterator it(vec.begin()), end(vec.end());
+	for (; it != end; ++it) {
+		delete *it;
+	}
+}
+
+real CommaExpression::execute(Environment &env) const {
+	real val = 0;
+	Expressions::const_iterator it(vec.begin()), e(vec.end());
+	for (; it != e; ++it) {
+		val = (*it)->execute(env);
+	}
+	return val;
+}
+
+CommaExpression *CommaExpression::commaExpression() {
+	return this;
 }
 
 
