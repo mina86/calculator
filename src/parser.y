@@ -24,8 +24,6 @@ namespace calc {
 	calc::Variable                       var;
 	/** An expression. */
 	calc::Expression                    *expr;
-	/** List of arguments for function call. */
-	calc::FunctionExpression::Arguments *args;
 };
 
 %parse-param { calc::Lexer       &lexer }
@@ -66,11 +64,10 @@ int yylex(yy::Parser::semantic_type *yylval,
 
 
 %type	<expr>	assignment_expr additive_expr multiplicative_expr
-%type	<expr>	pow_expr prefix_expr simple_expr
+%type	<expr>	pow_expr prefix_expr simple_expr expression
 %type	<var>	var
-%type	<args>	arguments non_empty_arguments
 
-%destructor	{ delete $$; } ID arguments non_empty_arguments
+%destructor	{ delete $$; } ID expression
 %destructor	{ delete $$; } assignment_expr additive_expr simple_expr
 %destructor	{ delete $$; } multiplicative_expr pow_expr prefix_expr
 %destructor	{ delete $$.name; } var
@@ -81,12 +78,21 @@ start	: start instruction
 	;
 
 instruction
-	: assignment_expr ';'		{ $1->execute(env) }
-	| assignment_expr '\n'		{ env.instruction($1->execute(env)); }
+	: expression ';'		{ $1->execute(env) }
+	| expression '\n'		{ env.instruction($1->execute(env)); }
 	| ';'
 	| '\n'
 	| error ';'
 	| error '\n'
+	;
+
+expression
+	: assignment_expr		{ $$ = $1; $1 = 0; }
+	| expression ',' assignment_expr {
+		$$ = $1->commaExpression();
+		static_cast<calc::CommaExpression*>($$)->push($3);
+		$1 = $3 = 0;
+	}
 	;
 
 assignment_expr
@@ -175,8 +181,11 @@ simple_expr
 	| var				{
 		$$ = calc::GetExpression::create($1);
 	}
-	| ID '(' arguments ')' {
-		$$ = new calc::FunctionExpression(*$1, $3);
+	| ID '(' ')' {
+		$$ = new calc::FunctionExpression(*$1);
+	}
+	| ID '(' expression ')' {
+		$$ = new calc::FunctionExpression(*$1, $3->commaExpression());
 		$3 = 0;
 	}
 	;
@@ -189,25 +198,6 @@ var	: ID				{
 	}
 	| '#' ID			{
 		$$.name = $2; $$.scope = '#'; $2 = 0;
-	}
-	;
-
-arguments
-	: /* empty */			{
-		$$ = new calc::FunctionExpression::Arguments();
-	}
-	| non_empty_arguments		{ $$ = $1; $1 = 0; }
-	;
-
-non_empty_arguments
-	: assignment_expr		{
-		$$ = new calc::FunctionExpression::Arguments();
-		$$->push_back($1);
-		$1 = 0;
-	}
-	| non_empty_arguments ',' assignment_expr	{
-		$$ = $1; $$->push_back($3);
-		$1 = 0; $3 = 0;
 	}
 	;
 
