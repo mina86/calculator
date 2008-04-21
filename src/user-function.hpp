@@ -1,6 +1,6 @@
 /** \file
  * User Function class declaration.
- * $Id: user-function.hpp,v 1.3 2008/04/16 11:57:16 mina86 Exp $
+ * $Id: user-function.hpp,v 1.4 2008/04/21 08:27:39 mina86 Exp $
  */
 #ifndef H_USER_FUNCTION_HPP
 #define H_USER_FUNCTION_HPP
@@ -39,8 +39,7 @@ struct UserFunction : public Function {
 	 */
 	virtual bool argumentsCountOK(unsigned count) const;
 
-	virtual real execute(Environment &env, const real *args, unsigned count)
-		const;
+	virtual real execute(Environment &env, const Arguments &args) const;
 
 	/** Delets object. */
 	virtual void free();

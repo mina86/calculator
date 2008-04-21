@@ -1,6 +1,6 @@
 /** \file
  * Function class declaration.
- * $Id: function.hpp,v 1.4 2008/04/16 11:57:16 mina86 Exp $
+ * $Id: function.hpp,v 1.5 2008/04/21 08:27:39 mina86 Exp $
  */
 #ifndef H_FUNCTION_HPP
 #define H_FUNCTION_HPP
@@ -21,6 +21,8 @@ struct Environment;
 
 /** A function available in enviroment. */
 struct Function {
+	typedef std::vector<real> Arguments;
+
 	/** Virtual, empty destructor. */
 	virtual ~Function() { };
 
@@ -40,8 +42,7 @@ struct Function {
 	 *                                 was given.
 	 * \throw NoSuchFunction if non-existing function was called.
 	 */
-	virtual real execute(Environment &env, const real *args, unsigned count)
-		const = 0;
+	virtual real execute(Environment &env, const Arguments &args) const = 0;
 
 	/**
 	 * Frees function object.  It is needed as some objects function
