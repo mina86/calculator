@@ -1,6 +1,6 @@
 /** \file
  * Function class declaration.
- * $Id: function.hpp,v 1.5 2008/04/21 08:27:39 mina86 Exp $
+ * $Id: function.hpp,v 1.6 2008/04/21 10:13:32 mina86 Exp $
  */
 #ifndef H_FUNCTION_HPP
 #define H_FUNCTION_HPP
@@ -17,6 +17,7 @@ namespace calc {
 
 
 struct Environment;
+struct Expression;
 
 
 /** A function available in enviroment. */
@@ -24,7 +25,7 @@ struct Function {
 	typedef std::vector<real> Arguments;
 
 	/** Virtual, empty destructor. */
-	virtual ~Function() { };
+	virtual ~Function();
 
 	/**
 	 * Returns whether number of arguments is OK.
@@ -43,6 +44,20 @@ struct Function {
 	 * \throw NoSuchFunction if non-existing function was called.
 	 */
 	virtual real execute(Environment &env, const Arguments &args) const = 0;
+
+
+	/**
+	 * Executes function in given enviroment.
+	 * \param env enviroment to run function in.
+	 * \param args array of function call arguments.
+	 * \param count number of arguments.
+	 * \return function's value.
+	 * \throw InvalidNumberOfArguments if wrong number of arguments
+	 *                                 was given.
+	 * \throw NoSuchFunction if non-existing function was called.
+	 */
+	virtual real execute(Environment &env,
+	                     const std::vector<Expression *> &args) const;
 
 	/**
 	 * Frees function object.  It is needed as some objects function
