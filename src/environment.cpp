@@ -1,6 +1,6 @@
 /** \file
  * Enviroment defintion.
- * $Id: environment.cpp,v 1.3 2008/04/12 12:57:11 mina86 Exp $
+ * $Id: environment.cpp,v 1.4 2008/04/21 08:25:34 mina86 Exp $
  */
 #include "config.hpp"
 
@@ -37,22 +37,5 @@ void Environment::instruction(real value) {
 	(void)value;
 }
 
-
-
-
-real Environment::ExecuteInNewScope(Expression *expr,
-                                const UserFunction::Names &names,
-                                const real *values) {
-	NewScope local_scope(_stack);
-	Environment::Variables &vars = local();
-	UserFunction::Names::const_iterator n = names.begin(), end = names.end();
-	while (n != end) {
-		vars[*n] = *values;
-		++values;
-		++n;
-	}
-
-	return expr->execute(*this);
-}
 
 }

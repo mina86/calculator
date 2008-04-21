@@ -1,6 +1,6 @@
 /** \file
  * Enviroment declaration.
- * $Id: environment.hpp,v 1.5 2008/04/16 11:42:26 mina86 Exp $
+ * $Id: environment.hpp,v 1.6 2008/04/21 08:25:34 mina86 Exp $
  */
 #ifndef H_ENVIRONMENT_HPP
 #define H_ENVIRONMENT_HPP
@@ -12,7 +12,8 @@
 #include <map>
 
 #include "exceptions.hpp"
-#include "user-function.hpp"
+#include "expression.hpp"
+#include "function.hpp"
 #include "position.hh"
 #include "location.hh"
 
@@ -101,12 +102,14 @@ struct Environment {
 	 * assigns local variables and executes expression.
 	 *
 	 * \param expr expression to execute
+	 * \param scope initial variables in scope; this object will be
+	 *              deleted when after function returns.
 	 * \param names list of local variables names
-	 * \param values list of local variables values
-	 * \return value returned by expression.
 	 */
-	real ExecuteInNewScope(Expression *expr, const UserFunction::Names &names,
-	                       const real *values);
+	real executeInNewScope(Expression *expr, Variables *scope) {
+		NewScope local_scope(_stack, scope);
+		return expr->execute(*this);
+	}
 
 
 	/** Returns functions map. */
@@ -140,11 +143,13 @@ private:
 	 */
 	struct NewScope {
 		/**
-		 * Constructor creating new scope on stack.
+		 * Constructor using given scope as a new local scope on stack.
 		 * \param s stack to create new scope on.
+		 * \param vars object to use as a new local scope; it will be
+		 *             deleted when object is destroyed.
 		 */
-		NewScope(Stack &s) : stack(s) {
-			stack.push_back(new Variables());
+		NewScope(Stack &s, Variables *vars = new Variables()) : stack(s) {
+			stack.push_back(vars);
 		}
 
 		/** Discards top-level scope from the stack. */
