@@ -1,6 +1,6 @@
 /** \file
  * Expression declarations.
- * $Id: expression.hpp,v 1.4 2008/04/21 08:26:41 mina86 Exp $
+ * $Id: expression.hpp,v 1.5 2008/04/21 08:35:26 mina86 Exp $
  */
 #ifndef H_EXPRESSION_HPP
 #define H_EXPRESSION_HPP
@@ -76,7 +76,7 @@ struct NumberExpression : public Expression {
 	 * Constructor.
 	 * \param v literal number.
 	 */
-	NumberExpression(real v) : val(v) { }
+	explicit NumberExpression(real v) : val(v) { }
 
 	/**
 	 * Returns val.
@@ -96,7 +96,7 @@ struct NegExpression : public Expression {
 	 * Constructor.
 	 * \param e expression to negate.
 	 */
-	NegExpression(Expression *e) : expr(e) { }
+	explicit NegExpression(Expression *e) : expr(e) { }
 	/** Deletes expr. */
 	~NegExpression();
 	/**
@@ -122,7 +122,7 @@ protected:
 	 * Constructor.
 	 * \param n name argument.
 	 */
-	NameExpression(const std::string &n) : name(n) { }
+	explicit NameExpression(const std::string &n) : name(n) { }
 };
 
 
@@ -140,7 +140,7 @@ protected:
 	 * Constructor.
 	 * \param n variable's name.
 	 */
-	GetExpression(const std::string &n) : NameExpression(n) { }
+	explicit GetExpression(const std::string &n) : NameExpression(n) { }
 };
 
 
@@ -150,7 +150,7 @@ struct GetLocalExpression : public GetExpression {
 	 * Constructor.
 	 * \param n variable's name.
 	 */
-	GetLocalExpression(const std::string &n) : GetExpression(n) { }
+	explicit GetLocalExpression(const std::string &n) : GetExpression(n) { }
 
 	/**
 	 * Return's variable's value in given environment.
@@ -165,7 +165,7 @@ struct GetGlobalExpression : public GetExpression {
 	 * Constructor.
 	 * \param n variable's name.
 	 */
-	GetGlobalExpression(const std::string &n) : GetExpression(n) { }
+	explicit GetGlobalExpression(const std::string &n) : GetExpression(n) { }
 
 	/**
 	 * Return's variable's value in given environment.
@@ -180,7 +180,7 @@ struct GetConstExpression : public GetExpression {
 	 * Constructor.
 	 * \param n constant's name.
 	 */
-	GetConstExpression(const std::string &n) : GetExpression(n) { }
+	explicit GetConstExpression(const std::string &n) : GetExpression(n) { }
 
 	/**
 	 * Return's constant's value in given environment.
@@ -448,7 +448,7 @@ struct BooleanExpression : public Expression {
 	 *           true; if this is set to \c false expression's result
 	 *           will be negated; it can be altered with neg()
 	 */
-	BooleanExpression(bool _t = true) : t(_t) { };
+	explicit BooleanExpression(bool _t = true) : t(_t) { };
 
 	/** Makes expression negate its result. */
 	void neg() { t = !t; }
@@ -491,7 +491,7 @@ protected:
 private:
 	Expression *expr;
 
-	ExpressionAsBoolean(Expression *e) : expr(e) { }
+	explicit ExpressionAsBoolean(Expression *e) : expr(e) { }
 
 	friend struct Expression;
 };

@@ -1,6 +1,6 @@
 /** \file
  * Lexer reading from FILE stream declaration.
- * $Id: file-lexer.hpp,v 1.2 2008/03/13 09:54:37 kuba Exp $
+ * $Id: file-lexer.hpp,v 1.3 2008/04/21 08:35:26 mina86 Exp $
  */
 #ifndef H_FILE_LEXER_HPP
 #define H_FILE_LEXER_HPP
@@ -29,7 +29,7 @@ struct FILELexer : public Lexer {
 	 * \param stream_ input stream to read from or \c NULL.
 	 * \throw IOException if file could not be opened.
 	 */
-	FILELexer(const char *filename_, FILE *stream_ = 0)
+	explicit FILELexer(const char *filename_, FILE *stream_ = 0)
 		: Lexer(filename_), stream(stream_ ? stream_ : openFile(filename_)),
 		  closeStream(stream), previous(current) { }
 
@@ -43,7 +43,7 @@ struct FILELexer : public Lexer {
 	 * \param stream_ input stream to read from or \c NULL.
 	 * \throw IOException if file could not be opened.
 	 */
-	FILELexer(const std::string &filename_, FILE *stream_ = 0)
+	explicit FILELexer(const std::string &filename_, FILE *stream_ = 0)
 		: Lexer(filename_),
 		  stream(stream_ ? stream_ : openFile(filename_.c_str())),
 		  closeStream(stream), previous(current) { }
@@ -73,8 +73,8 @@ private:
 
 	/** Returns next character from file and updates location. */
 	int getchar();
-	/** 
-	 * "Ungets" character from file and updates location. 
+	/**
+	 * "Ungets" character from file and updates location.
 	 * \param ch character to unget.
 	 */
 	void ungetchar(int ch);

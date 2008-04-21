@@ -1,6 +1,6 @@
 /** \file
  * Exception definitions.
- * $Id: exceptions.hpp,v 1.4 2008/04/16 11:57:16 mina86 Exp $
+ * $Id: exceptions.hpp,v 1.5 2008/04/21 08:35:26 mina86 Exp $
  */
 #ifndef H_EXCEPTIONS_HPP
 #define H_EXCEPTIONS_HPP
@@ -19,7 +19,7 @@ struct IOException : public std::runtime_error {
 	 * Constructs exception and sets error message.
 	 * \param message error message.
 	 */
-	IOException(const std::string &message) throw()
+	explicit IOException(const std::string &message) throw()
 		: std::runtime_error(message) { }
 };
 
@@ -31,7 +31,7 @@ protected:
 	 * Constructs exception and sets error message.
 	 * \param message error message.
 	 */
-	ExpressionException(const std::string &message) throw()
+	explicit ExpressionException(const std::string &message) throw()
 		: std::runtime_error(message) { }
 };
 
@@ -53,7 +53,7 @@ protected:
 	 * Constructs exception and sets error message.
 	 * \param message error message.
 	 */
-	FunctionException(const std::string &message) throw()
+	explicit FunctionException(const std::string &message) throw()
 		: ExpressionException(message) { }
 };
 
