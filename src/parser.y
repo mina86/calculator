@@ -177,7 +177,7 @@ simple_expr
 	: NUMBER			{
 		$$ = new calc::NumberExpression($1);
 	}
-	| '(' assignment_expr ')'	{ $$ = $2; $2 = 0; }
+	| '(' expression ')'		{ $$ = $2; $2 = 0; }
 	| var				{
 		$$ = calc::GetExpression::create($1);
 	}
