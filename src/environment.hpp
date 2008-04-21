@@ -1,6 +1,6 @@
 /** \file
  * Enviroment declaration.
- * $Id: environment.hpp,v 1.6 2008/04/21 08:25:34 mina86 Exp $
+ * $Id: environment.hpp,v 1.7 2008/04/21 10:12:03 mina86 Exp $
  */
 #ifndef H_ENVIRONMENT_HPP
 #define H_ENVIRONMENT_HPP
@@ -103,7 +103,7 @@ struct Environment {
 	 *
 	 * \param expr expression to execute
 	 * \param scope initial variables in scope; this object will be
-	 *              deleted when after function returns.
+	 *              deleted after function returns or throws exception.
 	 * \param names list of local variables names
 	 */
 	real executeInNewScope(Expression *expr, Variables *scope) {
@@ -146,10 +146,12 @@ private:
 		 * Constructor using given scope as a new local scope on stack.
 		 * \param s stack to create new scope on.
 		 * \param vars object to use as a new local scope; it will be
-		 *             deleted when object is destroyed.
+		 *             deleted when object is destroyed or constructor
+		 *             throws exception.
 		 */
 		NewScope(Stack &s, Variables *vars = new Variables()) : stack(s) {
-			stack.push_back(vars);
+			try { stack.push_back(vars); }
+			catch (...) { delete vars; throw; }
 		}
 
 		/** Discards top-level scope from the stack. */
