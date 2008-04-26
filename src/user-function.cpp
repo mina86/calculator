@@ -1,6 +1,6 @@
 /** \file
  * User Function class definition.
- * $Id: user-function.cpp,v 1.5 2008/04/21 10:14:04 mina86 Exp $
+ * $Id: user-function.cpp,v 1.6 2008/04/26 19:08:28 kuba Exp $
  */
 
 #include "config.hpp"
@@ -28,7 +28,8 @@ void UserFunction::free() {
 }
 
 
-real UserFunction::execute(Environment &env, const Arguments &args) const {
+real UserFunction::execute(Environment &env, const Arguments &args) const
+{
 	throwIfArgumentsCountNotOK(args.size());
 
 	std::auto_ptr<Environment::Variables> vars(new Environment::Variables());
@@ -43,9 +44,8 @@ real UserFunction::execute(Environment &env, const Arguments &args) const {
 
 
 real UserFunction::execute(Environment &env,
-                           const std::vector<Expression *> &args) const {
-	throwIfArgumentsCountNotOK(args.size());
-
+                           const std::vector<Expression *> &args) const
+{
 	throwIfArgumentsCountNotOK(args.size());
 
 	std::auto_ptr<Environment::Variables> vars(new Environment::Variables());

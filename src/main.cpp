@@ -121,6 +121,28 @@ int main(void) {
 	}
 #endif
 
+    calc::Environment::Functions &funcs = env->functions();
+    funcs["sqrt" ] = calc::Func_sqrt::get();
+    funcs["cbrt" ] = calc::Func_cbrt::get();
+    funcs["e"    ] = calc::Func_exp::get();
+    funcs["exp"  ] = calc::Func_exp::get();
+    funcs["log"  ] = calc::Func_log::get();
+    funcs["ln"   ] = calc::Func_log::get();
+    funcs["log10"] = calc::Func_log10::get();
+    funcs["log2" ] = calc::Func_log2::get();
+    funcs["cos"  ] = calc::Func_cos::get();
+    funcs["sin"  ] = calc::Func_sin::get();
+    funcs["tan"  ] = calc::Func_tan::get();
+    funcs["acos" ] = calc::Func_acos::get();
+    funcs["asin" ] = calc::Func_asin::get();
+    funcs["atan" ] = calc::Func_atan::get();
+    funcs["cosh" ] = calc::Func_cosh::get();
+    funcs["sinh" ] = calc::Func_sinh::get();
+    funcs["tanh" ] = calc::Func_tanh::get();
+    funcs["acosh"] = calc::Func_acosh::get();
+    funcs["asinh"] = calc::Func_asinh::get();
+    funcs["atanh"] = calc::Func_atanh::get();
+
 	/* Run */
 	calc::FILELexer lexer;
 	yy::Parser parser(lexer, *env);

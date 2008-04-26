@@ -1,118 +1,118 @@
 ##                               -*- Mode: org; indent-tabs-mode: nil -*-
 ## TODO List
-## $Id: TODO,v 1.7 2008/04/21 10:25:56 mina86 Exp $
+## $Id: TODO,v 1.8 2008/04/26 19:08:28 kuba Exp $
 ##
 
-Liczba w nawiasach kwadratowych oznacza piorytet -- [0] najwy¿szy, [5]
-najni¿szy.  [DONE] oznacza, i¿ rzecz zosta³a zroiona.
+Liczba w nawiasach kwadratowych oznacza piorytet -- [0] najwyï¿½szy, [5]
+najniï¿½szy.  [DONE] oznacza, iï¿½ rzecz zostaï¿½a zroiona.
 
-* [DONE] Obs³uga \<NL>
+* [DONE] Obsï¿½uga \<NL>
 
-  Lexer powinien traktowaæ backslash jako specialny znak.  <del>Je¿eli
-  nastêpnym znakiem po backslashu bêdzie drugi backslash lexer
-  powinien zwróciæ pojedynczy token okre¶laj±cy znak backslash.</del>
-  Je¿eli nastêpnym znakiem bêdzie znak przej¶cia do nowej linii lexer
-  winien traktowaæ sekwencjê tych dwóch znaków jako bia³y znak.
-  <del>Inne sekwencje powinny (na razie) zwracaæ oba znaki,
-  w przysz³o¶ci mog± mieæ inne znaczenie.</del> Inne znaki powinny byæ
+  Lexer powinien traktowaï¿½ backslash jako specialny znak.  <del>Jeï¿½eli
+  nastï¿½pnym znakiem po backslashu bï¿½dzie drugi backslash lexer
+  powinien zwrï¿½ciï¿½ pojedynczy token okreï¿½lajï¿½cy znak backslash.</del>
+  Jeï¿½eli nastï¿½pnym znakiem bï¿½dzie znak przejï¿½cia do nowej linii lexer
+  winien traktowaï¿½ sekwencjï¿½ tych dwï¿½ch znakï¿½w jako biaï¿½y znak.
+  <del>Inne sekwencje powinny (na razie) zwracaï¿½ oba znaki,
+  w przyszï¿½oï¿½ci mogï¿½ mieï¿½ inne znaczenie.</del> Inne znaki powinny byï¿½
   zwracane "as is".
 
-* [0] Wbudowane funkcje
+* [DONE] Wbudowane funkcje
 
-  Nale¿y stworzyæ serjê klas reprezentuj±cych wbudowane funkcje, czyli
-  to co obecnie jest w functions.hpp/cpp nale¿y przerobiæ na klasy
-  dziedzicz±ce po BuiltInFunction.  Jedyne co metoda BuiltInFunction
-  bêdzie robiæ to nadpisywaæ metodê free(), tak aby nie robi³a ona
-  nic.  Wynika to faktu, i¿ obiekty te powinny byæ singletonami,
-  tzn. udostêpniaæ statyczn± metodê get(), która wygl±daæ bêdzie mniej
-  wiêcej tak:
+  Naleï¿½y stworzyï¿½ serjï¿½ klas reprezentujï¿½cych wbudowane funkcje, czyli
+  to co obecnie jest w functions.hpp/cpp naleï¿½y przerobiï¿½ na klasy
+  dziedziczï¿½ce po BuiltInFunction.  Jedyne co metoda BuiltInFunction
+  bï¿½dzie robiï¿½ to nadpisywaï¿½ metodï¿½ free(), tak aby nie robiï¿½a ona
+  nic.  Wynika to faktu, iï¿½ obiekty te powinny byï¿½ singletonami,
+  tzn. udostï¿½pniaï¿½ statycznï¿½ metodï¿½ get(), ktï¿½ra wyglï¿½daï¿½ bï¿½dzie mniej
+  wiï¿½cej tak:
 
     FooFunction *FooFunction::get() {
         static FooFunction foo;
         return &foo;
     }
 
-  Pewnie dobrze by by³o, gdyby klasa BuiltInFunction udostêpnia³a
-  ponadto konstruktor przyjmuj±cy minimaln± i maksymaln± liczbê
-  argumentów, jak± funkcja przyjmuje oraz napisywa³a metode
-  argumentsCountOK() tak, aby porównywa³a liczbê argumentów
-  z dopuszczalnym przedzia³em (wówczas ka¿da klasa z osobna nie bêdzie
-  musia³a tago robiæ (choæ z drugiej strony bêdzie musia³a wo³aæ
+  Pewnie dobrze by byï¿½o, gdyby klasa BuiltInFunction udostï¿½pniaï¿½a
+  ponadto konstruktor przyjmujï¿½cy minimalnï¿½ i maksymalnï¿½ liczbï¿½
+  argumentï¿½w, jakï¿½ funkcja przyjmuje oraz napisywaï¿½a metode
+  argumentsCountOK() tak, aby porï¿½wnywaï¿½a liczbï¿½ argumentï¿½w
+  z dopuszczalnym przedziaï¿½em (wï¿½wczas kaï¿½da klasa z osobna nie bï¿½dzie
+  musiaï¿½a tago robiï¿½ (choï¿½ z drugiej strony bï¿½dzie musiaï¿½a woï¿½aï¿½
   konstruktor klasy bazowej, ale to chyba bardziej czytelne
-  i zwiêz³e)).
+  i zwiï¿½zï¿½e)).
 
 ** [4] Nowe funkcje
 
-   Nale¿y ponadto dodaæ kolejne funkcje takie jak floor(), celi(),
+   Naleï¿½y ponadto dodaï¿½ kolejne funkcje takie jak floor(), celi(),
    round(), gcd() (greatest common divisor), lcm() (least common
-   multiple) i co tam jeszcze przyjdzie do g³owy.
+   multiple) i co tam jeszcze przyjdzie do gï¿½owy.
 
 ** [4] Nowe operatory
 
-   Zawsze mo¿na te¿ wymy¶laæ nowe operatory, np.:
+   Zawsze moï¿½na teï¿½ wymyï¿½laï¿½ nowe operatory, np.:
    - expr % expr -- dzielenie modulo
-   - expr ! -- silnia (nale¿y zwróciæ uwagê, czy u¿ycie '!' nie
-               spowoduje konfliktów z wyra¿eniami logicznymi
+   - expr ! -- silnia (naleï¿½y zwrï¿½ciï¿½ uwagï¿½, czy uï¿½ycie '!' nie
+               spowoduje konfliktï¿½w z wyraï¿½eniami logicznymi
    - ( expr expr ) -- dwumian Newtona
 
-* [1] Dodanie obs³ugi linii poleceñ
+* [1] Dodanie obsï¿½ugi linii poleceï¿½
 
-** [1] -v - wypisywanie wyników instrukcji
+** [1] -v - wypisywanie wynikï¿½w instrukcji
 
-   W chwili obecnej, za ka¿dym razem, gdy jest wykonana instrukcja
-   (niezakoñczona ¶rednikiem) jej wynik wypisywany jest na standardowe
-   wyj¶cie.  W wersji finalnej powinno tak siê dziaæ tylko, gdy dodany
-   zostanie prze³±cznik -v.
+   W chwili obecnej, za kaï¿½dym razem, gdy jest wykonana instrukcja
+   (niezakoï¿½czona ï¿½rednikiem) jej wynik wypisywany jest na standardowe
+   wyjï¿½cie.  W wersji finalnej powinno tak siï¿½ dziaï¿½ tylko, gdy dodany
+   zostanie przeï¿½ï¿½cznik -v.
 
-   Zrealizowaæ to mo¿na do¶æ prosto tworz±c klasê dziedzicz±c± po
-   Enviroment nazwan± SilentEnviroment, która bêdzie nadpisywaæ metodê
-   instruction(), tak aby tak nic nie robi³a.  Wówczas zale¿nie od
-   tego czy dany prze³±cznik zosta³ podany czy nie funkcja main()
-   bêdzie alo tworzyæ obiekt Enviroment albo SilentEnviroment.  Mo¿na
-   te¿ zrobiæ na odwrót, tzn. Enviroment nie bêdzie wypisywaæ
-   i stworzyæ klasê VerboseEnviroment.
+   Zrealizowaï¿½ to moï¿½na doï¿½ï¿½ prosto tworzï¿½c klasï¿½ dziedziczï¿½cï¿½ po
+   Enviroment nazwanï¿½ SilentEnviroment, ktï¿½ra bï¿½dzie nadpisywaï¿½ metodï¿½
+   instruction(), tak aby tak nic nie robiï¿½a.  Wï¿½wczas zaleï¿½nie od
+   tego czy dany przeï¿½ï¿½cznik zostaï¿½ podany czy nie funkcja main()
+   bï¿½dzie alo tworzyï¿½ obiekt Enviroment albo SilentEnviroment.  Moï¿½na
+   teï¿½ zrobiï¿½ na odwrï¿½t, tzn. Enviroment nie bï¿½dzie wypisywaï¿½
+   i stworzyï¿½ klasï¿½ VerboseEnviroment.
 
-** [1] -q - wypisywanie zmiennych po zakoñczeniu
+** [1] -q - wypisywanie zmiennych po zakoï¿½czeniu
 
-   Obecnie po napotkaniu koñca pliku program wypisuje warto¶ci
-   wszystkich zmiennych globalnych.  Prze³±cznik -q powinien takie
-   zachowanie wy³±czaæ.
+   Obecnie po napotkaniu koï¿½ca pliku program wypisuje wartoï¿½ci
+   wszystkich zmiennych globalnych.  Przeï¿½ï¿½cznik -q powinien takie
+   zachowanie wyï¿½ï¿½czaï¿½.
 
 ** [1] -h - wypisywanie pomocy
 
-   Chyba nie trzeba komentowaæ, powinnien siê tu znale¿æ opis
-   prze³±czników oraz sk³adni.
+   Chyba nie trzeba komentowaï¿½, powinnien siï¿½ tu znaleï¿½ï¿½ opis
+   przeï¿½ï¿½cznikï¿½w oraz skï¿½adni.
 
 ** [2] -l - wypisywanie wbudowanych funkcji
 
-   Prze³±cznik ten powinien spowodowaæ, ¿e program wypiszê listê
-   wbudowanych funkcji i zakoñczy dzia³anie.
+   Przeï¿½ï¿½cznik ten powinien spowodowaï¿½, ï¿½e program wypiszï¿½ listï¿½
+   wbudowanych funkcji i zakoï¿½czy dziaï¿½anie.
 
-** [2] -L - wypisanie sta³ych
+** [2] -L - wypisanie staï¿½ych
 
-   Prze³±cznik ten powinien spowodowaæ, ¿e program wypiszê listê
-   sta³ych (wraz z warto¶cami) i zakoñczy dzia³anie.
+   Przeï¿½ï¿½cznik ten powinien spowodowaï¿½, ï¿½e program wypiszï¿½ listï¿½
+   staï¿½ych (wraz z wartoï¿½cami) i zakoï¿½czy dziaï¿½anie.
 
-* [0] Obs³uga wyj±tków rzucanych przez Expression::execute()
+* [0] Obsï¿½uga wyjï¿½tkï¿½w rzucanych przez Expression::execute()
 
-  Obecnie wyj±tki rzucane przez Expression::execute() nie s±
-  obs³ugiwane.  Nale¿y dodaæ t± obs³ugê do pliku parser.y.  Je¿eli
-  wyj±tek zostanie rzucony powinien zostaæ wypisany komunikat.  Stan
-  ¶rodowiska bêdzie w chwili obecnej niezdefiniowany (tzn. nadal
-  wszystko ma dzia³aæ dobrze, ale to czy niektóre efekty uboczne
-  wyra¿enia, które rzuci³o wyj±tek zosta³y wykonanie czy nie nie jest
-  okre¶lone).
+  Obecnie wyjï¿½tki rzucane przez Expression::execute() nie sï¿½
+  obsï¿½ugiwane.  Naleï¿½y dodaï¿½ tï¿½ obsï¿½ugï¿½ do pliku parser.y.  Jeï¿½eli
+  wyjï¿½tek zostanie rzucony powinien zostaï¿½ wypisany komunikat.  Stan
+  ï¿½rodowiska bï¿½dzie w chwili obecnej niezdefiniowany (tzn. nadal
+  wszystko ma dziaï¿½aï¿½ dobrze, ale to czy niektï¿½re efekty uboczne
+  wyraï¿½enia, ktï¿½re rzuciï¿½o wyjï¿½tek zostaï¿½y wykonanie czy nie nie jest
+  okreï¿½lone).
 
-** [0] B³êdne wo³ania funkcji powinny rzucaæ wyj±tek
+** [0] Bï¿½ï¿½dne woï¿½ania funkcji powinny rzucaï¿½ wyjï¿½tek
 
-   Obecnie, FunctionExpression::exception() zamiast rzucaæ wyj±tek,
-   gdy jest b³êdna liczba argumentów lub nieistniej±ca funkcja
-   wypisuje komunikat.  Nalezy to zmieniæ.
+   Obecnie, FunctionExpression::exception() zamiast rzucaï¿½ wyjï¿½tek,
+   gdy jest bï¿½ï¿½dna liczba argumentï¿½w lub nieistniejï¿½ca funkcja
+   wypisuje komunikat.  Nalezy to zmieniï¿½.
 
 * [0] Definiowanie funkcji
 
-  Nale¿y dodaæ mo¿liwo¶æ definiowania funkcji.  Ogólna sk³adnia bêdzie
-  wygl±daæ jako¶ tak:
+  Naleï¿½y dodaï¿½ moï¿½liwoï¿½ï¿½ definiowania funkcji.  Ogï¿½lna skï¿½adnia bï¿½dzie
+  wyglï¿½daï¿½ jakoï¿½ tak:
 
     define_instruction: DEFINE ID '(' formal_arguments ')' = assignment_expr
     formal_arguments: /* empty */
@@ -120,19 +120,19 @@ najni¿szy.  [DONE] oznacza, i¿ rzecz zosta³a zroiona.
     non_empty_formal_arguments: ID
                               | non_empty_formal_arguments ',' ID
 
-  formal_arguments i non_empty_formal_arguments winny budowaæ
+  formal_arguments i non_empty_formal_arguments winny budowaï¿½
   std::vector<std::string> (czyli UserFunction::Names),
-  a define_instruction tworzyæ nowy obiekt UserFunction.
+  a define_instruction tworzyï¿½ nowy obiekt UserFunction.
 
 * [1] Operator ?: i operatory logiczne
 
-  Nale¿y dodaæ obs³ugê oepratora ?: oraz operatorów logicznych.
-  Poprzednio pisa³em, aby zastosowaæ odrêbn± klasê wyra¿eñ
-  BooleanExpresson, ale chyba mo¿na to wszystko za³atwiæ jako zwyk³e
-  Expression--wówczas bez problemu bêdzie mo¿na definiowaæ funkcje
-  które zwracaj± warto¶ci true/false.
+  Naleï¿½y dodaï¿½ obsï¿½ugï¿½ oepratora ?: oraz operatorï¿½w logicznych.
+  Poprzednio pisaï¿½em, aby zastosowaï¿½ odrï¿½bnï¿½ klasï¿½ wyraï¿½eï¿½
+  BooleanExpresson, ale chyba moï¿½na to wszystko zaï¿½atwiï¿½ jako zwykï¿½e
+  Expression--wï¿½wczas bez problemu bï¿½dzie moï¿½na definiowaï¿½ funkcje
+  ktï¿½re zwracajï¿½ wartoï¿½ci true/false.
 
-  Proponujê nastêpuj±ca gramatykê:
+  Proponujï¿½ nastï¿½pujï¿½ca gramatykï¿½:
 
   cond_expr: logic_or_expr
            | logic_or_expr '?' expr ':' cond_expr
@@ -147,23 +147,23 @@ najni¿szy.  [DONE] oznacza, i¿ rzecz zosta³a zroiona.
   cmp_op: "==" | "!="
   rel_op: "<=" | ">=" | '<' | '>'
 
-  W assignment_expr w ostatniej alternatywie bêdzie trzeba oczywi¶cie
-  zmieniæ additive_expr na cond_expr.
+  W assignment_expr w ostatniej alternatywie bï¿½dzie trzeba oczywiï¿½cie
+  zmieniï¿½ additive_expr na cond_expr.
 
-  Operatory && i || nie bêd± rzecz jasna wyliczaæ prawego argumentu,
-  je¿eli wynik bêdzie mo¿na wywnioskowaæ z lewego.
+  Operatory && i || nie bï¿½dï¿½ rzecz jasna wyliczaï¿½ prawego argumentu,
+  jeï¿½eli wynik bï¿½dzie moï¿½na wywnioskowaï¿½ z lewego.
 
-  Operatory logiczne bêd± zwracaæ 0 w przypadku fa³szu i 1 w przypadku
-  prawdy.  Co wiêcej, wyra¿enie bêdzie uznawane, ¿e ma warto¶æ
-  prawdziw± je¿eli bêdzie ona ró¿na od 0.  Co¶ takiego powinno
-  zadzia³aæ, gdy¿ w typie double mo¿na bez przeszkód przechowywaæ
-  warto¶æ zero.
+  Operatory logiczne bï¿½dï¿½ zwracaï¿½ 0 w przypadku faï¿½szu i 1 w przypadku
+  prawdy.  Co wiï¿½cej, wyraï¿½enie bï¿½dzie uznawane, ï¿½e ma wartoï¿½ï¿½
+  prawdziwï¿½ jeï¿½eli bï¿½dzie ona rï¿½ï¿½na od 0.  Coï¿½ takiego powinno
+  zadziaï¿½aï¿½, gdyï¿½ w typie double moï¿½na bez przeszkï¿½d przechowywaï¿½
+  wartoï¿½ï¿½ zero.
 
-** [3] Porównywanie liczb z pewn± dok³adno¶ci± ("Fuzzy Comparison")
+** [3] Porï¿½wnywanie liczb z pewnï¿½ dokï¿½adnoï¿½ciï¿½ ("Fuzzy Comparison")
 
-   Proponujê dodaæ jeszcze nastêpuj±ce operatory:
+   Proponujï¿½ dodaï¿½ jeszcze nastï¿½pujï¿½ce operatory:
 
-    Operator | Typ    | Przyk³ad | Znaczenie
+    Operator | Typ    | Przykï¿½ad | Znaczenie
      =~      | cmp_op | a =~ b   | abs(a - b) <= p
      !~      | cmp_op | a !~ b   | abs(a - b) >  p
      <~      | rel_op | a <~ b   | a <  b - p
@@ -171,40 +171,40 @@ najni¿szy.  [DONE] oznacza, i¿ rzecz zosta³a zroiona.
      >~      | rel_op | a >~ b   | a - p > b
      >=~     | rel_op | a >=~ b  | a + p >= b
 
-   Gdzie p bêdzie z góry ustalon± sta³±.
+   Gdzie p bï¿½dzie z gï¿½ry ustalonï¿½ staï¿½ï¿½.
 
-*** [5] Parametr wywo³ania -p
+*** [5] Parametr wywoï¿½ania -p
 
-    Przy wywo³aniu programu z parametrem -p i liczb± rzeczywist± mo¿na
-    ustaliæ parametr p, z którym "Fuzzy Comparison" jest wykonywane.
+    Przy wywoï¿½aniu programu z parametrem -p i liczbï¿½ rzeczywistï¿½ moï¿½na
+    ustaliï¿½ parametr p, z ktï¿½rym "Fuzzy Comparison" jest wykonywane.
 
 * [DONE] Operator ,
 
-  Warto te¿ dodaæ operator ',', gdy¿ bêdzie on szczególnie przydatny
+  Warto teï¿½ dodaï¿½ operator ',', gdyï¿½ bï¿½dzie on szczegï¿½lnie przydatny
   przy definiowaniu funkcji, np.:
 
   define foo(x, y, z) tmp = dlugi_i_zlozony_ciag_boliczen, \
       tmp * tmp
 
-  gdy¿:
+  gdyï¿½:
 
   define foo(x, y, z) (tmp = dlugi_i_zlozony_ciag_boliczen) * tmp
 
-  ma niezdefiniowan± kolejno¶æ wykonywania wyra¿eñ, a
+  ma niezdefiniowanï¿½ kolejnoï¿½ï¿½ wykonywania wyraï¿½eï¿½, a
 
   define foo(x, y, z) = dlugi_i_zlozony_ciag_boliczen * \
       dlugi_i_zlozony_ciag_boliczen
 
-  dwa razy wylicza co¶ bardzo z³o¿onego (tak, wiem ¿e mamy operacje
-  potêgowania, ale to tylko przyk³ad).
+  dwa razy wylicza coï¿½ bardzo zï¿½oï¿½onego (tak, wiem ï¿½e mamy operacje
+  potï¿½gowania, ale to tylko przykï¿½ad).
 
 ** [DONE] Magiczne traktowanie przecinka przez lexer
 
-   Lexer móg³by traktowaæ przecinek w magiczny sposób, tzn. ignorowaæ
-   znak przej¶cia do nowej linii je¿eli wystêpuje on zaraz za
-   przecinkiem albo wrêcz ignorowaæ wszystkie bia³e znaki, a w tym
-   i znaki przej¶cia do nowej linii, wystêpuj±ce za przecinkiem,
-   a przed czymkolwiek innym, wówczas definiowanie funkcji by³oby
+   Lexer mï¿½gï¿½by traktowaï¿½ przecinek w magiczny sposï¿½b, tzn. ignorowaï¿½
+   znak przejï¿½cia do nowej linii jeï¿½eli wystï¿½puje on zaraz za
+   przecinkiem albo wrï¿½cz ignorowaï¿½ wszystkie biaï¿½e znaki, a w tym
+   i znaki przejï¿½cia do nowej linii, wystï¿½pujï¿½ce za przecinkiem,
+   a przed czymkolwiek innym, wï¿½wczas definiowanie funkcji byï¿½oby
    jeszcze prostrze:
 
    define foo(x, y, z) = wyrazenie,
@@ -213,28 +213,28 @@ najni¿szy.  [DONE] oznacza, i¿ rzecz zosta³a zroiona.
       wyrazenie,
       wyrazenie
 
-   bez konieczno¶ci koñczenia ka¿dej linijki backslashem.
+   bez koniecznoï¿½ci koï¿½czenia kaï¿½dej linijki backslashem.
 
 * [DONE] Poprawienie kodu i zmiana std::string* na std::string
 
-  Poniewa¿ bison by³ pierwotnie pisany dla C to niezbyt sobie radzi
-  z czym¶ takim jak destruktory.  Z tego powodu je¿eli chcemy wywo³aæ
-  w nim destruktor to trzeba korzytaæ ze wska¼ników i obiektów
-  tworzonych na stercie.  Tak te¿ jest z std::string.  Jednak, pisz±c
-  na szybko, wyra¿enia w expression.hpp, które przyjmuj± nazwê
-  zmiennej/funkcji te¿ operuj± na wska¼nikach do std::string, co jest
-  raczej niedobre.  Dlatego trzeba wyczy¶ciæ kod, tak aby obiekty
-  w expression.hpp trzyma³y bezpo¶rednio obiekty std::string, a nie
-  wska¼niki do nich.  Nale¿y wówczas zwróciæ uwagê na odpowiednie
-  zmodyfikowanie parser.y w ten sposób, aby wska¼niki nie by³y
-  zerowane, gdy¿ wówczas destruktory bêd± musia³y byæ wywo³ywane
-  (obecnie w parser.y widaæ instrukcje typu $1 = 0 czy $1.name = 0,
-  gdy¿ imituj± one zachowanie sprytnych wska¼ników;  w przypadku
-  wyra¿eñ (obiektów Expression) zachowanie takie jest nadal konieczne,
-  lecz je¿eli obiekty dziedzicz±ce po Expression bêd± trzyma³y w³asn±
-  kopiê std::string to w odniesieniu do ci±gów znaków zachowanie takie
-  mo¿e byæ ju¿ b³êdne).
+  Poniewaï¿½ bison byï¿½ pierwotnie pisany dla C to niezbyt sobie radzi
+  z czymï¿½ takim jak destruktory.  Z tego powodu jeï¿½eli chcemy wywoï¿½aï¿½
+  w nim destruktor to trzeba korzytaï¿½ ze wskaï¿½nikï¿½w i obiektï¿½w
+  tworzonych na stercie.  Tak teï¿½ jest z std::string.  Jednak, piszï¿½c
+  na szybko, wyraï¿½enia w expression.hpp, ktï¿½re przyjmujï¿½ nazwï¿½
+  zmiennej/funkcji teï¿½ operujï¿½ na wskaï¿½nikach do std::string, co jest
+  raczej niedobre.  Dlatego trzeba wyczyï¿½ciï¿½ kod, tak aby obiekty
+  w expression.hpp trzymaï¿½y bezpoï¿½rednio obiekty std::string, a nie
+  wskaï¿½niki do nich.  Naleï¿½y wï¿½wczas zwrï¿½ciï¿½ uwagï¿½ na odpowiednie
+  zmodyfikowanie parser.y w ten sposï¿½b, aby wskaï¿½niki nie byï¿½y
+  zerowane, gdyï¿½ wï¿½wczas destruktory bï¿½dï¿½ musiaï¿½y byï¿½ wywoï¿½ywane
+  (obecnie w parser.y widaï¿½ instrukcje typu $1 = 0 czy $1.name = 0,
+  gdyï¿½ imitujï¿½ one zachowanie sprytnych wskaï¿½nikï¿½w;  w przypadku
+  wyraï¿½eï¿½ (obiektï¿½w Expression) zachowanie takie jest nadal konieczne,
+  lecz jeï¿½eli obiekty dziedziczï¿½ce po Expression bï¿½dï¿½ trzymaï¿½y wï¿½asnï¿½
+  kopiï¿½ std::string to w odniesieniu do ciï¿½gï¿½w znakï¿½w zachowanie takie
+  moï¿½e byï¿½ juï¿½ bï¿½ï¿½dne).
 
-* [2] Uzupe³niæ dokumentacjê
+* [2] Uzupeï¿½niï¿½ dokumentacjï¿½
 
-  Na koniec nale¿y tak¿e uzupe³niæ dokumentacjê w plikach ¼ród³owych.
+  Na koniec naleï¿½y takï¿½e uzupeï¿½niï¿½ dokumentacjï¿½ w plikach ï¿½rï¿½dï¿½owych.

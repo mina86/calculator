@@ -1,6 +1,6 @@
 /** \file
  * Function class declaration.
- * $Id: function.hpp,v 1.6 2008/04/21 10:13:32 mina86 Exp $
+ * $Id: function.hpp,v 1.7 2008/04/26 19:08:28 kuba Exp $
  */
 #ifndef H_FUNCTION_HPP
 #define H_FUNCTION_HPP
@@ -20,7 +20,7 @@ struct Environment;
 struct Expression;
 
 
-/** A function available in enviroment. */
+/** A function available in environment. */
 struct Function {
 	typedef std::vector<real> Arguments;
 
@@ -29,13 +29,13 @@ struct Function {
 
 	/**
 	 * Returns whether number of arguments is OK.
-	 * \param count number of arguements.
+	 * \param count number of arguments.
 	 */
 	virtual bool argumentsCountOK(unsigned count) const = 0;
 
 	/**
-	 * Executes function in given enviroment.
-	 * \param env enviroment to run function in.
+	 * Executes function in given environment.
+	 * \param env environment to run function in.
 	 * \param args array of function call arguments.
 	 * \param count number of arguments.
 	 * \return function's value.
@@ -47,8 +47,8 @@ struct Function {
 
 
 	/**
-	 * Executes function in given enviroment.
-	 * \param env enviroment to run function in.
+	 * Executes function in given environment.
+	 * \param env environment to run function in.
 	 * \param args array of function call arguments.
 	 * \param count number of arguments.
 	 * \return function's value.
@@ -61,7 +61,7 @@ struct Function {
 
 	/**
 	 * Frees function object.  It is needed as some objects function
-	 * objects are intended to be singletons and shuld never be
+	 * objects are intended to be singletons and should never be
 	 * deleted.  For such objects this method would do nothing.  Code
 	 * that want to free a Function object must not use delete
 	 * operator but rather this method.
@@ -71,7 +71,7 @@ struct Function {
 	/**
 	 * Throws InvalidNumberOfArguments exception if number of
 	 * arguments is not OK.
-	 * \param count number of arguements.
+	 * \param count number of arguments.
 	 * \throw InvalidNumberOfArguments if wrong number of arguments
 	 *                                 was given.
 	 */

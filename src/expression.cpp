@@ -1,6 +1,6 @@
 /** \file
  * Expression method definitions.
- * $Id: expression.cpp,v 1.5 2008/04/21 10:12:44 mina86 Exp $
+ * $Id: expression.cpp,v 1.6 2008/04/26 19:08:28 kuba Exp $
  */
 
 #include "config.hpp"
@@ -117,7 +117,7 @@ real FunctionExpression::execute(Environment &env) const {
 		return 0;
 	}
 
-	if (func->argumentsCountOK(args->size())) {
+	if (!func->argumentsCountOK(args->size())) {
 		env.error("invalid number of arguments for function: " + name);
 		return 0;
 	}

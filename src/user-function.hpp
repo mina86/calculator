@@ -1,6 +1,6 @@
 /** \file
  * User Function class declaration.
- * $Id: user-function.hpp,v 1.5 2008/04/21 10:13:32 mina86 Exp $
+ * $Id: user-function.hpp,v 1.6 2008/04/26 19:08:28 kuba Exp $
  */
 #ifndef H_USER_FUNCTION_HPP
 #define H_USER_FUNCTION_HPP
@@ -34,7 +34,7 @@ struct UserFunction : public Function {
 	~UserFunction();
 
 	/**
-	 * Returns \c true iff \a count equals <code>names.size()</code>.
+	 * Returns \c true if \a count equals <code>names.size()</code>.
 	 * \param count number of arguements.
 	 */
 	virtual bool argumentsCountOK(unsigned count) const;
@@ -43,7 +43,7 @@ struct UserFunction : public Function {
 	virtual real execute(Environment &env,
 	                     const std::vector<Expression *> &args) const;
 
-	/** Delets object. */
+	/** Deletes object. */
 	virtual void free();
 
 private:
