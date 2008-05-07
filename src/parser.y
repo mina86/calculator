@@ -139,25 +139,25 @@ assignment_expr
 	;
 
 cond_expr
-	: logic_xor_expr		{ $$ = $1; $1 = 0;}
-	| logic_xor_expr '?' expression ':' cond_expr {
+	: logic_or_expr			{ $$ = $1; $1 = 0;}
+	| logic_or_expr '?' expression ':' cond_expr {
 		$$ = new calc::IfExpression($1, $3, $5);
 		$1 = $3 = $5 = 0;
 	}
 	;
 
-logic_xor_expr
-	: logic_or_expr			{ $$ = $1; $1 = 0; }
-	| logic_xor_expr "^^" logic_or_expr {
-		$$ = new calc::LogicalXorExpression($1, $3);
+logic_or_expr
+	: logic_xor_expr		{ $$ = $1; $1 = 0; }
+	| logic_or_expr "||" logic_xor_expr {
+		$$ = new calc::LogicalOrExpression($1, $3);
 		$1 = $3 = 0;
 	}
 	;
 
-logic_or_expr
+logic_xor_expr
 	: logic_and_expr		{ $$ = $1; $1 = 0; }
-	| logic_or_expr "||" logic_and_expr {
-		$$ = new calc::LogicalOrExpression($1, $3);
+	| logic_xor_expr "^^" logic_and_expr {
+		$$ = new calc::LogicalXorExpression($1, $3);
 		$1 = $3 = 0;
 	}
 	;
