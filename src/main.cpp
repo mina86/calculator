@@ -166,6 +166,9 @@ int main(int argc, char **argv) {
     funcs["acosh"] = calc::Func_acosh::get();
     funcs["asinh"] = calc::Func_asinh::get();
     funcs["atanh"] = calc::Func_atanh::get();
+    funcs["min"  ] = calc::Func_min::get();
+    funcs["max"  ] = calc::Func_max::get();
+    funcs["avg"  ] = calc::Func_avg::get();
 
 
 	/* Run */
@@ -241,9 +244,10 @@ static void listFunc() {
 		"  sqrt(x)   returns square root of x\n"
 		"  cbrt(x)   returns cube root of x\n"
 		"  e(x)      synonym of exp(x)\n"
-		"  exp(x)    returns e raised to the power of x \n"
-		"  log(x)    synonym of ln(x)\n"
-		"  ln(x)     returns the natural logarithm of x\n"
+		"  exp(x)    returns e raised to the power of x\n"
+		"  log(x)    returns the natural logarithm of x\n"
+		"  log(x,y)  returns base y logarithm of x\n"
+		"  ln(x)     synonym of log(x)\n"
 		"  log10(x)  returns base 10 logarithm of x\n"
 		"  log2(x)   returns base 2 logarithm of x\n"
 		"  cos(x)    returns cosine of x (given in radians)\n"
@@ -258,7 +262,10 @@ static void listFunc() {
 		"  tanh(x)   returns hyperbolic tangent od x\n"
 		"  acosh(x)  is an inverse of cosh\n"
 		"  asinh(x)  is an inverse of sinh\n"
-		"  atanh(x)  is an inverse of tanh\n";
+		"  atanh(x)  is an inverse of tanh\n"
+		"  min(...)  returns smallest argument\n"
+		"  max(...)  returns biggest argument\n"
+		"  avg(...)  returns average of arguments\n";
 }
 
 
