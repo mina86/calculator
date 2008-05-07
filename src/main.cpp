@@ -94,33 +94,6 @@ int main(void) {
 	}
 
 	/* Register functions */
-#if 0
-	{
-		/* FIXME: TODO */
-		Environment::Functions &funcs = env->funcs();
-		funcs["sqrt" ] = calc::func_sqrt;
-		funcs["cbrt" ] = calc::func_cbrt;
-		funcs["e"    ] = calc::func_exp;
-		funcs["exp"  ] = calc::func_exp;
-		funcs["log"  ] = calc::func_log;
-		funcs["ln"   ] = calc::func_log;
-		funcs["log10"] = calc::func_log10;
-		funcs["log2" ] = calc::func_log2;
-		funcs["cos"  ] = calc::func_cos;
-		funcs["sin"  ] = calc::func_sin;
-		funcs["tan"  ] = calc::func_tan;
-		funcs["acos" ] = calc::func_acos;
-		funcs["asin" ] = calc::func_asin;
-		funcs["atan" ] = calc::func_atan;
-		funcs["cosh" ] = calc::func_cosh;
-		funcs["sinh" ] = calc::func_sinh;
-		funcs["tanh" ] = calc::func_tanh;
-		funcs["acosh"] = calc::func_acosh;
-		funcs["asinh"] = calc::func_asinh;
-		funcs["atanh"] = calc::func_atanh;
-	}
-#endif
-
     calc::Environment::Functions &funcs = env->functions();
     funcs["sqrt" ] = calc::Func_sqrt::get();
     funcs["cbrt" ] = calc::Func_cbrt::get();
