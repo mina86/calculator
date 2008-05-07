@@ -61,15 +61,20 @@ int yylex(yy::Parser::semantic_type *yylval,
 %token		LE		"<="
 %token		NE		"!="
 %token		EQ		"=="
+%token		OR		"||"
+%token		AND		"&&"
+%token		XOR		"^^"
 
 
-%type	<expr>	assignment_expr additive_expr multiplicative_expr
-%type	<expr>	pow_expr prefix_expr simple_expr expression
+%type	<expr>	assignment_expr additive_expr multiplicative_expr rel_expr
+%type	<expr>	pow_expr prefix_expr simple_expr expression cond_expr
+%type	<expr>	logic_or_expr logic_and_expr logic_xor_expr cmp_expr
 %type	<var>	var
 
-%destructor	{ delete $$; } ID expression
+%destructor	{ delete $$; } ID expression rel_expr cond_expr cmp_expr
 %destructor	{ delete $$; } assignment_expr additive_expr simple_expr
 %destructor	{ delete $$; } multiplicative_expr pow_expr prefix_expr
+%destructor	{ delete $$; } logic_or_expr logic_and_expr logic_xor_expr
 %destructor	{ delete $$.name; } var
 
 %%
@@ -130,7 +135,69 @@ assignment_expr
 		$$ = calc::SetExpression::create($1, expr);
 		$3 = 0;
 	}
-	| additive_expr			{ $$ = $1; $1 = 0; }
+	| cond_expr			{ $$ = $1; $1 = 0; }
+	;
+
+cond_expr
+	: logic_xor_expr		{ $$ = $1; $1 = 0;}
+	| logic_xor_expr '?' expression ':' cond_expr {
+		$$ = new calc::IfExpression($1, $3, $5);
+		$1 = $3 = $5 = 0;
+	}
+	;
+
+logic_xor_expr
+	: logic_or_expr			{ $$ = $1; $1 = 0; }
+	| logic_xor_expr "^^" logic_or_expr {
+		$$ = new calc::LogicalXorExpression($1, $3);
+		$1 = $3 = 0;
+	}
+	;
+
+logic_or_expr
+	: logic_and_expr		{ $$ = $1; $1 = 0; }
+	| logic_or_expr "||" logic_and_expr {
+		$$ = new calc::LogicalOrExpression($1, $3);
+		$1 = $3 = 0;
+	}
+	;
+
+logic_and_expr
+	: cmp_expr			{ $$ = $1; $1 = 0; }
+	| logic_and_expr "&&" cmp_expr {
+		$$ = new calc::LogicalAndExpression($1, $3);
+		$1 = $3 = 0;
+	}
+	;
+
+cmp_expr: rel_expr			{ $$ = $1; $1 = 0; }
+	| cmp_expr "==" rel_expr	{
+		$$ = new calc::EqualExpression($1, $3);
+		$1 = $3 = 0;
+	}
+	| cmp_expr "!=" rel_expr	{
+		$$ = new calc::EqualExpression($1, $3, false);
+		$1 = $3 = 0;
+	}
+	;
+
+rel_expr: additive_expr			{ $$ = $1; $1 = 0; }
+	| rel_expr '>'    additive_expr	{
+		$$ = new calc::GreaterExpression($1, $3);
+		$1 = $3 = 0;
+	}
+	| rel_expr '<'    additive_expr	{
+		$$ = new calc::GreaterExpression($3, $1);
+		$1 = $3 = 0;
+	}
+	| rel_expr "<="    additive_expr	{
+		$$ = new calc::GreaterExpression($1, $3, false);
+		$1 = $3 = 0;
+	}
+	| rel_expr ">="    additive_expr	{
+		$$ = new calc::GreaterExpression($3, $1, false);
+		$1 = $3 = 0;
+	}
 	;
 
 additive_expr
@@ -168,6 +235,12 @@ prefix_expr
 	: '+' prefix_expr		{ $$ = $2; $2 = 0; }
 	| '-' prefix_expr		{
 		$$ = new calc::NegExpression($2);
+		$2 = 0;
+	}
+	| '!' prefix_expr		{
+		calc::BooleanExpression *expr = $2->booleanExpression();
+		expr->neg();
+		$$ = expr;
 		$2 = 0;
 	}
 	| simple_expr                   { $$ = $1; $1 = 0; }
