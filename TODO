@@ -1,6 +1,6 @@
 ##                               -*- Mode: org; indent-tabs-mode: nil -*-
 ## TODO List
-## $Id: TODO,v 1.8 2008/04/26 19:08:28 kuba Exp $
+## $Id: TODO,v 1.9 2008/05/07 17:30:44 mina86 Exp $
 ##
 
 Liczba w nawiasach kwadratowych oznacza piorytet -- [0] najwy�szy, [5]
@@ -55,9 +55,9 @@ najni�szy.  [DONE] oznacza, i� rzecz zosta�a zroiona.
                spowoduje konflikt�w z wyra�eniami logicznymi
    - ( expr expr ) -- dwumian Newtona
 
-* [1] Dodanie obs�ugi linii polece�
+* [DONE] Dodanie obs�ugi linii polece�
 
-** [1] -v - wypisywanie wynik�w instrukcji
+** [DONE] -v - wypisywanie wynik�w instrukcji
 
    W chwili obecnej, za ka�dym razem, gdy jest wykonana instrukcja
    (niezako�czona �rednikiem) jej wynik wypisywany jest na standardowe
@@ -72,23 +72,23 @@ najni�szy.  [DONE] oznacza, i� rzecz zosta�a zroiona.
    te� zrobi� na odwr�t, tzn. Enviroment nie b�dzie wypisywa�
    i stworzy� klas� VerboseEnviroment.
 
-** [1] -q - wypisywanie zmiennych po zako�czeniu
+** [DONE] -q - wypisywanie zmiennych po zako�czeniu
 
    Obecnie po napotkaniu ko�ca pliku program wypisuje warto�ci
    wszystkich zmiennych globalnych.  Prze��cznik -q powinien takie
    zachowanie wy��cza�.
 
-** [1] -h - wypisywanie pomocy
+** [DONE] -h - wypisywanie pomocy
 
    Chyba nie trzeba komentowa�, powinnien si� tu znale�� opis
    prze��cznik�w oraz sk�adni.
 
-** [2] -l - wypisywanie wbudowanych funkcji
+** [DONE] -l - wypisywanie wbudowanych funkcji
 
    Prze��cznik ten powinien spowodowa�, �e program wypisz� list�
    wbudowanych funkcji i zako�czy dzia�anie.
 
-** [2] -L - wypisanie sta�ych
+** [DONE] -L - wypisanie sta�ych
 
    Prze��cznik ten powinien spowodowa�, �e program wypisz� list�
    sta�ych (wraz z warto�cami) i zako�czy dzia�anie.
@@ -124,7 +124,7 @@ najni�szy.  [DONE] oznacza, i� rzecz zosta�a zroiona.
   std::vector<std::string> (czyli UserFunction::Names),
   a define_instruction tworzy� nowy obiekt UserFunction.
 
-* [1] Operator ?: i operatory logiczne
+* [DONE] Operator ?: i operatory logiczne
 
   Nale�y doda� obs�ug� oepratora ?: oraz operator�w logicznych.
   Poprzednio pisa�em, aby zastosowa� odr�bn� klas� wyra�e�
@@ -159,9 +159,9 @@ najni�szy.  [DONE] oznacza, i� rzecz zosta�a zroiona.
   zadzia�a�, gdy� w typie double mo�na bez przeszk�d przechowywa�
   warto�� zero.
 
-** [3] Por�wnywanie liczb z pewn� dok�adno�ci� ("Fuzzy Comparison")
+* [3] Por�wnywanie liczb z pewn� dok�adno�ci� ("Fuzzy Comparison")
 
-   Proponuj� doda� jeszcze nast�puj�ce operatory:
+  Proponuj� doda� jeszcze nast�puj�ce operatory:
 
     Operator | Typ    | Przyk�ad | Znaczenie
      =~      | cmp_op | a =~ b   | abs(a - b) <= p
@@ -171,12 +171,13 @@ najni�szy.  [DONE] oznacza, i� rzecz zosta�a zroiona.
      >~      | rel_op | a >~ b   | a - p > b
      >=~     | rel_op | a >=~ b  | a + p >= b
 
-   Gdzie p b�dzie z g�ry ustalon� sta��.
+  Gdzie p b�dzie z g�ry ustalon� sta��.
 
-*** [5] Parametr wywo�ania -p
+** [5] Parametr wywo�ania -p
 
-    Przy wywo�aniu programu z parametrem -p i liczb� rzeczywist� mo�na
-    ustali� parametr p, z kt�rym "Fuzzy Comparison" jest wykonywane.
+   Przy wywo�aniu programu z parametrem -p i liczb� rzeczywist�
+   mo�na ustali� parametr p, z kt�rym "Fuzzy Comparison" jest
+   wykonywane.
 
 * [DONE] Operator ,
 
