@@ -1,6 +1,6 @@
 /** \file
  * Lexer reading from FILE stream implementation.
- * $Id: file-lexer.cpp,v 1.8 2008/05/07 16:24:09 mina86 Exp $
+ * $Id: file-lexer.cpp,v 1.9 2008/05/07 17:30:27 mina86 Exp $
  */
 #include "math.hpp"
 #include "exceptions.hpp"
@@ -91,7 +91,7 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 		switch (ch = getchar()) {
 		case '=': return yy::Parser::token::POW_EQ;
 		case '^': return yy::Parser::token::XOR;
-		default: ungetchar(ch); return ch;
+		default: ungetchar(ch); return '^';
 		}
 	}
 
