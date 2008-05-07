@@ -1,6 +1,6 @@
 /** \file
  * Lexer reading from FILE stream implementation.
- * $Id: file-lexer.cpp,v 1.6 2008/04/21 10:24:59 mina86 Exp $
+ * $Id: file-lexer.cpp,v 1.7 2008/05/07 16:21:58 mina86 Exp $
  */
 #include "math.hpp"
 #include "exceptions.hpp"
@@ -87,7 +87,8 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 	}
 
 	/* #= maybe? */
-	if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^') {
+	if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^' ||
+	    ch == '>' || ch == '<' || ch == '=' || ch == '!') {
 		int c = getchar();
 		if (c != '=') {
 			ungetchar(c);
@@ -99,6 +100,24 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 		case '*': return yy::Parser::token::MUL_EQ;
 		case '/': return yy::Parser::token::DIV_EQ;
 		case '^': return yy::Parser::token::POW_EQ;
+		case '>': return yy::Parser::token::GE;
+		case '<': return yy::Parser::token::LE;
+		case '=': return yy::Parser::token::EQ;
+		case '!': return yy::Parser::token::NE;
+		}
+	}
+
+	/* Logical operator? */
+	if (ch == '&' || ch == '|' || ch == '^') {
+		int c = getchar();
+		if (c != ch) {
+			ungetchar(c);
+			return ch;
+		}
+		switch (ch) {
+		case '|': return yy::Parser::token::OR;
+		case '&': return yy::Parser::token::AND;
+		case '^': return yy::Parser::token::XOR;
 		}
 	}
 
