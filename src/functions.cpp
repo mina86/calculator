@@ -1,6 +1,6 @@
 /** \file
  * Calculator functions implementation.
- * $Id: functions.cpp,v 1.3 2008/04/26 19:08:28 kuba Exp $
+ * $Id: functions.cpp,v 1.4 2008/05/07 16:20:17 mina86 Exp $
  */
 #ifndef H_VARIABLES_HPP
 #define H_VARIABLES_HPP
@@ -181,6 +181,7 @@ namespace calc {
 
     real Func_sqrt::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::sqrt (args[0]);
     }
@@ -196,6 +197,7 @@ namespace calc {
 
     real Func_cbrt::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::cbrt (args[0]);
     }
@@ -211,6 +213,7 @@ namespace calc {
 
     real Func_exp::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::exp  (args[0]);
     }
@@ -226,6 +229,7 @@ namespace calc {
 
     real Func_log::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         switch (args.size()) {
         case  1: return m::log(args[0]);
@@ -246,6 +250,7 @@ namespace calc {
 
     real Func_log10::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::log10(args[0]);
     }
@@ -262,6 +267,7 @@ namespace calc {
 
     real Func_log2::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::log2 (args[0]);
     }
@@ -277,6 +283,7 @@ namespace calc {
 
     real Func_cos::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::cos (args[0]);
     }
@@ -292,6 +299,7 @@ namespace calc {
 
     real Func_sin::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::sin (args[0]);
     }
@@ -307,6 +315,7 @@ namespace calc {
 
     real Func_tan::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::tan (args[0]);
     }
@@ -322,6 +331,7 @@ namespace calc {
 
     real Func_acos::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::acos (args[0]);
     }
@@ -337,6 +347,7 @@ namespace calc {
 
     real Func_asin::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::asin (args[0]);
     }
@@ -352,6 +363,7 @@ namespace calc {
 
     real Func_atan::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         switch (args.size()) {
         case  1: return m::atan (args[0]);
@@ -371,6 +383,7 @@ namespace calc {
 
     real Func_cosh::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::cosh (args[0]);
     }
@@ -386,6 +399,7 @@ namespace calc {
 
     real Func_sinh::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::sinh (args[0]);
     }
@@ -401,6 +415,7 @@ namespace calc {
 
     real Func_tanh::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::tanh (args[0]);
     }
@@ -416,6 +431,7 @@ namespace calc {
 
     real Func_acosh::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::acosh (args[0]);
     }
@@ -431,6 +447,7 @@ namespace calc {
 
     real Func_asinh::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::asinh (args[0]);
     }
@@ -446,6 +463,7 @@ namespace calc {
 
     real Func_atanh::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         throwIfArgumentsCountNotOK(args.size());
         return m::atanh (args[0]);
     }
@@ -461,6 +479,7 @@ namespace calc {
 
     real Func_max::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         Arguments::size_type size = args.size();
         if (!size) {
             throw InvalidNumberOfArguments();
@@ -485,6 +504,7 @@ namespace calc {
 
     real Func_min::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         Arguments::size_type size = args.size();
         if (!size) {
             throw InvalidNumberOfArguments();
@@ -509,6 +529,7 @@ namespace calc {
 
     real Func_avg::execute( Environment &env, const Arguments &args ) const
     {
+        (void)env; /* silence warning */
         Arguments::size_type size = args.size();
         if (!size) {
             throw InvalidNumberOfArguments();
