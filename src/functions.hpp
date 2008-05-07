@@ -1,6 +1,6 @@
 /** \file
  * Calculator functions.
- * $Id: functions.hpp,v 1.4 2008/04/26 19:08:28 kuba Exp $
+ * $Id: functions.hpp,v 1.5 2008/05/07 17:54:28 mina86 Exp $
  */
 #ifndef H_FUNCTIONS_HPP
 #define H_FUNCTIONS_HPP
@@ -9,36 +9,65 @@
 
 #include "environment.hpp"
 #include "function.hpp"
-#include "built-in-function.hpp"
 
 
 namespace calc {
 
+
+/**
+ * A Built-in Functions base class
+ */
+struct BuiltInFunction : public Function {
+	virtual bool argumentsCountOK(unsigned count) const;
+	virtual void free();
+
+protected:
+	/** Constructor available only for child classes */
+	BuiltInFunction(const unsigned &nargs)
+		: minArgs(nargs), maxArgs(nargs) { }
+	BuiltInFunction(const unsigned &min, const unsigned &max)
+		: minArgs(min), maxArgs(max) { }
+
+private:
+	/** Minimal number of arguments passed to function */
+	const unsigned minArgs;
+
+	/** Maximal number of arguments passed to function */
+	const unsigned maxArgs;
+};
+
+
+/**
+ * Makro for defining get() static methods of built in functions.
+ */
+#define CALC_FUNC_GET(func) \
+	static Func_ ## func *get() { \
+		static Func_ ## func f; \
+		return &f; \
+	}
+
+
 /**
  * Structure executes the squere root function.
  */
-//real func_sqrt (const FunctionArguments &arguments);
-struct Func_sqrt :  public BuiltInFunction
-{
+struct Func_sqrt :  public BuiltInFunction {
     Func_sqrt() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_sqrt *get();
+    CALC_FUNC_GET(sqrt)
 };
 
 
 /**
  * Structure executes the cube root function.
  */
-//real func_cbrt (const FunctionArguments &arguments);
-struct Func_cbrt :  public BuiltInFunction
-{
+struct Func_cbrt :  public BuiltInFunction {
     Func_cbrt() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_cbrt *get();
+    CALC_FUNC_GET(cbrt)
 };
 
 
@@ -46,14 +75,12 @@ struct Func_cbrt :  public BuiltInFunction
  * Structure executes the base of natural logarithms to the power
  * given as argument.
  */
-//real func_exp  (const FunctionArguments &arguments);
-struct Func_exp :  public BuiltInFunction
-{
+struct Func_exp :  public BuiltInFunction {
     Func_exp() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_exp *get();
+    CALC_FUNC_GET(exp)
 };
 
 /**
@@ -61,105 +88,89 @@ struct Func_exp :  public BuiltInFunction
  * If called with two arguments structure executes logarithm with base
  * specified by second argument of the first argument.
  */
-//real func_log  (const FunctionArguments &arguments);
-struct Func_log :  public BuiltInFunction
-{
+struct Func_log :  public BuiltInFunction {
     Func_log() : BuiltInFunction(1,2) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_log *get();
+    CALC_FUNC_GET(log)
 };
 
 /**
  * Structure executes the the base 10 logarithm function.
  */
-//real func_log10(const FunctionArguments &arguments);
-struct Func_log10 :  public BuiltInFunction
-{
+struct Func_log10 :  public BuiltInFunction {
     Func_log10() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_log10 *get();
+    CALC_FUNC_GET(log10)
 };
 
 /**
  * Structure executes the the base 2 logarithm function.
  */
-//real func_log2 (const FunctionArguments &arguments);
-struct Func_log2 :  public BuiltInFunction
-{
+struct Func_log2 :  public BuiltInFunction {
     Func_log2() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_log2 *get();
+    CALC_FUNC_GET(log2)
 };
 
 /**
  * Structure executes the cosine function.
  */
-//real func_cos  (const FunctionArguments &arguments);
-struct Func_cos :  public BuiltInFunction
-{
+struct Func_cos :  public BuiltInFunction {
     Func_cos() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_cos *get();
+    CALC_FUNC_GET(cos)
 };
 
 /**
  * Structure executes the sine function.
  */
-// real func_sin  (const FunctionArguments &arguments);
-struct Func_sin :  public BuiltInFunction
-{
+struct Func_sin :  public BuiltInFunction {
     Func_sin() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_sin *get();
+    CALC_FUNC_GET(sin)
 };
 
 /**
  * Structure executes the tangent function.
  */
-//real func_tan  (const FunctionArguments &arguments);
-struct Func_tan :  public BuiltInFunction
-{
+struct Func_tan :  public BuiltInFunction {
     Func_tan() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_tan *get();
+    CALC_FUNC_GET(tan)
 };
 
 /**
  * Structure executes the arcus cosine function.
  */
-//real func_acos (const FunctionArguments &arguments);
-struct Func_acos :  public BuiltInFunction
-{
+struct Func_acos :  public BuiltInFunction {
     Func_acos() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_acos *get();
+    CALC_FUNC_GET(acos)
 };
 
 /**
  * Structure executes the arcus sine function.
  */
-//real func_asin (const FunctionArguments &arguments);
-struct Func_asin :  public BuiltInFunction
-{
+struct Func_asin :  public BuiltInFunction {
     Func_asin() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_asin *get();
+    CALC_FUNC_GET(asin)
 };
 
 /**
@@ -167,14 +178,12 @@ struct Func_asin :  public BuiltInFunction
  * is given uses \c tan() function.  If two arguments are given uses
  * \c tan2() function.
  */
-//real func_atan (const FunctionArguments &arguments);
-struct Func_atan :  public BuiltInFunction
-{
+struct Func_atan :  public BuiltInFunction {
     Func_atan() : BuiltInFunction(1,2) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_atan *get();
+    CALC_FUNC_GET(atan)
 };
 
 
@@ -182,122 +191,107 @@ struct Func_atan :  public BuiltInFunction
 /**
  * Structure executes the hyperbolic cosine function.
  */
-//real func_cosh (const FunctionArguments &arguments);
-struct Func_cosh :  public BuiltInFunction
-{
+struct Func_cosh :  public BuiltInFunction {
     Func_cosh() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_cosh *get();
+    CALC_FUNC_GET(cosh)
 };
 
 /**
  * Structure executes the hyperbolic sine function.
  */
-//real func_sinh (const FunctionArguments &arguments);
-struct Func_sinh :  public BuiltInFunction
-{
+struct Func_sinh :  public BuiltInFunction {
     Func_sinh() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_sinh *get();
+    CALC_FUNC_GET(sinh)
 };
 
 /**
  * Structure executes the hyperbolic tangent function.
  */
-//real func_tanh (const FunctionArguments &arguments);
-struct Func_tanh :  public BuiltInFunction
-{
+struct Func_tanh :  public BuiltInFunction {
     Func_tanh() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_tanh *get();
+    CALC_FUNC_GET(tanh)
 };
 
 /**
  * Structure executes inverse hyperbolic cosine function.
  */
-//real func_acosh(const FunctionArguments &arguments);
-struct Func_acosh :  public BuiltInFunction
-{
+struct Func_acosh :  public BuiltInFunction {
     Func_acosh() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_acosh *get();
+    CALC_FUNC_GET(acosh)
 };
 
 /**
  * Structure executes the inverse hyperbolic sine function.
  */
-//real func_asinh(const FunctionArguments &arguments);
-struct Func_asinh :  public BuiltInFunction
-{
+struct Func_asinh :  public BuiltInFunction {
     Func_asinh() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_asinh *get();
+    CALC_FUNC_GET(asinh)
 };
 
 /**
  * Structure executes the inverse hyperbolic tangent function.
  */
-//real func_atanh(const FunctionArguments &arguments);
-struct Func_atanh :  public BuiltInFunction
-{
+struct Func_atanh :  public BuiltInFunction {
     Func_atanh() : BuiltInFunction(1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_atanh *get();
+    CALC_FUNC_GET(atanh)
 };
 
 
 /**
  * Structure executes the biggest function.
  */
-//real func_max  (const FunctionArguments &arguments);
-struct Func_max :  public BuiltInFunction
-{
-    Func_max() : BuiltInFunction(1,2) {};
+struct Func_max :  public BuiltInFunction {
+    Func_max() : BuiltInFunction(1, -1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_max *get();
+    CALC_FUNC_GET(max)
 };
 
 /**
  * Structure executes the smallest function.
  */
-//real func_min  (const FunctionArguments &arguments);
-struct Func_min :  public BuiltInFunction
-{
-    Func_min() : BuiltInFunction(1,2) {};
+struct Func_min :  public BuiltInFunction {
+    Func_min() : BuiltInFunction(1, -1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_min *get();
+    CALC_FUNC_GET(min)
 };
 
 /**
  * Structure executes the average value function.
  */
-//real func_avg  (const FunctionArguments &arguments);
-struct Func_avg :  public BuiltInFunction
-{
-    Func_avg() : BuiltInFunction(1,2) {};
+struct Func_avg :  public BuiltInFunction {
+    Func_avg() : BuiltInFunction(1, -1) {};
 
     real execute(Environment &env, const Arguments &args) const;
 
-    static Func_avg *get();
+    CALC_FUNC_GET(avg)
 };
 
-}
 
+
+#undef CALC_FUNC_GET
+
+}
 
 #endif
