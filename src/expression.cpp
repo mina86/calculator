@@ -1,6 +1,6 @@
 /** \file
  * Expression method definitions.
- * $Id: expression.cpp,v 1.6 2008/04/26 19:08:28 kuba Exp $
+ * $Id: expression.cpp,v 1.7 2008/05/07 16:19:59 mina86 Exp $
  */
 
 #include "config.hpp"
@@ -14,6 +14,8 @@
 namespace calc {
 
 bool Expression::boolean(Environment &env) const {
+	/* The next line may produce "comparing floating point with == or
+	   != is unsafe" warning; ignore it, we know that. */
 	return execute(env) != 0.0;
 }
 
@@ -156,6 +158,8 @@ AtLeast2ArgBooleanExpression::~AtLeast2ArgBooleanExpression() {
 
 
 bool EqualExpression::_boolean(Environment &env) const {
+	/* The next line may produce "comparing floating point with == or
+	   != is unsafe" warning; ignore it, we know that. */
 	return expr1->execute(env) == expr2->execute(env);
 }
 
@@ -163,6 +167,18 @@ bool GreaterExpression::_boolean(Environment &env) const {
 	return expr1->execute(env) > expr2->execute(env);
 }
 
+
+bool LogicalOrExpression::_boolean(Environment &env) const {
+	return expr1->boolean(env) || expr2->boolean(env);
+}
+
+bool LogicalAndExpression::_boolean(Environment &env) const {
+	return expr1->boolean(env) && expr2->boolean(env);
+}
+
+bool LogicalXorExpression::_boolean(Environment &env) const {
+	return expr1->boolean(env) != expr2->boolean(env);
+}
 
 
 CommaExpression::~CommaExpression() {
@@ -185,6 +201,10 @@ CommaExpression *CommaExpression::commaExpression() {
 	return this;
 }
 
+
+real IfExpression::execute(Environment &env) const {
+	return cond->boolean(env) ? expr1->execute(env) : expr2->execute(env);
+}
 
 
 }

@@ -1,11 +1,13 @@
 /** \file
  * Expression declarations.
- * $Id: expression.hpp,v 1.6 2008/04/21 10:12:44 mina86 Exp $
+ * $Id: expression.hpp,v 1.7 2008/05/07 16:19:59 mina86 Exp $
  */
 #ifndef H_EXPRESSION_HPP
 #define H_EXPRESSION_HPP
 
 #include "config.hpp"
+
+#include <assert.h>
 
 #include <string>
 #include <vector>
@@ -37,14 +39,14 @@ struct Expression {
 	virtual bool boolean(Environment &env) const;
 
 
-	/** Returns BooleanExpression interpreting value of this Expression. */
-	virtual BooleanExpression *booleanExpression();
-
 	/**
 	 * If this is a CommaExpression returns it otherwise returns new
 	 * CommaExpression with this expression as the only one.
 	 */
 	virtual CommaExpression *commaExpression();
+
+	/** Returns BooleanExpression interpreting value of this Expression. */
+	virtual BooleanExpression *booleanExpression();
 
 
 	/** Virtual destructor. */
@@ -447,6 +449,7 @@ struct BooleanExpression : public Expression {
 	 */
 	virtual bool boolean(Environment &env) const;
 
+	/** Returns itself. */
 	virtual BooleanExpression *booleanExpression();
 
 protected:
@@ -462,19 +465,30 @@ private:
 };
 
 
+/**
+ * Interpretes expression's value as a boolean.  It is used to
+ * make negations.
+ */
 struct ExpressionAsBoolean : public BooleanExpression {
+	/** Deletes expression. */
 	~ExpressionAsBoolean();
 
 protected:
 	virtual bool _boolean(Environment &env) const;
 
 private:
+	/** Expression to evaluate. */
 	Expression *expr;
 
+	/**
+	 * Constructos object.
+	 * \param e not a boolean expression.
+	 */
 	explicit ExpressionAsBoolean(Expression *e) : expr(e) { }
 
 	friend struct Expression;
 };
+
 
 
 /** Base class for boolean expressions taking at least two arguments. */
@@ -546,23 +560,119 @@ protected:
 
 
 
+/** A trinary ?: epxression. */
+struct IfExpression : public AtLeast2ArgExpression {
+	/**
+	 * Constructor.
+	 * \param c condition expression
+	 * \param e1 expreeession to evaluate if \a c evaluates \c true.
+	 * \param e2 expreeession to evaluate if \a c evaluates \c false.
+	 */
+	IfExpression(Expression *c, Expression *e1, Expression *e2)
+		: AtLeast2ArgExpression(e1, e2), cond(c) { }
+
+	/** Deletes all expressions. */
+	~IfExpression() {
+		delete cond;
+	}
+
+	virtual real execute(Environment &env) const;
+
+private:
+	/** A condition expression. */
+	Expression *cond;
+};
+
+
+/** A logical OR expression. */
+struct LogicalOrExpression : AtLeast2ArgBooleanExpression {
+	/**
+	 * Constructos a logical expression.
+	 * \param e1 first sub-expression.
+	 * \param e2 second sub-expression.
+	 */
+	LogicalOrExpression(Expression *e1, Expression *e2)
+		: AtLeast2ArgBooleanExpression(e1, e2) { }
+
+protected:
+	virtual bool _boolean(Environment &env) const;
+};
+
+
+/** A logical AND expression. */
+struct LogicalAndExpression : AtLeast2ArgBooleanExpression {
+	/**
+	 * Constructos a logical expression.
+	 * \param e1 first sub-expression.
+	 * \param e2 second sub-expression.
+	 */
+	LogicalAndExpression(Expression *e1, Expression *e2)
+		: AtLeast2ArgBooleanExpression(e1, e2) { }
+
+protected:
+	virtual bool _boolean(Environment &env) const;
+};
+
+
+/** A logical XOR expression. */
+struct LogicalXorExpression : AtLeast2ArgBooleanExpression {
+	/**
+	 * Constructos a logical expression.
+	 * \param e1 first sub-expression.
+	 * \param e2 second sub-expression.
+	 */
+	LogicalXorExpression(Expression *e1, Expression *e2)
+		: AtLeast2ArgBooleanExpression(e1, e2) { }
+
+protected:
+	virtual bool _boolean(Environment &env) const;
+};
+
+
+
 /** Expression representing comma operator. */
 struct CommaExpression : public Expression {
+	/** A vector of expressions. */
 	typedef std::vector<Expression *> Expressions;
 
+
+	/** Constructs empty sequence of expressions. */
 	CommaExpression() { }
+
+	/**
+	 * Constructs sequence consisting of single expression.
+	 * \param e expression to add to sequence.
+	 */
+
 	explicit CommaExpression(Expression *e) { push(e); }
+	/**
+	 * Copies sequence of expressions.
+	 * \param exprs sequence of expressions.
+	 */
 	explicit CommaExpression(const Expressions &exprs) : vec(exprs) { }
+
+	/** Deletes sequence of expressions and all expressions in it. */
 	~CommaExpression();
 
 	virtual real execute(Environment &env) const;
+	/** Returns itself. */
 	virtual CommaExpression *commaExpression();
 
+
+	/** Returns number of expressions in sequence. */
 	Expressions::size_type size() const { return vec.size(); }
+
+	/** Returns underlying vector. */
 	const Expressions &expressions() const { return vec; }
-	void push(Expression *e) { vec.push_back(e); }
+
+	/** Adds expression to sequence. */
+	void push(Expression *e) {
+		assert(e);
+		vec.push_back(e);
+	}
 
 private:
+	/** A vector of expressions. */
 	Expressions vec;
 };
 
@@ -570,6 +680,7 @@ private:
 
 /** A function call expression. */
 struct FunctionExpression : public NameExpression {
+	/** Function arguments. */
 	typedef CommaExpression Arguments;
 
 	/**
