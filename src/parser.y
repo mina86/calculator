@@ -10,6 +10,7 @@
 #include <string>
 
 #include "expression.hpp"
+#include "user-function.hpp"
 
 namespace calc {
 	struct Lexer;
@@ -24,6 +25,8 @@ namespace calc {
 	calc::Variable                       var;
 	/** An expression. */
 	calc::Expression                    *expr;
+	/** Function parameters */
+	calc::UserFunction::Names			*params;
 };
 
 %parse-param { calc::Lexer       &lexer }
@@ -51,6 +54,7 @@ int yylex(yy::Parser::semantic_type *yylval,
 
 
 %token	<var.name>	ID
+%token	DEFINE	"define"
 %token	<num>	NUMBER
 %token		ADD_EQ		"+="
 %token		SUB_EQ		"-="
@@ -70,12 +74,14 @@ int yylex(yy::Parser::semantic_type *yylval,
 %type	<expr>	pow_expr prefix_expr simple_expr expression cond_expr
 %type	<expr>	logic_or_expr logic_and_expr logic_xor_expr cmp_expr
 %type	<var>	var
+%type	<params> formal_arguments non_empty_formal_arguments
 
 %destructor	{ delete $$; } ID expression rel_expr cond_expr cmp_expr
 %destructor	{ delete $$; } assignment_expr additive_expr simple_expr
 %destructor	{ delete $$; } multiplicative_expr pow_expr prefix_expr
 %destructor	{ delete $$; } logic_or_expr logic_and_expr logic_xor_expr
 %destructor	{ delete $$.name; } var
+%destructor	{ delete $$; } formal_arguments non_empty_formal_arguments
 
 %%
 start	: start instruction
@@ -83,12 +89,37 @@ start	: start instruction
 	;
 
 instruction
-	: expression ';'		{ $1->execute(env) }
-	| expression '\n'		{ env.instruction($1->execute(env)); }
+	: DEFINE define_instruction ';'
+	| DEFINE define_instruction '\n'
+	| expression ';'		{ env.execute($1, false); }
+	| expression '\n'		{ env.execute($1, true); }
 	| ';'
 	| '\n'
 	| error ';'
 	| error '\n'
+	;
+
+define_instruction
+	: ID '(' formal_arguments ')' '=' assignment_expr	{
+		env.addUserFunction( *$1, new calc::UserFunction($6, * $3));
+	}
+	;
+
+formal_arguments
+	: /* empty */ { $$ = new calc::UserFunction::Names() }
+	| non_empty_formal_arguments { $$ = $1; $1 = 0; }
+	;
+
+non_empty_formal_arguments
+	: ID	{ 
+		calc::UserFunction::Names *args = new calc::UserFunction::Names();
+		args->push_back(*$1);
+		$$ = args; $1 = 0; }
+	| non_empty_formal_arguments ',' ID {
+		$$ = $1;
+		$$->push_back( $3 [0] );
+		$1 = 0;
+	}
 	;
 
 expression

@@ -1,6 +1,6 @@
 /** \file
  * Lexer reading from FILE stream implementation.
- * $Id: file-lexer.cpp,v 1.9 2008/05/07 17:30:27 mina86 Exp $
+ * $Id: file-lexer.cpp,v 1.10 2008/05/10 10:05:26 kuba Exp $
  */
 #include "math.hpp"
 #include "exceptions.hpp"
@@ -81,6 +81,8 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 			value.num = std::numeric_limits<calc::real>::infinity();
 			return yy::Parser::token::NUMBER;
 		} else {
+			if(id == "define")
+				return yy::Parser::token::DEFINE;
 			value.var.name = new std::string(id);
 			return yy::Parser::token::ID;
 		}

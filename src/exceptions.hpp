@@ -1,6 +1,6 @@
 /** \file
  * Exception definitions.
- * $Id: exceptions.hpp,v 1.5 2008/04/21 08:35:26 mina86 Exp $
+ * $Id: exceptions.hpp,v 1.6 2008/05/10 10:05:26 kuba Exp $
  */
 #ifndef H_EXCEPTIONS_HPP
 #define H_EXCEPTIONS_HPP
@@ -40,7 +40,7 @@ protected:
  * constant's value.
  */
 struct ConstAlreadyDefined : public ExpressionException {
-	/** Constructos exception. */
+	/** Constructors exception. */
 	ConstAlreadyDefined() throw()
 		: ExpressionException("constant already defined") { }
 };
@@ -63,9 +63,11 @@ protected:
  * function.
  */
 struct InvalidNumberOfArguments : public FunctionException {
-	/** Constructos exception. */
-	InvalidNumberOfArguments() throw()
-		: FunctionException("invalid number of arguments") { }
+	/** Constructors exception. */
+    InvalidNumberOfArguments() throw()
+        : FunctionException("invalid number of arguments") { }
+	InvalidNumberOfArguments(const std::string &msg) throw()
+        : FunctionException("invalid number of arguments for function: " + msg) { }
 };
 
 
@@ -73,10 +75,28 @@ struct InvalidNumberOfArguments : public FunctionException {
  * Exception thrown when function that does not exist was called.
  */
 struct NoSuchFunction : public FunctionException {
-	/** Constructos exception. */
-	NoSuchFunction() throw() : FunctionException("no such function") { }
+	/** Constructors exception. */
+    NoSuchFunction(const std::string &msg) throw()
+        : FunctionException("no such function: " + msg) {}
 };
 
+/**
+ * Exception thrown when function that is defined by user has same
+ * name as bulit-in function.
+ */
+struct BuiltInFunctionAmbiguity : public FunctionException {
+	/** Constructors exception. */
+	BuiltInFunctionAmbiguity(const std::string &msg) throw()
+        : FunctionException("ambiguity with built-in function: " + msg) {}
+};
+
+/**
+ * Exception thrown when expression is divided by 0.
+ */
+struct DivideByZeroException : public FunctionException {
+    /** Constructors exception. */
+    DivideByZeroException() throw() : FunctionException("divide by zero is not allowed") { }
+};
 
 }
 

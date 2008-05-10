@@ -1,10 +1,6 @@
 /** \file
  * Expression method definitions.
-<<<<<<< expression.cpp
- * $Id: expression.cpp,v 1.8 2008/05/10 10:05:26 kuba Exp $
-=======
- * $Id: expression.cpp,v 1.8 2008/05/10 10:05:26 kuba Exp $
->>>>>>> 1.7
+ * $Id: expression.cpp,v 1.9 2008/05/10 10:07:07 kuba Exp $
  */
 
 #include "config.hpp"

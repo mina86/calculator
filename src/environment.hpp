@@ -1,6 +1,6 @@
 /** \file
  * Enviroment declaration.
- * $Id: environment.hpp,v 1.7 2008/04/21 10:12:03 mina86 Exp $
+ * $Id: environment.hpp,v 1.8 2008/05/10 10:05:26 kuba Exp $
  */
 #ifndef H_ENVIRONMENT_HPP
 #define H_ENVIRONMENT_HPP
@@ -43,6 +43,14 @@ struct Environment {
 	/** An empty virtual destructor. */
 	virtual ~Environment();
 
+	/**
+	 * Executes evaluation on given expression.
+	 * \param expr expression to evaluate.
+	 * \param verbose if set true, calls instruction().
+	 * \return expression's result.
+	 */
+	virtual void execute(const Expression *expr, const bool &verbose);
+	
 	/**
 	 * Prints error message.
 	 * \param pos position when error occured.
@@ -118,16 +126,37 @@ struct Environment {
 	/** Returns functions map. */
 	const Functions &functions() const { return _functions; }
 
+	/** Returns user functions map. */
+	Functions &userFunctions() { return _userFunctions; }
+
+	/** Returns user functions map. */
+	const Functions &userFunctions() const { return _userFunctions; }
+	
 	/**
 	 * Returns function with given name or 0 if it does not exist.
 	 * \param name function's name.
 	 */
 	const Function *getFunction(const std::string &name) const {
 		Functions::const_iterator it = functions().find(name);
-		return it == functions().end() ? 0 : it->second;
+		if(it != functions().end()) return it->second;
+		it = userFunctions().find(name);
+		return it == userFunctions().end() ? 0 : it->second;
 	}
 
-
+	/** Method adds new user function definition. If function is defined,
+	 *  it is replaced by new definition.
+	 *  \param name function's name.
+	 *  \param func new function object.
+	 */
+	void addUserFunction(const std::string &name, Function *func) {
+		if( functions().count(name) == 0 ) {
+			if(userFunctions().count(name)) delete userFunctions()[ name ];
+			userFunctions()[ name ] = func;
+		}
+		else /* FIXME: add throwing exception instead of printing an error */
+			error( BuiltInFunctionAmbiguity(name).what() );
+	}
+		
 private:
 	/** Execution stack. */
 	Stack _stack;
@@ -135,6 +164,8 @@ private:
 	Variables _constants;
 	/** Pointers to functions. */
 	Functions _functions;
+	/** Pointers to user functions */
+	Functions _userFunctions;
 
 
 	/**

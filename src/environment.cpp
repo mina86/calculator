@@ -1,6 +1,6 @@
 /** \file
  * Enviroment defintion.
- * $Id: environment.cpp,v 1.4 2008/04/21 08:25:34 mina86 Exp $
+ * $Id: environment.cpp,v 1.5 2008/05/10 10:05:26 kuba Exp $
  */
 #include "config.hpp"
 
@@ -20,6 +20,18 @@ Environment::~Environment() {
 	while (it != end) {
 		it->second->free();
 		++it;
+	}
+}
+
+void Environment::execute(const Expression *expr, const bool &verbose) {
+	try {
+		double result = expr->execute(*this);
+		if (verbose) {
+			instruction(result);
+		}
+	}
+	catch(ExpressionException &e) {
+		error( e.what() );
 	}
 }
 
