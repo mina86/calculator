@@ -1,6 +1,10 @@
 /** \file
  * Expression method definitions.
- * $Id: expression.cpp,v 1.7 2008/05/07 16:19:59 mina86 Exp $
+<<<<<<< expression.cpp
+ * $Id: expression.cpp,v 1.8 2008/05/10 10:05:26 kuba Exp $
+=======
+ * $Id: expression.cpp,v 1.8 2008/05/10 10:05:26 kuba Exp $
+>>>>>>> 1.7
  */
 
 #include "config.hpp"
@@ -100,7 +104,9 @@ real MulExpression::execute(Environment &env) const {
 }
 
 real DivExpression::execute(Environment &env) const {
-	return expr1->execute(env) / expr2->execute(env);
+    real sec = expr2->execute(env);
+    if(sec == 0.0) throw DivideByZeroException();
+	return expr1->execute(env) / sec;
 }
 
 real PowExpression::execute(Environment &env) const {
@@ -115,12 +121,14 @@ FunctionExpression::~FunctionExpression() {
 real FunctionExpression::execute(Environment &env) const {
 	const Function *func = env.getFunction(name);
 	if (!func) {
-		env.error("no such function: " + name);
+		//env.error("no such function: " + name);
+        throw NoSuchFunction(name);
 		return 0;
 	}
 
 	if (!func->argumentsCountOK(args->size())) {
-		env.error("invalid number of arguments for function: " + name);
+		//env.error("invalid number of arguments for function: " + name);
+        throw InvalidNumberOfArguments(name);
 		return 0;
 	}
 
