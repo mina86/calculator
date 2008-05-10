@@ -54,7 +54,7 @@ int yylex(yy::Parser::semantic_type *yylval,
 
 
 %token	<var.name>	ID
-%token	DEFINE	"define"
+%token		DEFINE		"define"
 %token	<num>	NUMBER
 %token		ADD_EQ		"+="
 %token		SUB_EQ		"-="
@@ -100,8 +100,9 @@ instruction
 	;
 
 define_instruction
-	: ID '(' formal_arguments ')' '=' assignment_expr	{
-		env.addUserFunction( *$1, new calc::UserFunction($6, * $3));
+	: ID '(' formal_arguments ')' '=' expression	{
+		env.addUserFunction(*$1, new calc::UserFunction($6, *$3));
+		$6 = 0;
 	}
 	;
 
@@ -111,13 +112,13 @@ formal_arguments
 	;
 
 non_empty_formal_arguments
-	: ID	{ 
-		calc::UserFunction::Names *args = new calc::UserFunction::Names();
-		args->push_back(*$1);
-		$$ = args; $1 = 0; }
+	: ID	{
+		$$ = new calc::UserFunction::Names();
+		$$->push_back(*$1);
+	}
 	| non_empty_formal_arguments ',' ID {
 		$$ = $1;
-		$$->push_back( $3 [0] );
+		$$->push_back(*$3);
 		$1 = 0;
 	}
 	;
