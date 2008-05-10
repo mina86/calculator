@@ -1,13 +1,13 @@
 /** \file
  * Exception definitions.
- * $Id: exceptions.hpp,v 1.6 2008/05/10 10:05:26 kuba Exp $
+ * $Id: exceptions.hpp,v 1.7 2008/05/10 19:17:00 kuba Exp $
  */
 #ifndef H_EXCEPTIONS_HPP
 #define H_EXCEPTIONS_HPP
 
 
 #include <stdexcept>
-
+#include <string>
 
 namespace calc {
 
