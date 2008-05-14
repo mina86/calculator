@@ -1,6 +1,6 @@
 /** \file
  * Enviroment declaration.
- * $Id: environment.hpp,v 1.9 2008/05/10 19:17:00 kuba Exp $
+ * $Id: environment.hpp,v 1.10 2008/05/14 09:03:38 mina86 Exp $
  */
 #ifndef H_ENVIRONMENT_HPP
 #define H_ENVIRONMENT_HPP
@@ -51,7 +51,7 @@ struct Environment {
 	 * \return expression's result.
 	 */
 	virtual void execute(const Expression *expr, const bool &verbose);
-	
+
 	/**
 	 * Prints error message.
 	 * \param pos position when error occured.
@@ -142,13 +142,13 @@ struct Environment {
 	 *  \param func new function object.
 	 */
 	void addUserFunction(const std::string &name, Function *func) {
-		if( functions().count(name) > 0 ) {
-			UserFunction *ftmp = dynamic_cast<UserFunction*>( functions()[name] );
-			if(ftmp) delete ftmp;
+		Function* &f = functions()[name];
+		if (f) {
+			f->free();
 		}
-		functions()[ name ] = func;
+		f = func;
 	}
-		
+
 private:
 	/** Execution stack. */
 	Stack _stack;
