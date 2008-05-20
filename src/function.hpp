@@ -1,6 +1,6 @@
 /** \file
  * Function class declaration.
- * $Id: function.hpp,v 1.7 2008/04/26 19:08:28 kuba Exp $
+ * $Id: function.hpp,v 1.8 2008/05/20 21:20:42 mina86 Exp $
  */
 #ifndef H_FUNCTION_HPP
 #define H_FUNCTION_HPP
@@ -37,7 +37,6 @@ struct Function {
 	 * Executes function in given environment.
 	 * \param env environment to run function in.
 	 * \param args array of function call arguments.
-	 * \param count number of arguments.
 	 * \return function's value.
 	 * \throw InvalidNumberOfArguments if wrong number of arguments
 	 *                                 was given.
@@ -50,7 +49,6 @@ struct Function {
 	 * Executes function in given environment.
 	 * \param env environment to run function in.
 	 * \param args array of function call arguments.
-	 * \param count number of arguments.
 	 * \return function's value.
 	 * \throw InvalidNumberOfArguments if wrong number of arguments
 	 *                                 was given.

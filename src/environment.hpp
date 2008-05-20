@@ -1,6 +1,6 @@
 /** \file
  * Enviroment declaration.
- * $Id: environment.hpp,v 1.10 2008/05/14 09:03:38 mina86 Exp $
+ * $Id: environment.hpp,v 1.11 2008/05/20 21:20:42 mina86 Exp $
  */
 #ifndef H_ENVIRONMENT_HPP
 #define H_ENVIRONMENT_HPP
@@ -45,12 +45,12 @@ struct Environment {
 	virtual ~Environment();
 
 	/**
-	 * Executes evaluation on given expression.
+	 * Executes expression on given expression.
 	 * \param expr expression to evaluate.
 	 * \param verbose if set true, calls instruction().
 	 * \return expression's result.
 	 */
-	virtual void execute(const Expression *expr, const bool &verbose);
+	void execute(const Expression *expr, bool verbose);
 
 	/**
 	 * Prints error message.
@@ -113,7 +113,6 @@ struct Environment {
 	 * \param expr expression to execute
 	 * \param scope initial variables in scope; this object will be
 	 *              deleted after function returns or throws exception.
-	 * \param names list of local variables names
 	 */
 	real executeInNewScope(Expression *expr, Variables *scope) {
 		NewScope local_scope(_stack, scope);

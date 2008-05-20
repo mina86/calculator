@@ -1,6 +1,6 @@
 /** \file
  * Enviroment defintion.
- * $Id: environment.cpp,v 1.5 2008/05/10 10:05:26 kuba Exp $
+ * $Id: environment.cpp,v 1.6 2008/05/20 21:20:42 mina86 Exp $
  */
 #include "config.hpp"
 
@@ -23,7 +23,7 @@ Environment::~Environment() {
 	}
 }
 
-void Environment::execute(const Expression *expr, const bool &verbose) {
+void Environment::execute(const Expression *expr, bool verbose) {
 	try {
 		double result = expr->execute(*this);
 		if (verbose) {
