@@ -394,8 +394,8 @@
  * w&nbsp;momencie wywo³ania funkcji, np.:
  *
  * <pre>define add1(x) = x + 1
- * add1(10)
- * <i>11</i></pre>
+ *add1(10)
+ *<i>11</i></pre>
  *
  * Backslash na koñcu linii powoduje "sklejenie" linii z&nbsp;nastêpn±
  * dziêki czemu definicje d³ugich funkcji mo¿na dzieliæ na czê¶ci.
@@ -403,10 +403,10 @@
  * znajduj±cych siê za nim, np.:
  *
  * <pre>define sqsump1(x, y) = z = x + y,
- * z^2 \
- * + 1
- * sqsump1(1,2)
- * <i>10</i></pre>
+ *z^2 \
+ *+ 1
+ *sqsump1(1,2)
+ *<i>10</i></pre>
  *
  * Przy ka¿dym wywo³aniu funkcji tworzona jest nowa przestrzeñ
  * zmiennych lokalnych dziêki czemu funkcje mog± stosowaæ przeró¿ne
@@ -414,21 +414,21 @@
  * np.:
  *
  * <pre>x = 10;
- * define foo() = x = 20, x + 1
- * define bar() = x = 20, x + $x
- * x
- * <i>10</i>
- * foo()
- * <i>21</i>
- * bar()
- * <i>30</i></pre>
+ *define foo() = x = 20, x + 1
+ *define bar() = x = 20, x + $x
+ *x
+ *<i>10</i>
+ *foo()
+ *<i>21</i>
+ *bar()
+ *<i>30</i></pre>
  *
  * Dziêki obecno¶ci operatora warunkowego mo¿na definiowaæ funkcje
  * rekurencyjne, np.:
  *
  * <pre>define fib(x) = x &gt;= 2 ? fib(x-1) + fib(x-2) : x
- * fib(10)
- * <i>55</i></pre>
+ *fib(10)
+ *<i>55</i></pre>
  *
  * Definicja ju¿ istniej±cej funkcji (równie¿ wbudowanej) powoduje
  * zamazanie dotychczasowej definicji na rzecz nowej.  Pozwala to
