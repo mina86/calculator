@@ -1,6 +1,6 @@
 /** \file
  * Wrapper around C mathematical functions.
- * $Id: math.hpp,v 1.6 2008/05/22 11:00:29 mina86 Exp $
+ * $Id: math.hpp,v 1.7 2008/05/22 13:44:09 mina86 Exp $
  */
 #ifndef H_MATH_HPP
 #define H_MATH_HPP
@@ -42,6 +42,9 @@ namespace m {
 	static inline long double sqrt (long double x) { return ::sqrtl (x); }
 	static inline long double exp  (long double x) { return ::expl  (x); }
 	static inline long double log  (long double x) { return ::logl  (x); }
+	static inline long double log  (long double x, long double y) {
+		return ::log(x) / ::log(y);
+	}
 	static inline long double log10(long double x) { return ::log10l(x); }
 
 
@@ -115,6 +118,9 @@ namespace m {
 	static inline double sqrt (double x) { return ::sqrt  (x); }
 	static inline double exp  (double x) { return ::exp   (x); }
 	static inline double log  (double x) { return ::log   (x); }
+	static inline double log  (double x, double y) {
+		return ::log(x) / ::log(y);
+	}
 	static inline double log10(double x) { return ::log10 (x); }
 
 	static inline double cos  (double x) { return ::cos   (x); }
