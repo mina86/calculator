@@ -626,29 +626,29 @@ int main(int argc, char **argv) {
 	/* Register functions */
 	{
 		calc::Environment::Functions &funcs = env->functions();
-		funcs["sqrt" ] = calc::Func_sqrt::get();
-		funcs["cbrt" ] = calc::Func_cbrt::get();
-		funcs["e"    ] = calc::Func_exp::get();
-		funcs["exp"  ] = calc::Func_exp::get();
-		funcs["log"  ] = calc::Func_log::get();
-		funcs["ln"   ] = calc::Func_log::get();
-		funcs["log10"] = calc::Func_log10::get();
-		funcs["log2" ] = calc::Func_log2::get();
-		funcs["cos"  ] = calc::Func_cos::get();
-		funcs["sin"  ] = calc::Func_sin::get();
-		funcs["tan"  ] = calc::Func_tan::get();
-		funcs["acos" ] = calc::Func_acos::get();
-		funcs["asin" ] = calc::Func_asin::get();
-		funcs["atan" ] = calc::Func_atan::get();
-		funcs["cosh" ] = calc::Func_cosh::get();
-		funcs["sinh" ] = calc::Func_sinh::get();
-		funcs["tanh" ] = calc::Func_tanh::get();
-		funcs["acosh"] = calc::Func_acosh::get();
-		funcs["asinh"] = calc::Func_asinh::get();
-		funcs["atanh"] = calc::Func_atanh::get();
-		funcs["min"  ] = calc::Func_min::get();
-		funcs["max"  ] = calc::Func_max::get();
-		funcs["avg"  ] = calc::Func_avg::get();
+		funcs["sqrt" ] = calc::builtin::sqrt::get();
+		funcs["cbrt" ] = calc::builtin::cbrt::get();
+		funcs["e"    ] = calc::builtin::exp::get();
+		funcs["exp"  ] = calc::builtin::exp::get();
+		funcs["log"  ] = calc::builtin::log::get();
+		funcs["ln"   ] = calc::builtin::log::get();
+		funcs["log10"] = calc::builtin::log10::get();
+		funcs["log2" ] = calc::builtin::log2::get();
+		funcs["cos"  ] = calc::builtin::cos::get();
+		funcs["sin"  ] = calc::builtin::sin::get();
+		funcs["tan"  ] = calc::builtin::tan::get();
+		funcs["acos" ] = calc::builtin::acos::get();
+		funcs["asin" ] = calc::builtin::asin::get();
+		funcs["atan" ] = calc::builtin::atan::get();
+		funcs["cosh" ] = calc::builtin::cosh::get();
+		funcs["sinh" ] = calc::builtin::sinh::get();
+		funcs["tanh" ] = calc::builtin::tanh::get();
+		funcs["acosh"] = calc::builtin::acosh::get();
+		funcs["asinh"] = calc::builtin::asinh::get();
+		funcs["atanh"] = calc::builtin::atanh::get();
+		funcs["min"  ] = calc::builtin::min::get();
+		funcs["max"  ] = calc::builtin::max::get();
+		funcs["avg"  ] = calc::builtin::avg::get();
 	}
 
 

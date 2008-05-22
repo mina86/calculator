@@ -1,6 +1,6 @@
 /** \file
  * Calculator functions implementation.
- * $Id: functions.cpp,v 1.5 2008/05/07 17:54:28 mina86 Exp $
+ * $Id: functions.cpp,v 1.6 2008/05/22 13:45:20 mina86 Exp $
  */
 #ifndef H_VARIABLES_HPP
 #define H_VARIABLES_HPP
@@ -12,75 +12,82 @@
 #include <vector>
 
 namespace calc {
-bool BuiltInFunction::argumentsCountOK(unsigned count) const {
-    return minArgs <= count && count <= maxArgs;
+
+namespace builtin {
+
+
+namespace _ {
+
+void Function::free() { }
+
+bool OneArgFunction::argumentsCountOK(unsigned count) const {
+	return count == 1;
 }
 
-void BuiltInFunction::free() { }
-
-
-#define CALC_FUNC_PASS(func) \
-	real Func_ ## func::execute(Environment &env, const Arguments &args)\
-		const {															\
-		(void)env; /* silence warning */								\
-		throwIfArgumentsCountNotOK(args.size());						\
-		return m::func(args[0]);										\
-	}
-
-CALC_FUNC_PASS(sqrt)
-CALC_FUNC_PASS(cbrt)
-CALC_FUNC_PASS(exp)
-
-real Func_log::execute(Environment &env, const Arguments &args) const {
-	(void)env;
-	switch (args.size()) {
-	case  1: return m::log(args[0]);
-	case  2: return m::log(args[0]) / m::log(args[1]);
-	default: throw InvalidNumberOfArguments();
-	}
+bool OneOrTwoArgFunction::argumentsCountOK(unsigned count) const {
+	return count == 1 || count == 2;
 }
 
-CALC_FUNC_PASS(log10)
-CALC_FUNC_PASS(log2)
-CALC_FUNC_PASS(cos)
-CALC_FUNC_PASS(sin)
-CALC_FUNC_PASS(tan)
-CALC_FUNC_PASS(acos)
-CALC_FUNC_PASS(asin)
-
-real Func_atan::execute( Environment &env, const Arguments &args ) const {
-	(void)env; /* silence warning */
-	switch (args.size()) {
-	case  1: return m::atan (args[0]);
-	case  2: return m::atan (args[0], args[1]);
-	default: throw InvalidNumberOfArguments();
-	}
+bool OneOrMoreArgFunction::argumentsCountOK(unsigned count) const {
+	return count >= 1;
 }
 
-CALC_FUNC_PASS(cosh)
-CALC_FUNC_PASS(sinh)
-CALC_FUNC_PASS(tanh)
-CALC_FUNC_PASS(acosh)
-CALC_FUNC_PASS(asinh)
-CALC_FUNC_PASS(atanh)
+}
 
-real Func_max::execute( Environment &env, const Arguments &args ) const {
-	(void)env; /* silence warning */
+
+/**
+ * Defines a virtual execute() method for class \a func which accepts
+ * one argument and calls \a m::func function.
+ */
+#define CALC_FUNC(func) \
+	real func::execute(Environment &env, const Arguments &args) const { \
+		(void)env; throwIfArgumentsCountNotOK(args.size()); \
+		return m::func(args[0]); \
+	}
+
+	CALC_FUNC(sqrt )
+	CALC_FUNC(cbrt )
+	CALC_FUNC(exp  )
+	CALC_FUNC(log10)
+	CALC_FUNC(log2 )
+	CALC_FUNC(cos  )
+	CALC_FUNC(sin  )
+	CALC_FUNC(tan  )
+	CALC_FUNC(cosh )
+	CALC_FUNC(sinh )
+	CALC_FUNC(tanh )
+	CALC_FUNC(acos )
+	CALC_FUNC(asin )
+	CALC_FUNC(acosh)
+	CALC_FUNC(asinh)
+	CALC_FUNC(atanh)
+
+#undef CALC_FUNC
+
+/**
+ * Defines a virtual execute() method for class \a func which accepts
+ * one or two arguments and calls \a m::func function.
+ */
+#define CALC_FUNC(func) \
+	real func::execute(Environment &env, const Arguments &args) const { \
+		(void)env; \
+		switch (args.size()) { \
+		case 1: return m::func(args[0]); \
+		case 2: return m::func(args[0], args[1]); \
+		default: throw InvalidNumberOfArguments(); \
+		} \
+	}
+
+	CALC_FUNC(log  )
+	CALC_FUNC(atan )
+
+#undef CALC_FUNC
+
+
+
+real min::execute(Environment &env, const Arguments &args) const {
 	Arguments::size_type size = args.size();
-	throwIfArgumentsCountNotOK(size);
-	const real *it = &args[0];
-	real val = *it;
-	while (--size) {
-		const real v = *++it;
-		if (v > val) val = v;
-	}
-	return val;
-}
-
-real Func_min::execute( Environment &env, const Arguments &args ) const {
-	(void)env; /* silence warning */
-	Arguments::size_type size = args.size();
-	throwIfArgumentsCountNotOK(size);
+	(void)env; throwIfArgumentsCountNotOK(size); \
 	const real *it = &args[0];
 	real val = *it;
 	while (--size) {
@@ -90,10 +97,21 @@ real Func_min::execute( Environment &env, const Arguments &args ) const {
 	return val;
 }
 
-real Func_avg::execute( Environment &env, const Arguments &args ) const {
-	(void)env; /* silence warning */
+real max::execute(Environment &env, const Arguments &args) const {
 	Arguments::size_type size = args.size();
-	throwIfArgumentsCountNotOK(size);
+	(void)env; throwIfArgumentsCountNotOK(size); \
+	const real *it = &args[0];
+	real val = *it;
+	while (--size) {
+		const real v = *++it;
+		if (v > val) val = v;
+	}
+	return val;
+}
+
+real avg::execute(Environment &env, const Arguments &args) const {
+	Arguments::size_type size = args.size();
+	(void)env; throwIfArgumentsCountNotOK(size); \
 	const real *it = &args[0];
 	real val = *it;
 	while (--size) {
@@ -102,6 +120,8 @@ real Func_avg::execute( Environment &env, const Arguments &args ) const {
 	return val / args.size();
 }
 
+
+}
 
 }
 #endif
