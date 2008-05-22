@@ -1,6 +1,6 @@
 /** \file
  * Wrapper around C mathematical functions.
- * $Id: math.hpp,v 1.4 2008/05/22 08:06:44 mina86 Exp $
+ * $Id: math.hpp,v 1.5 2008/05/22 08:52:25 mina86 Exp $
  */
 #ifndef H_MATH_HPP
 #define H_MATH_HPP
@@ -59,12 +59,18 @@ namespace m {
 	static inline long double sinh (long double x) { return ::sinhl (x); }
 	static inline long double tanh (long double x) { return ::tanhl (x); }
 
-#	ifdef _WIN32
+#  ifdef _WIN32
 	static inline long double cbrt (long double x) {
 		return ::powl (x, 1.0/3.0);
 	}
 	static inline long double log2 (long double x) {
+#    if defined M_LN2l
+		return ::logl(x)/M_LN2l;
+#    elif defined M_LN2
+		return ::logl(x)/M_LN2;
+#    else
 		return ::logl(x)/::logl(2.0);
+#    endif
 	}
 
 	static inline long double acosh(long double x) {
@@ -77,10 +83,10 @@ namespace m {
 		return boost::math::atanh<long double>(x).real();
 	}
 
-	static inline long double ator (const char *str) {
-		return strtod(str, 0);
+	static inline long double ator (const char *str, char **end = 0) {
+		return strtod(str, end);
 	}
-#	else
+#  else
 	static inline long double cbrt (long double x) { return ::cbrtl (x); }
 	static inline long double log2 (long double x) { return ::log2l (x); }
 
@@ -88,17 +94,19 @@ namespace m {
 	static inline long double asinh(long double x) { return ::asinhl(x); }
 	static inline long double atanh(long double x) { return ::atanhl(x); }
 
-	static inline long double ator (const char *str) {
-		return strtold(str, 0);
+	static inline long double ator (const char *str, char **end = 0) {
+		return strtold(str, end);
 	}
-#	endif
+#  endif
 #else
 
 #  if HAVE_LONG_DOUBLE
 	static inline long double abs  (long double x) { return x < 0 ? -x : x; }
 #  endif
 
-	static inline double ator (const char *str) { return strtod(str, 0); }
+	static inline double ator (const char *str, char **end = 0) {
+		return strtod(str, end);
+	}
 #endif
 
 	static inline double abs  (double x) { return ::fabs  (x); }
@@ -121,9 +129,15 @@ namespace m {
 	static inline double sinh (double x) { return ::sinh  (x); }
 	static inline double tanh (double x) { return ::tanh  (x); }
 
-#	ifdef _WIN32
+#  ifdef _WIN32
 	static inline double cbrt (double x) { return ::pow (x, 1.0/3.0); }
-	static inline double log2 (double x) { return ::log(x)/::log(2.0); }
+	static inline double log2 (double x) {
+#    if defined M_LN2
+		return ::log(x)/M_LN2;
+#    else
+		return ::log(x)/::logl(2.0);
+#    endif
+	}
 
 	static inline double acosh(double x) {
 		return boost::math::acosh<double>(x).real();
@@ -134,14 +148,14 @@ namespace m {
 	inline double atanh(double x) {
 		return boost::math::atanh<double>(x).real();
 	}
-#	else
+#  else
 	static inline double cbrt (double x) { return ::cbrt (x); }
 	static inline double log2 (double x) { return ::log2 (x); }
 
 	static inline double acosh(double x) { return ::acosh (x); }
 	static inline double asinh(double x) { return ::asinh (x); }
 	static inline double atanh(double x) { return ::atanh (x); }
-#	endif
+#  endif
 }
 
 }

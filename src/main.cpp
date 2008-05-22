@@ -1,5 +1,6 @@
 #include "config.hpp"
 
+#include <errno.h>
 #include <math.h>
 
 #include <iostream>
@@ -7,6 +8,7 @@
 #include "functions.hpp"
 #include "environment.hpp"
 #include "file-lexer.hpp"
+#include "math.hpp"
 
 
 
@@ -40,6 +42,15 @@
  * Dodanie prze³±cznika <tt>-q</tt> powoduje, i¿ po zakoñczeniu
  * program nie wypisze listy zmiennych zdefiniowanych
  * w&nbsp;programie.
+ *
+ * Prze³±cznikiem <tt>-P</tt> mo¿na ustawiæ dok³adno¶æ z jak±
+ * operatory porównania bêd± porównywaæ zmienne.  Domy¶lnie
+ * dok³adno¶ci± jest zero, tzn. dwie warto¶ci "s± sobie równe" je¿eli
+ * "s± sobie równe".  Je¿eli po opcji <tt>-P</tt> poda siê liczbê
+ * rzeczywist± warto¶ci bêd± uznawane za równe je¿eli ich warto¶æ
+ * bezwezglêdna bêdzie niewiêksza ni¿ podana warto¶æ (prze³±cznik ten
+ * wp³ywa równie¿ na operatory relacji, ale nie wp³ywa na konwersje
+ * liczby na warto¶c logiczn±).
  *
  * Informacje o&nbsp;opcjach oraz dzia³aniu aplikacji mo¿na uzyskaæ
  * uruchamiaj±c go z&nbsp;opcj± <tt>-h</tt>.
@@ -162,8 +173,11 @@
  * i&nbsp;wówczas zostanie potraktowana jako warto¶æ logiczna prawda.
  * Z&nbsp;tego powodu, aby zamieniæ wynik wyra¿enia na warto¶æ
  * logiczn± nale¿y skorzystaæ z funkcji <tt>abs()</tt> i&nbsp;porównaæ
- * jej wynik z&nbsp;bardzo ma³± liczb± dodatni±.  Operatory logiczne
- * zwracaj± 1.0 w&nbsp;przypadku prawdy i 0.0 w przypadku fa³szu.
+ * jej wynik z&nbsp;bardzo ma³± liczb± dodatni± lub prze³±cznika
+ * <tt>-P</tt> i operatora porównania (Uwaga! Prze³±cznk <tt>-P</tt>
+ * nie wp³ywa na to jakie warto¶ci uznawane s± za prawdziwe!).
+ * Operatory logiczne zwracaj± 1.0 w&nbsp;przypadku prawdy i 0.0
+ * w przypadku fa³szu.
  *
  * <h4>Zmienne i&nbsp;sta³e</h4>
  *
@@ -479,6 +493,12 @@
  * instruction.
  */
 struct VerboseEnvironment : public calc::Environment {
+	/**
+	 * Constructor.
+	 * \param p comparision opeartors precision.
+	 */
+	explicit VerboseEnvironment(calc::real p) : Environment(p) { }
+
 	void instruction(calc::real value) {
 		std::cout << value << '\n';
 	}
@@ -499,6 +519,7 @@ static void listOp();
 
 int main(int argc, char **argv) {
 	bool verbose = false, quiet = false, finish = false;
+	calc::real precision = 0;
 
 	int i = 1;
 	for (; i < argc && argv[i][0] == '-' && argv[i][1]; ++i) {
@@ -516,6 +537,28 @@ int main(int argc, char **argv) {
 			case 'f': finish  = true; listFunc();   break;
 			case 'c': finish  = true; listConst();  break;
 			case 'o': finish  = true; listOp();     break;
+
+			case 'P': {
+				if (*++ch) {
+					/* nothing */
+				} else if (++i < argc) {
+					ch = argv[i];
+				} else {
+					std::cerr << "precision expected after P\n";
+					return 1;
+				}
+
+				char *end;
+				errno = 0;
+				precision = calc::m::ator(ch, &end);
+				if (precision < 0 || errno || *end) {
+					std::cerr << ch << ": invalid precision\n";
+					return 1;
+				}
+				ch = end - 1;
+			}
+				break;
+
 			default:
 				std::cerr << "invalid option: " << *ch << '\n';
 				return 1;
@@ -524,7 +567,7 @@ int main(int argc, char **argv) {
 	}
 
 	if (i < argc) {
-		std::cerr << "enexpected argument: " << argv[i] << '\n';
+		std::cerr << "unexpected argument: " << argv[i] << '\n';
 		return 1;
 	}
 
@@ -534,8 +577,9 @@ int main(int argc, char **argv) {
 
 
 	/** Create environment. */
-	calc::Environment *env =
-		verbose ? new VerboseEnvironment() : new calc::Environment();
+	calc::Environment *env = verbose
+		? new VerboseEnvironment(precision)
+		: new calc::Environment(precision);
 
 
 	/* Register constants */
@@ -662,13 +706,14 @@ int main(int argc, char **argv) {
 static void help() {
 	std::cout <<
 		"usage: ./calc [-vqhsofc]\n"
-		"  -v  print result of each instruction terminated with a new line\n"
-		"  -q  do not print values of all global variables at the end\n"
-		"  -h  print this help screen and exit\n"
-		"  -s  print syntax\n"
-		"  -o  print list of oeprators and exit\n"
-		"  -f  print list of built-in functions and exit\n"
-		"  -c  print list of built-in constants and exit\n";
+		"  -v     print result of each instruction terminated with a new line\n"
+		"  -q     do not print values of all global variables at the end\n"
+		"  -P<p>  set arithemtic comparison precision to <p>\n"
+		"  -h     print this help screen and exit\n"
+		"  -s     print syntax\n"
+		"  -o     print list of oeprators and exit\n"
+		"  -f     print list of built-in functions and exit\n"
+		"  -c     print list of built-in constants and exit\n";
 }
 
 

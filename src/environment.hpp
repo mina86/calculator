@@ -1,6 +1,6 @@
 /** \file
  * Enviroment declaration.
- * $Id: environment.hpp,v 1.11 2008/05/20 21:20:42 mina86 Exp $
+ * $Id: environment.hpp,v 1.12 2008/05/22 08:52:25 mina86 Exp $
  */
 #ifndef H_ENVIRONMENT_HPP
 #define H_ENVIRONMENT_HPP
@@ -37,8 +37,12 @@ struct Environment {
 	typedef std::vector<Variables*> Stack;
 
 
-	/** Default constructor. */
-	Environment() : global_scope(_stack) { }
+	/**
+	 * Constructor.
+	 * \param p precision for comparison operators.
+	 */
+	explicit Environment(real p = 0)
+		: _precision(p), global_scope(_stack) { }
 
 
 	/** An empty virtual destructor. */
@@ -148,6 +152,11 @@ struct Environment {
 		f = func;
 	}
 
+
+	/** Returns precision for comparison operators. */
+	real precision() const { return _precision; }
+
+
 private:
 	/** Execution stack. */
 	Stack _stack;
@@ -155,6 +164,8 @@ private:
 	Variables _constants;
 	/** Pointers to functions. */
 	Functions _functions;
+	/** Precision for comparison oeprators. */
+	real _precision;
 
 
 	/**

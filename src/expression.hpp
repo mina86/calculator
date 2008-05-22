@@ -1,6 +1,6 @@
 /** \file
  * Expression declarations.
- * $Id: expression.hpp,v 1.8 2008/05/22 08:00:59 mina86 Exp $
+ * $Id: expression.hpp,v 1.9 2008/05/22 08:52:25 mina86 Exp $
  */
 #ifndef H_EXPRESSION_HPP
 #define H_EXPRESSION_HPP
@@ -505,11 +505,24 @@ struct EqualExpression : public AtLeast2ArgBooleanExpression {
 	 * \param e1 first operand.
 	 * \param e2 second operand.
 	 * \param _t if \c false result of expression will be negated
+	 * \param p comparison precision
 	 */
-	EqualExpression(Expression *e1, Expression *e2, bool _t = true)
-		: AtLeast2ArgBooleanExpression(e1, e2, _t) { }
+	EqualExpression(Expression *e1, Expression *e2, bool _t = true,
+	                real p = 0)
+		: AtLeast2ArgBooleanExpression(e1, e2, _t), precision(p) { }
+
+	/**
+	 * Constructor.
+	 * \param e1 first operand.
+	 * \param e2 second operand.
+	 * \param p comparison precision
+	 */
+	EqualExpression(Expression *e1, Expression *e2, real p)
+		: AtLeast2ArgBooleanExpression(e1, e2, true), precision(p) { }
 
 protected:
+	real precision; /**< Comparison precision. */
+
 	virtual bool _boolean(Environment &env) const;
 };
 
@@ -530,11 +543,24 @@ struct GreaterExpression : public AtLeast2ArgBooleanExpression {
 	 * \param e1 first operand.
 	 * \param e2 second operand.
 	 * \param _t if \c false result of expression will be negated
+	 * \param p comparison precision
 	 */
-	GreaterExpression(Expression *e1, Expression *e2, bool _t = true)
-		: AtLeast2ArgBooleanExpression(e1, e2, _t) { }
+	GreaterExpression(Expression *e1, Expression *e2, bool _t = true,
+	                  real p = 0)
+		: AtLeast2ArgBooleanExpression(e1, e2, _t), precision(p) { }
+
+	/**
+	 * Constructor.
+	 * \param e1 first operand.
+	 * \param e2 second operand.
+	 * \param p comparison precision
+	 */
+	GreaterExpression(Expression *e1, Expression *e2, real p)
+		: AtLeast2ArgBooleanExpression(e1, e2, true), precision(p) { }
 
 protected:
+	real precision; /**< Comparison precision. */
+
 	virtual bool _boolean(Environment &env) const;
 };
 

@@ -1,6 +1,6 @@
 /** \file
  * Exception definitions.
- * $Id: exceptions.hpp,v 1.7 2008/05/10 19:17:00 kuba Exp $
+ * $Id: exceptions.hpp,v 1.8 2008/05/22 08:52:25 mina86 Exp $
  */
 #ifndef H_EXCEPTIONS_HPP
 #define H_EXCEPTIONS_HPP
@@ -88,14 +88,6 @@ struct BuiltInFunctionAmbiguity : public FunctionException {
 	/** Constructors exception. */
 	BuiltInFunctionAmbiguity(const std::string &msg) throw()
         : FunctionException("ambiguity with built-in function: " + msg) {}
-};
-
-/**
- * Exception thrown when expression is divided by 0.
- */
-struct DivideByZeroException : public FunctionException {
-    /** Constructors exception. */
-    DivideByZeroException() throw() : FunctionException("divide by zero is not allowed") { }
 };
 
 }

@@ -204,30 +204,30 @@ logic_and_expr
 
 cmp_expr: rel_expr			{ $$ = $1; $1 = 0; }
 	| cmp_expr "==" rel_expr	{
-		$$ = new calc::EqualExpression($1, $3);
+		$$ = new calc::EqualExpression($1, $3, env.precision());
 		$1 = $3 = 0;
 	}
 	| cmp_expr "!=" rel_expr	{
-		$$ = new calc::EqualExpression($1, $3, false);
+		$$ = new calc::EqualExpression($1, $3, false,env.precision());
 		$1 = $3 = 0;
 	}
 	;
 
 rel_expr: additive_expr			{ $$ = $1; $1 = 0; }
 	| rel_expr '>'    additive_expr	{
-		$$ = new calc::GreaterExpression($1, $3);
+		$$ = new calc::GreaterExpression($1, $3, env.precision());
 		$1 = $3 = 0;
 	}
 	| rel_expr '<'    additive_expr	{
-		$$ = new calc::GreaterExpression($3, $1);
+		$$ = new calc::GreaterExpression($3, $1, env.precision());
 		$1 = $3 = 0;
 	}
 	| rel_expr "<="    additive_expr	{
-		$$ = new calc::GreaterExpression($1, $3, false);
+		$$ = new calc::GreaterExpression($1, $3, false, env.precision());
 		$1 = $3 = 0;
 	}
 	| rel_expr ">="    additive_expr	{
-		$$ = new calc::GreaterExpression($3, $1, false);
+		$$ = new calc::GreaterExpression($3, $1, false, env.precision());
 		$1 = $3 = 0;
 	}
 	;

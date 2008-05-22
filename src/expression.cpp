@@ -1,6 +1,6 @@
 /** \file
  * Expression method definitions.
- * $Id: expression.cpp,v 1.9 2008/05/10 10:07:07 kuba Exp $
+ * $Id: expression.cpp,v 1.10 2008/05/22 08:52:25 mina86 Exp $
  */
 
 #include "config.hpp"
@@ -100,9 +100,7 @@ real MulExpression::execute(Environment &env) const {
 }
 
 real DivExpression::execute(Environment &env) const {
-    real sec = expr2->execute(env);
-    if(sec == 0.0) throw DivideByZeroException();
-	return expr1->execute(env) / sec;
+	return expr1->execute(env) / expr2->execute(env);
 }
 
 real PowExpression::execute(Environment &env) const {
@@ -117,14 +115,12 @@ FunctionExpression::~FunctionExpression() {
 real FunctionExpression::execute(Environment &env) const {
 	const Function *func = env.getFunction(name);
 	if (!func) {
-		//env.error("no such function: " + name);
-        throw NoSuchFunction(name);
+		throw NoSuchFunction(name);
 		return 0;
 	}
 
 	if (!func->argumentsCountOK(args->size())) {
-		//env.error("invalid number of arguments for function: " + name);
-        throw InvalidNumberOfArguments(name);
+		throw InvalidNumberOfArguments(name);
 		return 0;
 	}
 
@@ -162,13 +158,11 @@ AtLeast2ArgBooleanExpression::~AtLeast2ArgBooleanExpression() {
 
 
 bool EqualExpression::_boolean(Environment &env) const {
-	/* The next line may produce "comparing floating point with == or
-	   != is unsafe" warning; ignore it, we know that. */
-	return expr1->execute(env) == expr2->execute(env);
+	return m::abs(expr1->execute(env) - expr2->execute(env)) <= precision;
 }
 
 bool GreaterExpression::_boolean(Environment &env) const {
-	return expr1->execute(env) > expr2->execute(env);
+	return expr1->execute(env) > expr2->execute(env) + precision;
 }
 
 
