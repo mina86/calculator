@@ -1,6 +1,10 @@
+
+
+
+
 ##                               -*- Mode: org; indent-tabs-mode: nil -*-
 ## TODO List
-## $Id: TODO,v 1.9 2008/05/07 17:30:44 mina86 Exp $
+## $Id: TODO,v 1.10 2008/05/22 07:59:39 mina86 Exp $
 ##
 
 Liczba w nawiasach kwadratowych oznacza piorytet -- [0] najwy�szy, [5]
@@ -93,7 +97,7 @@ najni�szy.  [DONE] oznacza, i� rzecz zosta�a zroiona.
    Prze��cznik ten powinien spowodowa�, �e program wypisz� list�
    sta�ych (wraz z warto�cami) i zako�czy dzia�anie.
 
-* [0] Obs�uga wyj�tk�w rzucanych przez Expression::execute()
+* [DONE} Obs�uga wyj�tk�w rzucanych przez Expression::execute()
 
   Obecnie wyj�tki rzucane przez Expression::execute() nie s�
   obs�ugiwane.  Nale�y doda� t� obs�ug� do pliku parser.y.  Je�eli
@@ -103,13 +107,13 @@ najni�szy.  [DONE] oznacza, i� rzecz zosta�a zroiona.
   wyra�enia, kt�re rzuci�o wyj�tek zosta�y wykonanie czy nie nie jest
   okre�lone).
 
-** [0] B��dne wo�ania funkcji powinny rzuca� wyj�tek
+** [DONE] B��dne wo�ania funkcji powinny rzuca� wyj�tek
 
-   Obecnie, FunctionExpression::exception() zamiast rzuca� wyj�tek,
+   Obecnie, FunctionExpression::execute() zamiast rzuca� wyj�tek,
    gdy jest b��dna liczba argument�w lub nieistniej�ca funkcja
    wypisuje komunikat.  Nalezy to zmieni�.
 
-* [0] Definiowanie funkcji
+* [DONE] Definiowanie funkcji
 
   Nale�y doda� mo�liwo�� definiowania funkcji.  Og�lna sk�adnia b�dzie
   wygl�da� jako� tak:
@@ -236,6 +240,6 @@ najni�szy.  [DONE] oznacza, i� rzecz zosta�a zroiona.
   kopi� std::string to w odniesieniu do ci�g�w znak�w zachowanie takie
   mo�e by� ju� b��dne).
 
-* [2] Uzupe�ni� dokumentacj�
+* [DONE] Uzupe�ni� dokumentacj�
 
   Na koniec nale�y tak�e uzupe�ni� dokumentacj� w plikach �r�d�owych.
