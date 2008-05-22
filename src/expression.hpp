@@ -1,6 +1,6 @@
 /** \file
  * Expression declarations.
- * $Id: expression.hpp,v 1.9 2008/05/22 08:52:25 mina86 Exp $
+ * $Id: expression.hpp,v 1.10 2008/05/22 09:47:37 mina86 Exp $
  */
 #ifndef H_EXPRESSION_HPP
 #define H_EXPRESSION_HPP
@@ -511,19 +511,16 @@ struct EqualExpression : public AtLeast2ArgBooleanExpression {
 	                real p = 0)
 		: AtLeast2ArgBooleanExpression(e1, e2, _t), precision(p) { }
 
-	/**
-	 * Constructor.
-	 * \param e1 first operand.
-	 * \param e2 second operand.
-	 * \param p comparison precision
-	 */
-	EqualExpression(Expression *e1, Expression *e2, real p)
-		: AtLeast2ArgBooleanExpression(e1, e2, true), precision(p) { }
+	/** \copydoc EqualExpression(Expression*, Expression*, bool, real) */
+	EqualExpression(Expression *e1, Expression *e2, real p, bool _t = true)
+		: AtLeast2ArgBooleanExpression(e1, e2, _t), precision(p) { }
 
 protected:
-	real precision; /**< Comparison precision. */
-
 	virtual bool _boolean(Environment &env) const;
+
+private:
+	/** Comparison precision. */
+	const real precision;
 };
 
 
@@ -549,19 +546,30 @@ struct GreaterExpression : public AtLeast2ArgBooleanExpression {
 	                  real p = 0)
 		: AtLeast2ArgBooleanExpression(e1, e2, _t), precision(p) { }
 
+	/** \copydoc GreaterExpression(Expression*, Expression*, bool, real) */
+	GreaterExpression(Expression *e1, Expression *e2, real p,
+	                  bool _t = true)
+		: AtLeast2ArgBooleanExpression(e1, e2, _t), precision(p) { }
+
 	/**
 	 * Constructor.
 	 * \param e1 first operand.
 	 * \param e2 second operand.
+	 * \param sw whether to switch first and second operand.
+	 * \param _t if \c false result of expression will be negated
 	 * \param p comparison precision
 	 */
-	GreaterExpression(Expression *e1, Expression *e2, real p)
-		: AtLeast2ArgBooleanExpression(e1, e2, true), precision(p) { }
+	GreaterExpression(Expression *e1, Expression *e2, bool sw, bool _t,
+	                  real p = 0)
+		: AtLeast2ArgBooleanExpression(sw ? e2 : e1, sw ? e1 : e2, _t),
+		  precision(p) { }
 
 protected:
-	real precision; /**< Comparison precision. */
-
 	virtual bool _boolean(Environment &env) const;
+
+private:
+	/** Comparison precision. */
+	const real precision;
 };
 
 

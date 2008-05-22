@@ -1,6 +1,6 @@
 /** \file
  * Lexer reading from FILE stream implementation.
- * $Id: file-lexer.cpp,v 1.10 2008/05/10 10:05:26 kuba Exp $
+ * $Id: file-lexer.cpp,v 1.11 2008/05/22 09:47:37 mina86 Exp $
  */
 #include "math.hpp"
 #include "exceptions.hpp"
@@ -80,9 +80,9 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 		if (id == "inf") {
 			value.num = std::numeric_limits<calc::real>::infinity();
 			return yy::Parser::token::NUMBER;
+		} else if (id == "define") {
+			return yy::Parser::token::DEFINE;
 		} else {
-			if(id == "define")
-				return yy::Parser::token::DEFINE;
 			value.var.name = new std::string(id);
 			return yy::Parser::token::ID;
 		}
@@ -91,30 +91,76 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 	/* ^, ^= or ^^ */
 	if (ch == '^') {
 		switch (ch = getchar()) {
-		case '=': return yy::Parser::token::POW_EQ;
-		case '^': return yy::Parser::token::XOR;
-		default: ungetchar(ch); return '^';
+		case '=': /* ^= */
+			value.setop = yy::Parser::semantic_type::SET_POW;
+			return yy::Parser::token::SET_OP;
+		case '^': /* ^^ */
+			return yy::Parser::token::XOR;
+		default:
+			ungetchar(ch);
+			return '^';
+		}
+	}
+
+	/* >, <, >= or <= */
+	if (ch == '>' || ch == '<') {
+		int c = getchar();
+		if (c != '=') {
+			ungetchar(c);
+		} else {
+			ch <<= 8;
+		}
+
+		switch (ch) {
+		case '>' << 8: /* >= */
+			value.flags = yy::REL_NOT | yy::REL_SWITCH;
+			return yy::Parser::token::REL_OP;
+		case '<' << 8: /* <= */
+			value.flags = yy::REL_NOT;
+			return yy::Parser::token::REL_OP;
+		case '<':
+			value.flags = yy::REL_SWITCH;
+			return yy::Parser::token::REL_OP;
+		case '>': /* > */
+			value.flags = 0;
+			return yy::Parser::token::REL_OP;
+		default:
+			assert(0);
 		}
 	}
 
 	/* #= maybe? */
 	if (ch == '+' || ch == '-' || ch == '*' || ch == '/' ||
-	    ch == '>' || ch == '<' || ch == '=' || ch == '!') {
+	    ch == '=' || ch == '!') {
 		int c = getchar();
 		if (c != '=') {
 			ungetchar(c);
 			return ch;
 		}
+
 		switch (ch) {
-		case '+': return yy::Parser::token::ADD_EQ;
-		case '-': return yy::Parser::token::SUB_EQ;
-		case '*': return yy::Parser::token::MUL_EQ;
-		case '/': return yy::Parser::token::DIV_EQ;
-		case '^':
-		case '>': return yy::Parser::token::GE;
-		case '<': return yy::Parser::token::LE;
-		case '=': return yy::Parser::token::EQ;
-		case '!': return yy::Parser::token::NE;
+		case '+':
+			value.setop = yy::Parser::semantic_type::SET_ADD;
+			return yy::Parser::token::SET_OP;
+		case '-':
+			value.setop = yy::Parser::semantic_type::SET_SUB;
+			return yy::Parser::token::SET_OP;
+		case '*':
+			value.setop = yy::Parser::semantic_type::SET_MUL;
+			return yy::Parser::token::SET_OP;
+		case '/':
+			value.setop = yy::Parser::semantic_type::SET_DIV;
+			return yy::Parser::token::SET_OP;
+
+		case '=': /* == */
+			value.flags = 0;
+			return yy::Parser::token::CMP_OP;
+		case '!': /* != */
+			value.flags = yy::CMP_NOT;
+			return yy::Parser::token::CMP_OP;
+
+		default:
+			assert(0);
 		}
 	}
 

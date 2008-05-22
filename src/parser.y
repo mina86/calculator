@@ -16,6 +16,17 @@ namespace calc {
 	struct Lexer;
 	struct Environment;
 }
+
+namespace yy {
+enum {
+	REL_SWITCH = 1,
+	REL_NOT    = 2,
+	CMP_NOT    = 2,
+	REL_FUZZY  = 4,
+	CMP_FUZZY  = 4
+};
+}
+
 %}
 
 %union {
@@ -27,6 +38,10 @@ namespace calc {
 	calc::Expression                    *expr;
 	/** Function parameters */
 	calc::UserFunction::Names           *params;
+	/** Flags used with relation and equal operator. */
+	unsigned                             flags;
+	/** An assignment operator type. */
+	enum { SET_ADD, SET_SUB, SET_MUL, SET_DIV, SET_POW } setop;
 };
 
 %parse-param { calc::Lexer       &lexer }
@@ -56,15 +71,9 @@ int yylex(yy::Parser::semantic_type *yylval,
 %token	<var.name>	ID
 %token		DEFINE		"define"
 %token	<num>	NUMBER
-%token		ADD_EQ		"+="
-%token		SUB_EQ		"-="
-%token		MUL_EQ		"*="
-%token		DIV_EQ		"/="
-%token		POW_EQ		"^="
-%token		GE		">="
-%token		LE		"<="
-%token		NE		"!="
-%token		EQ		"=="
+%token	<setop>	SET_OP		"#="
+%token	<flags>	REL_OP
+%token	<flags>	CMP_OP
 %token		OR		"||"
 %token		AND		"&&"
 %token		XOR		"^^"
@@ -137,33 +146,20 @@ assignment_expr
 		$$ = $1.setExpression($3);
 		$3 = 0;
 	}
-	| var "+=" assignment_expr	{
-		calc::Expression *expr;
-		expr = new calc::AddExpression($1.getExpression(), $3);
-		$$ = $1.setExpression(expr);
-		$3 = 0;
-	}
-	| var "-=" assignment_expr	{
-		calc::Expression *expr;
-		expr = new calc::SubExpression($1.getExpression(), $3);
-		$$ = $1.setExpression(expr);
-		$3 = 0;
-	}
-	| var "*=" assignment_expr	{
-		calc::Expression *expr;
-		expr = new calc::MulExpression($1.getExpression(), $3);
-		$$ = $1.setExpression(expr);
-		$3 = 0;
-	}
-	| var "/=" assignment_expr	{
-		calc::Expression *expr;
-		expr = new calc::DivExpression($1.getExpression(), $3);
-		$$ = $1.setExpression(expr);
-		$3 = 0;
-	}
-	| var "^=" assignment_expr	{
-		calc::Expression *expr;
-		expr = new calc::PowExpression($1.getExpression(), $3);
+	| var "#=" assignment_expr	{
+		calc::Expression *expr = $1.getExpression();
+		switch ($2) {
+		case semantic_type::SET_ADD: 
+			expr = new calc::AddExpression(expr, $3); break;
+		case semantic_type::SET_SUB: 
+			expr = new calc::SubExpression(expr, $3); break;
+		case semantic_type::SET_MUL: 
+			expr = new calc::MulExpression(expr, $3); break;
+		case semantic_type::SET_DIV: 
+			expr = new calc::DivExpression(expr, $3); break;
+		case semantic_type::SET_POW: 
+			expr = new calc::PowExpression(expr, $3); break;
+		}
 		$$ = $1.setExpression(expr);
 		$3 = 0;
 	}
@@ -203,31 +199,18 @@ logic_and_expr
 	;
 
 cmp_expr: rel_expr			{ $$ = $1; $1 = 0; }
-	| cmp_expr "==" rel_expr	{
-		$$ = new calc::EqualExpression($1, $3, env.precision());
-		$1 = $3 = 0;
-	}
-	| cmp_expr "!=" rel_expr	{
-		$$ = new calc::EqualExpression($1, $3, false,env.precision());
+	| cmp_expr CMP_OP rel_expr	{
+		$$ = new calc::EqualExpression($1, $3, !($2 & CMP_NOT),
+		                               env.precision());
 		$1 = $3 = 0;
 	}
 	;
 
 rel_expr: additive_expr			{ $$ = $1; $1 = 0; }
-	| rel_expr '>'    additive_expr	{
-		$$ = new calc::GreaterExpression($1, $3, env.precision());
-		$1 = $3 = 0;
-	}
-	| rel_expr '<'    additive_expr	{
-		$$ = new calc::GreaterExpression($3, $1, env.precision());
-		$1 = $3 = 0;
-	}
-	| rel_expr "<="    additive_expr	{
-		$$ = new calc::GreaterExpression($1, $3, false, env.precision());
-		$1 = $3 = 0;
-	}
-	| rel_expr ">="    additive_expr	{
-		$$ = new calc::GreaterExpression($3, $1, false, env.precision());
+	| rel_expr REL_OP additive_expr	{
+		$$ = new calc::GreaterExpression($1, $3, $2 & REL_SWITCH,
+		                                 !($2 & REL_NOT),
+		                                 env.precision());
 		$1 = $3 = 0;
 	}
 	;
