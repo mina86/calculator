@@ -43,14 +43,14 @@
  * program nie wypisze listy zmiennych zdefiniowanych
  * w&nbsp;programie.
  *
- * Prze³±cznikiem <tt>-P</tt> mo¿na ustawiæ dok³adno¶æ z jak±
- * operatory porównania bêd± porównywaæ zmienne.  Domy¶lnie
- * dok³adno¶ci± jest zero, tzn. dwie warto¶ci "s± sobie równe" je¿eli
- * "s± sobie równe".  Je¿eli po opcji <tt>-P</tt> poda siê liczbê
- * rzeczywist± warto¶ci bêd± uznawane za równe je¿eli ich warto¶æ
- * bezwezglêdna bêdzie niewiêksza ni¿ podana warto¶æ (prze³±cznik ten
- * wp³ywa równie¿ na operatory relacji, ale nie wp³ywa na konwersje
- * liczby na warto¶c logiczn±).
+ * <p name="przelacznik_p" id="przelacznik_p">Prze³±cznikami
+ * <tt>-p</tt> i&nbsp;<tt>-P</tt> mo¿na ustawiæ dok³adno¶æ z jak±
+ * operatory "niewyra¼nego" (prze³±cznik <tt>-p</tt>; domy¶lnie
+ * <tt>1e-9</tt>) lub zwyk³ego (prze³±cznik <tt>-P</tt>; domy¶lnie 0)
+ * bêd± porównywaæ zmienne.  Domy¶lnie dok³adno¶ci± jest zero,
+ * tzn. dwie warto¶ci "s± sobie równe" je¿eli "s± sobie równe".
+ * Prze³±czniki te wp³ywa równie¿ na operatory relacji, ale nie
+ * wp³ywaj± na konwersje liczby na warto¶æ logiczn±.</p>
  *
  * Informacje o&nbsp;opcjach oraz dzia³aniu aplikacji mo¿na uzyskaæ
  * uruchamiaj±c go z&nbsp;opcj± <tt>-h</tt>.
@@ -114,12 +114,12 @@
  *   </tr>
  *   <tr>
  *     <td>Relacji</td>
- *     <td><tt>&gt; &lt; &gt;= &lt;=</tt></td>
+ *     <td><tt>&gt; &lt; &gt;= &lt;= ~&gt; ~&lt; &gt;~ &lt;~</tt></td>
  *     <td>z lewej do prawej</td>
  *   </tr>
  *   <tr>
  *     <td>Porównania</td>
- *     <td><tt>== !=</tt></td>
+ *     <td><tt>== != ~~ =~ !~</tt></td>
  *     <td>z lewej do prawej</td>
  *   </tr>
  *   <tr>
@@ -157,11 +157,22 @@
  * Naturalnie obs³ugiwane jest równie¿ nawiasowanie wyra¿eñ
  * w&nbsp;celu wymuszenia kolejno¶ci wykonywania dzia³añ.
  *
- * Operatory robi± dok³adnie to samo co te znane z&nbsp;jêzyka
- * C&nbsp;za wyj±tkiem operatora <tt>^</tt>, który podnosi lewy
- * argument do potêgi okre¶lonej przez prawy argument oraz operatora
- * <tt>^^</tt>, który oznacza logiczny XOR i&nbsp;zasadniczo <tt>a ^^
- * b</tt> jest równowa¿ne <tt>!a != !b</tt>.
+ * Za wyj±tkiem operatorów <tt>^</tt>, <tt>^=</tt> oraz operatorów nie
+ * wystêpuj±cych w&nbsp;jêzyku C&nbsp;wszystkie one maj± takie same
+ * dzia³anie jak te znane z&nbsp;jêzyka C.
+ *
+ * Operator <tt>^</tt> oraz <tt>^=</tt> s± to operatory potêgowe.
+ *
+ * Operatory <tt>~~</tt>, <tt>=~</tt>, <tt>!~</tt>, <tt>~&gt;</tt>,
+ * <tt>~&lt;</tt>, <tt>&gt;~</tt> oraz <tt>&lt;~</tt> s±
+ * "niewyra¼nymi" (ang. fuzzy) odpowiednikami operatorów odpowiednio
+ * <tt>==</tt>, <tt>==</tt>, <tt>!=</tt>, <tt>&gt;</tt>,
+ * <tt>&lt;</tt>, <tt>&gt;=</tt> oraz <tt>&lt;=</tt>.  Wiêcej
+ * o&nbsp;tych operatorach przy okazji opisywania <a
+ * href="#przelacznik_p">prze³±cznika <tt>-p</tt></a>.
+ *
+ * Operator <tt>^^</tt> oznacza logiczny XOR i&nbsp;zasadniczo <tt>a
+ * ^^ b</tt> jest równowa¿ne <tt>!a != !b</tt>.
  *
  * Nale¿y zwróciæ uwagê na operatory logiczne oraz operatory, które
  * jako operandy przyjmuj± warto¶ci logiczne.  W&nbsp;kalkulatorze
@@ -172,10 +183,7 @@
  * okazaæ liczb± o&nbsp;bardzo ma³ym (ale ró¿nym od zera) module
  * i&nbsp;wówczas zostanie potraktowana jako warto¶æ logiczna prawda.
  * Z&nbsp;tego powodu, aby zamieniæ wynik wyra¿enia na warto¶æ
- * logiczn± nale¿y skorzystaæ z funkcji <tt>abs()</tt> i&nbsp;porównaæ
- * jej wynik z&nbsp;bardzo ma³± liczb± dodatni± lub prze³±cznika
- * <tt>-P</tt> i operatora porównania (Uwaga! Prze³±cznk <tt>-P</tt>
- * nie wp³ywa na to jakie warto¶ci uznawane s± za prawdziwe!).
+ * logiczn± nale¿y skorzystaæ z "niewyra¼nych" operatorów porównania.
  * Operatory logiczne zwracaj± 1.0 w&nbsp;przypadku prawdy i 0.0
  * w przypadku fa³szu.
  *
@@ -493,11 +501,9 @@
  * instruction.
  */
 struct VerboseEnvironment : public calc::Environment {
-	/**
-	 * Constructor.
-	 * \param p comparision opeartors precision.
-	 */
-	explicit VerboseEnvironment(calc::real p) : Environment(p) { }
+	/** \copydoc calc::Environment::Environment(real,real) */
+	explicit VerboseEnvironment(calc::real p, calc::real fp)
+		: Environment(p, fp) { }
 
 	void instruction(calc::real value) {
 		std::cout << value << '\n';
@@ -517,9 +523,32 @@ static void listConst();
 static void listOp();
 
 
+static calc::real parsePrecision(int argc, char **argv, int &i, char *&ch) {
+	if (*++ch) {
+		/* nothing */
+	} else if (++i < argc) {
+		ch = argv[i];
+	} else {
+		std::cerr << "precision expected\n";
+		return 1;
+	}
+
+	char *end;
+	errno = 0;
+	calc::real precision = calc::m::ator(ch, &end);
+	if (precision < 0 || errno || *end) {
+		std::cerr << ch << ": invalid precision\n";
+		return 1;
+	}
+	ch = end - 1;
+
+	return precision;
+}
+
+
 int main(int argc, char **argv) {
 	bool verbose = false, quiet = false, finish = false;
-	calc::real precision = 0;
+	calc::real precision = 0, fprecision = 1e-9;
 
 	int i = 1;
 	for (; i < argc && argv[i][0] == '-' && argv[i][1]; ++i) {
@@ -537,28 +566,8 @@ int main(int argc, char **argv) {
 			case 'f': finish  = true; listFunc();   break;
 			case 'c': finish  = true; listConst();  break;
 			case 'o': finish  = true; listOp();     break;
-
-			case 'P': {
-				if (*++ch) {
-					/* nothing */
-				} else if (++i < argc) {
-					ch = argv[i];
-				} else {
-					std::cerr << "precision expected after P\n";
-					return 1;
-				}
-
-				char *end;
-				errno = 0;
-				precision = calc::m::ator(ch, &end);
-				if (precision < 0 || errno || *end) {
-					std::cerr << ch << ": invalid precision\n";
-					return 1;
-				}
-				ch = end - 1;
-			}
-				break;
-
+			case 'p': fprecision = parsePrecision(argc, argv, i, ch); break;
+			case 'P':  precision = parsePrecision(argc, argv, i, ch); break;
 			default:
 				std::cerr << "invalid option: " << *ch << '\n';
 				return 1;
@@ -578,8 +587,8 @@ int main(int argc, char **argv) {
 
 	/** Create environment. */
 	calc::Environment *env = verbose
-		? new VerboseEnvironment(precision)
-		: new calc::Environment(precision);
+		? new VerboseEnvironment(precision, fprecision)
+		: new calc::Environment(precision, fprecision);
 
 
 	/* Register constants */
@@ -708,7 +717,8 @@ static void help() {
 		"usage: ./calc [-vqhsofc]\n"
 		"  -v     print result of each instruction terminated with a new line\n"
 		"  -q     do not print values of all global variables at the end\n"
-		"  -P<p>  set arithemtic comparison precision to <p>\n"
+		"  -p<p>  set fuzzy comparison precision to <p>; default 1e-9\n"
+		"  -P<p>  set arithemtic comparison precision to <p>; default 0\n"
 		"  -h     print this help screen and exit\n"
 		"  -s     print syntax\n"
 		"  -o     print list of oeprators and exit\n"

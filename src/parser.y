@@ -149,15 +149,15 @@ assignment_expr
 	| var "#=" assignment_expr	{
 		calc::Expression *expr = $1.getExpression();
 		switch ($2) {
-		case semantic_type::SET_ADD: 
+		case semantic_type::SET_ADD:
 			expr = new calc::AddExpression(expr, $3); break;
-		case semantic_type::SET_SUB: 
+		case semantic_type::SET_SUB:
 			expr = new calc::SubExpression(expr, $3); break;
-		case semantic_type::SET_MUL: 
+		case semantic_type::SET_MUL:
 			expr = new calc::MulExpression(expr, $3); break;
-		case semantic_type::SET_DIV: 
+		case semantic_type::SET_DIV:
 			expr = new calc::DivExpression(expr, $3); break;
-		case semantic_type::SET_POW: 
+		case semantic_type::SET_POW:
 			expr = new calc::PowExpression(expr, $3); break;
 		}
 		$$ = $1.setExpression(expr);
@@ -201,7 +201,7 @@ logic_and_expr
 cmp_expr: rel_expr			{ $$ = $1; $1 = 0; }
 	| cmp_expr CMP_OP rel_expr	{
 		$$ = new calc::EqualExpression($1, $3, !($2 & CMP_NOT),
-		                               env.precision());
+		                               env.precision($2 & CMP_FUZZY));
 		$1 = $3 = 0;
 	}
 	;
@@ -210,7 +210,7 @@ rel_expr: additive_expr			{ $$ = $1; $1 = 0; }
 	| rel_expr REL_OP additive_expr	{
 		$$ = new calc::GreaterExpression($1, $3, $2 & REL_SWITCH,
 		                                 !($2 & REL_NOT),
-		                                 env.precision());
+		                                 env.precision($2&REL_FUZZY));
 		$1 = $3 = 0;
 	}
 	;

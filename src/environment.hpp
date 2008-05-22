@@ -1,6 +1,6 @@
 /** \file
  * Enviroment declaration.
- * $Id: environment.hpp,v 1.12 2008/05/22 08:52:25 mina86 Exp $
+ * $Id: environment.hpp,v 1.13 2008/05/22 10:32:59 mina86 Exp $
  */
 #ifndef H_ENVIRONMENT_HPP
 #define H_ENVIRONMENT_HPP
@@ -40,9 +40,10 @@ struct Environment {
 	/**
 	 * Constructor.
 	 * \param p precision for comparison operators.
+	 * \param fp precision for fuzzy comparison operators.
 	 */
-	explicit Environment(real p = 0)
-		: _precision(p), global_scope(_stack) { }
+	explicit Environment(real p = 0, real fp = 1.0e-9)
+		: _precision(p), _fuzzy_precision(fp), global_scope(_stack) { }
 
 
 	/** An empty virtual destructor. */
@@ -153,8 +154,13 @@ struct Environment {
 	}
 
 
-	/** Returns precision for comparison operators. */
-	real precision() const { return _precision; }
+	/**
+	 * Returns precision for (fuzzy) comparison operators.
+	 * \param fuzzy whether to return precision for fuzzy comparison.
+	 */
+	real precision(bool fuzzy = false) const {
+		return fuzzy ? _fuzzy_precision : _precision;
+	}
 
 
 private:
@@ -166,6 +172,8 @@ private:
 	Functions _functions;
 	/** Precision for comparison oeprators. */
 	real _precision;
+	/** Precision for fuzzy comparison oeprators. */
+	real _fuzzy_precision;
 
 
 	/**

@@ -1,6 +1,6 @@
 /** \file
  * Lexer reading from FILE stream implementation.
- * $Id: file-lexer.cpp,v 1.11 2008/05/22 09:47:37 mina86 Exp $
+ * $Id: file-lexer.cpp,v 1.12 2008/05/22 10:32:59 mina86 Exp $
  */
 #include "math.hpp"
 #include "exceptions.hpp"
@@ -102,36 +102,34 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 		}
 	}
 
-	/* >, <, >= or <= */
+	/* >, <, >=, <=, >~ or <~ */
 	if (ch == '>' || ch == '<') {
 		int c = getchar();
-		if (c != '=') {
-			ungetchar(c);
-		} else {
-			ch <<= 8;
+		value.flags = ch == '<' ? yy::REL_SWITCH : 0;
+		switch (c) {
+		case '~': value.flags |= yy::REL_FUZZY; break;
+		case '=': value.flags ^= yy::REL_SWITCH | yy::REL_NOT; break;
+		default : ungetchar(c); break;
 		}
-
-		switch (ch) {
-		case '>' << 8: /* >= */
-			value.flags = yy::REL_NOT | yy::REL_SWITCH;
-			return yy::Parser::token::REL_OP;
-		case '<' << 8: /* <= */
-			value.flags = yy::REL_NOT;
-			return yy::Parser::token::REL_OP;
-		case '<':
-			value.flags = yy::REL_SWITCH;
-			return yy::Parser::token::REL_OP;
-		case '>': /* > */
-			value.flags = 0;
-			return yy::Parser::token::REL_OP;
-		default:
-			assert(0);
-		}
+		return yy::Parser::token::REL_OP;
 	}
 
-	/* #= maybe? */
-	if (ch == '+' || ch == '-' || ch == '*' || ch == '/' ||
-	    ch == '=' || ch == '!') {
+	/* =, !, ==, !=, =~ or !~ */
+	if (ch == '=' || ch == '!') {
+		int c = getchar();
+		switch (c) {
+		case '~': value.flags = yy::CMP_FUZZY; break;
+		case '=': value.flags = 0; break;
+		default : ungetchar(c); return ch;
+		}
+		if (ch == '!') {
+			value.flags |= yy::CMP_NOT;
+		}
+		return yy::Parser::token::CMP_OP;
+	}
+
+	/* # or #= */
+	if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
 		int c = getchar();
 		if (c != '=') {
 			ungetchar(c);
@@ -151,14 +149,6 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 		case '/':
 			value.setop = yy::Parser::semantic_type::SET_DIV;
 			return yy::Parser::token::SET_OP;
-
-		case '=': /* == */
-			value.flags = 0;
-			return yy::Parser::token::CMP_OP;
-		case '!': /* != */
-			value.flags = yy::CMP_NOT;
-			return yy::Parser::token::CMP_OP;
-
 		default:
 			assert(0);
 		}
