@@ -1,6 +1,6 @@
 /** \file
  * Expression declarations.
- * $Id: expression.hpp,v 1.7 2008/05/07 16:19:59 mina86 Exp $
+ * $Id: expression.hpp,v 1.8 2008/05/22 08:00:59 mina86 Exp $
  */
 #ifndef H_EXPRESSION_HPP
 #define H_EXPRESSION_HPP
@@ -66,21 +66,6 @@ private:
 };
 
 
-/** A class representing a variable, global, local or constant. */
-struct Variable {
-	/** Variable's name. */
-	std::string *name;
-	/**
-	 * Variable's scope.  '$' means global, '#' means constant and
-	 * anything else means local.
-	 */
-	char scope;
-
-	/** Converts object into an GetExpression. */
-	inline operator Expression*() const;
-};
-
-
 /** A literal number expression. */
 struct NumberExpression : public Expression {
 	/**
@@ -139,13 +124,6 @@ protected:
 
 /** Abstract class for expressions accessing variable's value. */
 struct GetExpression : public NameExpression {
-	/**
-	 * A factory creating a GetExpression based on variable's scope.
-	 * \param v variable to access
-	 * \return GetExpression accessing given variable.
-	 */
-	static inline GetExpression *create(const Variable &v);
-
 protected:
 	/**
 	 * Constructor.
@@ -201,33 +179,10 @@ struct GetConstExpression : public GetExpression {
 };
 
 
-inline GetExpression *GetExpression::create(const Variable &var) {
-	if (var.scope == '$') {
-		return new GetGlobalExpression(*var.name);
-	} else if (var.scope == '#') {
-		return new GetConstExpression(*var.name);
-	} else {
-		return new GetLocalExpression(*var.name);
-	}
-}
-
-
-inline Variable::operator Expression*() const {
-	return GetExpression::create(*this);
-}
-
 
 
 /** Abstract class for expressions setting variable's value. */
 struct SetExpression : public NameExpression {
-	/**
-	 * A factory creating a SetExpression based on variable's scope.
-	 * \param var variable to access.
-	 * \param e expression to set variable's value to value of.
-	 * \return SetExpression setting given variable.
-	 */
-	static inline SetExpression *create(const Variable &var, Expression *e);
-
 	/** Deletes expr. */
 	~SetExpression();
 
@@ -298,16 +253,41 @@ struct SetConstExpression : public SetExpression {
 };
 
 
-inline SetExpression *SetExpression::create(const Variable &var,
-                                            Expression *e) {
-	if (var.scope == '$') {
-		return new SetGlobalExpression(*var.name, e);
-	} else if (var.scope == '#') {
-		return new SetConstExpression(*var.name, e);
-	} else {
-		return new SetLocalExpression(*var.name, e);
+/** A class representing a variable, global, local or constant. */
+struct Variable {
+	/** Variable's name. */
+	std::string *name;
+	/**
+	 * Variable's scope.  '$' means global, '#' means constant and
+	 * anything else means local.
+	 */
+	char scope;
+
+	/** Creates a get expression. */
+	GetExpression *getExpression() const {
+		if (scope == '$') {
+			return new GetGlobalExpression(*name);
+		} else if (scope == '#') {
+			return new GetConstExpression(*name);
+		} else {
+			return new GetLocalExpression(*name);
+		}
 	}
-}
+
+	/**
+	 * Creates a set expression.
+	 * \param expr right operand of assigment experssion.
+	 */
+	SetExpression *setExpression(Expression *expr) const {
+		if (scope == '$') {
+			return new SetGlobalExpression(*name, expr);
+		} else if (scope == '#') {
+			return new SetConstExpression(*name, expr);
+		} else {
+			return new SetLocalExpression(*name, expr);
+		}
+	}
+};
 
 
 

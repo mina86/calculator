@@ -26,7 +26,7 @@ namespace calc {
 	/** An expression. */
 	calc::Expression                    *expr;
 	/** Function parameters */
-	calc::UserFunction::Names			*params;
+	calc::UserFunction::Names           *params;
 };
 
 %parse-param { calc::Lexer       &lexer }
@@ -134,37 +134,37 @@ expression
 
 assignment_expr
 	: var '='  assignment_expr	{
-		$$ = calc::SetExpression::create($1, $3);
+		$$ = $1.setExpression($3);
 		$3 = 0;
 	}
 	| var "+=" assignment_expr	{
 		calc::Expression *expr;
-		expr = new calc::AddExpression($1, $3);
-		$$ = calc::SetExpression::create($1, expr);
+		expr = new calc::AddExpression($1.getExpression(), $3);
+		$$ = $1.setExpression(expr);
 		$3 = 0;
 	}
 	| var "-=" assignment_expr	{
 		calc::Expression *expr;
-		expr = new calc::SubExpression($1, $3);
-		$$ = calc::SetExpression::create($1, expr);
+		expr = new calc::SubExpression($1.getExpression(), $3);
+		$$ = $1.setExpression(expr);
 		$3 = 0;
 	}
 	| var "*=" assignment_expr	{
 		calc::Expression *expr;
-		expr = new calc::MulExpression($1, $3);
-		$$ = calc::SetExpression::create($1, expr);
+		expr = new calc::MulExpression($1.getExpression(), $3);
+		$$ = $1.setExpression(expr);
 		$3 = 0;
 	}
 	| var "/=" assignment_expr	{
 		calc::Expression *expr;
-		expr = new calc::DivExpression($1, $3);
-		$$ = calc::SetExpression::create($1, expr);
+		expr = new calc::DivExpression($1.getExpression(), $3);
+		$$ = $1.setExpression(expr);
 		$3 = 0;
 	}
 	| var "^=" assignment_expr	{
 		calc::Expression *expr;
-		expr = new calc::PowExpression($1, $3);
-		$$ = calc::SetExpression::create($1, expr);
+		expr = new calc::PowExpression($1.getExpression(), $3);
+		$$ = $1.setExpression(expr);
 		$3 = 0;
 	}
 	| cond_expr			{ $$ = $1; $1 = 0; }
@@ -284,7 +284,7 @@ simple_expr
 	}
 	| '(' expression ')'		{ $$ = $2; $2 = 0; }
 	| var				{
-		$$ = calc::GetExpression::create($1);
+		$$ = $1.getExpression();
 	}
 	| ID '(' ')' {
 		$$ = new calc::FunctionExpression(*$1);
