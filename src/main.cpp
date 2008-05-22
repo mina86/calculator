@@ -212,10 +212,7 @@
  * nowej przestrzeni nazw zmiennych lokalnych.  Równie¿ funkcje
  * posiadaj± osobn± przestrzeñ nazw.
  *
- * W&nbsp;programie zdefiniowane s± nastêpuj±ce sta³e (zale¿nie od
- * ¶rodowiska z&nbsp;jakim kalkulator by³ kompilowane niektóre mog±
- * nie wystêpowaæ; aby poznaæ listê sta³ych nale¿y skorzystaæ
- * z&nbsp;prze³±cznika <tt>-c</tt>):
+ * W&nbsp;programie zdefiniowane s± nastêpuj±ce sta³e:
  *
  * <table>
  *     <tr>
@@ -594,99 +591,65 @@ int main(int argc, char **argv) {
 	/* Register constants */
 	{
 		calc::Environment::Variables &consts = env->constants();
-#if defined M_El
-		consts["e"] = M_El;
-#elif defined M_E
-		consts["e"] = M_E;
-#endif
-#if defined M_LOG2El
-		consts["log2e"] = M_LOG2El;
-#elif defined M_LOG2E
-		consts["log2e"] = M_LOG2E;
-#endif
-#if defined M_LOG10El
-		consts["log10e"] = M_LOG10El;
-#elif defined M_LOG10E
-		consts["log10e"] = M_LOG10E;
-#endif
-#if defined M_LN2l
-		consts["ln2"] = M_LN2l;
-#elif defined M_LN2
-		consts["ln2"] = M_LN2;
-#endif
-#if defined M_LN10l
-		consts["ln10"] = M_LN10l;
-#elif defined M_LN10
-		consts["ln10"] = M_LN10;
-#endif
-#if defined M_PIl
-		consts["pi"] = M_PIl;
-#elif defined M_PI
-		consts["pi"] = M_PI;
-#endif
-#if defined M_PI_2l
-		consts["pi_2"] = M_PI_2l;
-#elif defined M_PI_2
-		consts["pi_2"] = M_PI_2;
-#endif
-#if defined M_PI_4l
-		consts["pi_4"] = M_PI_4l;
-#elif defined M_PI_4
-		consts["pi_4"] = M_PI_4;
-#endif
-#if defined M_1_PIl
-		consts["_1_pi"] = M_1_PIl;
-#elif defined M_1_PI
-		consts["_1_pi"] = M_1_PI;
-#endif
-#if defined M_2_PIl
-		consts["_2_pi"] = M_2_PIl;
-#elif defined M_2_PI
-		consts["_2_pi"] = M_2_PI;
-#endif
-#if defined M_2_SQRTPIl
-		consts["_2_sqrtpi"] = M_2_SQRTPIl;
-#elif defined M_2_SQRTPI
-		consts["_2_sqrtpi"] = M_2_SQRTPI;
-#endif
-#if defined M_SQRT2l
-		consts["sqrt2"] = M_SQRT2l;
-#elif defined M_SQRT2
-		consts["sqrt2"] = M_SQRT2;
-#endif
-#if defined M_SQRT1_2l
-		consts["sqrt1_2"] = M_SQRT1_2l;
-#elif defined M_SQRT1_2
-		consts["sqrt1_2"] = M_SQRT1_2;
+#if HAVE_LONG_DOUBLE
+		consts["e"]         = 2.7182818284590452353602874713526625l;
+		consts["log2e"]     = 1.4426950408889634073599246810018921l;
+		consts["log10e"]    = 0.4342944819032518276511289189166051l;
+		consts["ln2"]       = 0.6931471805599453094172321214581766l;
+		consts["ln10"]      = 2.3025850929940456840179914546843642l;
+		consts["pi"]        = 3.1415926535897932384626433832795029l;
+		consts["pi_2"]      = 1.5707963267948966192313216916397514l;
+		consts["pi_4"]      = 0.7853981633974483096156608458198757l;
+		consts["_1_pi"]     = 0.3183098861837906715377675267450287l;
+		consts["_2_pi"]     = 0.6366197723675813430755350534900574l;
+		consts["_2_sqrtpi"] = 1.1283791670955125738961589031215452l;
+		consts["sqrt2"]     = 1.4142135623730950488016887242096981l;
+		consts["sqrt1_2"]   = 0.7071067811865475244008443621048490l;
+#else
+		consts["e"]         = 2.7182818284590452354;
+		consts["log2e"]     = 1.4426950408889634074;
+		consts["log10e"]    = 0.4342944819032518276;
+		consts["ln2"]       = 0.6931471805599453094;
+		consts["ln10"]      = 2.3025850929940456840;
+		consts["pi"]        = 3.1415926535897932384;
+		consts["pi_2"]      = 1.5707963267948966192;
+		consts["pi_4"]      = 0.7853981633974483096;
+		consts["_1_pi"]     = 0.3183098861837906715;
+		consts["_2_pi"]     = 0.6366197723675813430;
+		consts["_2_sqrtpi"] = 1.1283791670955125739;
+		consts["sqrt2"]     = 1.4142135623730950488;
+		consts["sqrt1_2"]   = 0.7071067811865475244;
 #endif
 	}
 
 
 	/* Register functions */
-    calc::Environment::Functions &funcs = env->functions();
-    funcs["sqrt" ] = calc::Func_sqrt::get();
-    funcs["cbrt" ] = calc::Func_cbrt::get();
-    funcs["e"    ] = calc::Func_exp::get();
-    funcs["exp"  ] = calc::Func_exp::get();
-    funcs["log"  ] = calc::Func_log::get();
-    funcs["ln"   ] = calc::Func_log::get();
-    funcs["log10"] = calc::Func_log10::get();
-    funcs["log2" ] = calc::Func_log2::get();
-    funcs["cos"  ] = calc::Func_cos::get();
-    funcs["sin"  ] = calc::Func_sin::get();
-    funcs["tan"  ] = calc::Func_tan::get();
-    funcs["acos" ] = calc::Func_acos::get();
-    funcs["asin" ] = calc::Func_asin::get();
-    funcs["atan" ] = calc::Func_atan::get();
-    funcs["cosh" ] = calc::Func_cosh::get();
-    funcs["sinh" ] = calc::Func_sinh::get();
-    funcs["tanh" ] = calc::Func_tanh::get();
-    funcs["acosh"] = calc::Func_acosh::get();
-    funcs["asinh"] = calc::Func_asinh::get();
-    funcs["atanh"] = calc::Func_atanh::get();
-    funcs["min"  ] = calc::Func_min::get();
-    funcs["max"  ] = calc::Func_max::get();
-    funcs["avg"  ] = calc::Func_avg::get();
+	{
+		calc::Environment::Functions &funcs = env->functions();
+		funcs["sqrt" ] = calc::Func_sqrt::get();
+		funcs["cbrt" ] = calc::Func_cbrt::get();
+		funcs["e"    ] = calc::Func_exp::get();
+		funcs["exp"  ] = calc::Func_exp::get();
+		funcs["log"  ] = calc::Func_log::get();
+		funcs["ln"   ] = calc::Func_log::get();
+		funcs["log10"] = calc::Func_log10::get();
+		funcs["log2" ] = calc::Func_log2::get();
+		funcs["cos"  ] = calc::Func_cos::get();
+		funcs["sin"  ] = calc::Func_sin::get();
+		funcs["tan"  ] = calc::Func_tan::get();
+		funcs["acos" ] = calc::Func_acos::get();
+		funcs["asin" ] = calc::Func_asin::get();
+		funcs["atan" ] = calc::Func_atan::get();
+		funcs["cosh" ] = calc::Func_cosh::get();
+		funcs["sinh" ] = calc::Func_sinh::get();
+		funcs["tanh" ] = calc::Func_tanh::get();
+		funcs["acosh"] = calc::Func_acosh::get();
+		funcs["asinh"] = calc::Func_asinh::get();
+		funcs["atanh"] = calc::Func_atanh::get();
+		funcs["min"  ] = calc::Func_min::get();
+		funcs["max"  ] = calc::Func_max::get();
+		funcs["avg"  ] = calc::Func_avg::get();
+	}
 
 
 	/* Run */
@@ -791,45 +754,19 @@ static void listFunc() {
 
 static void listConst() {
 	std::cout << "Available constants:\n"
-#if defined M_E
 		"  e         base of a natural logarithm\n"
-#endif
-#if defined M_LOG2E
 		"  log2e     a base 2 logarithm of e\n"
-#endif
-#if defined M_LOG10E
 		"  log10e    a base 10 logarithm of e\n"
-#endif
-#if defined M_LN2
 		"  ln2       a natural logarithm of 2\n"
-#endif
-#if defined M_LN10
 		"  ln10      a natural logarithm of 10\n"
-#endif
-#if defined M_PI
 		"  pi        Pi\n"
-#endif
-#if defined M_PI_2
 		"  pi_2      Pi/2\n"
-#endif
-#if defined M_PI_4
 		"  pi_4      Pi/4\n"
-#endif
-#if defined M_1_PI
 		"  _1_pi     1/Pi\n"
-#endif
-#if defined M_2_PI
 		"  _2_pi     2/Pi\n"
-#endif
-#if defined M_2_SQRTPI
 		"  _2_sqrtpi 2/sqrt(Pi)\n"
-#endif
-#if defined M_SQRT2
 		"  sqrt2     square root of 2\n"
-#endif
-#if defined M_SQRT1_2
 		"  sqrt1_2   1/sqrt(2)\n"
-#endif
 		;
 }
 

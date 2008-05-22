@@ -1,6 +1,6 @@
 /** \file
  * Wrapper around C mathematical functions.
- * $Id: math.hpp,v 1.5 2008/05/22 08:52:25 mina86 Exp $
+ * $Id: math.hpp,v 1.6 2008/05/22 11:00:29 mina86 Exp $
  */
 #ifndef H_MATH_HPP
 #define H_MATH_HPP
@@ -135,7 +135,7 @@ namespace m {
 #    if defined M_LN2
 		return ::log(x)/M_LN2;
 #    else
-		return ::log(x)/::logl(2.0);
+		return ::log(x)/::log(2.0);
 #    endif
 	}
 
