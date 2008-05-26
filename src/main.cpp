@@ -119,7 +119,7 @@
  *   </tr>
  *   <tr>
  *     <td>Porównania</td>
- *     <td><tt>== != ~~ =~ !~</tt></td>
+ *     <td><tt>== != =~ !~</tt></td>
  *     <td>z lewej do prawej</td>
  *   </tr>
  *   <tr>
@@ -163,12 +163,11 @@
  *
  * Operator <tt>^</tt> oraz <tt>^=</tt> s± to operatory potêgowe.
  *
- * Operatory <tt>~~</tt>, <tt>=~</tt>, <tt>!~</tt>, <tt>~&gt;</tt>,
- * <tt>~&lt;</tt>, <tt>&gt;~</tt> oraz <tt>&lt;~</tt> s±
- * "niewyra¼nymi" (ang. fuzzy) odpowiednikami operatorów odpowiednio
- * <tt>==</tt>, <tt>==</tt>, <tt>!=</tt>, <tt>&gt;</tt>,
- * <tt>&lt;</tt>, <tt>&gt;=</tt> oraz <tt>&lt;=</tt>.  Wiêcej
- * o&nbsp;tych operatorach przy okazji opisywania <a
+ * Operatory <tt>=~</tt>, <tt>!~</tt>, <tt>~&gt;</tt>, <tt>~&lt;</tt>,
+ * <tt>&gt;~</tt> oraz <tt>&lt;~</tt> s± "niewyra¼nymi" (ang. fuzzy)
+ * odpowiednikami operatorów odpowiednio <tt>==</tt>, <tt>!=</tt>,
+ * <tt>&gt;</tt>, <tt>&lt;</tt>, <tt>&gt;=</tt> oraz <tt>&lt;=</tt>.
+ * Wiêcej o&nbsp;tych operatorach przy okazji opisywania <a
  * href="#przelacznik_p">prze³±cznika <tt>-p</tt></a>.
  *
  * Operator <tt>^^</tt> oznacza logiczny XOR i&nbsp;zasadniczo <tt>a
@@ -773,16 +772,16 @@ static void listConst() {
 
 static void listOp() {
 	std::cout << "Available operators (from highest priority):\n"
-		"  Prefix          + - !                  right-to-left\n"
-		"  Power           ^                      right-to-left\n"
-		"  Multiplicative  * /                    left-to-right\n"
-		"  Additive        + -                    left-to-right\n"
-		"  Relation        > < >= <= ~> <~ >~ <~  left-to-right\n"
-		"  Compare         == != ~~ =~ !~         left-to-right\n"
-		"  Logic and       &&                     left-to-right\n"
-		"  Logic xor       ^^                     left-to-right\n"
-		"  Logic or        ||                     left-to-right\n"
-		"  Ternary         ?:                     right-to-left\n"
-		"  Assigment       = += -= *= /= ^=       right-to-left\n"
-		"  Comma           ,                      left-to-right\n";
+		"  Prefix          + - !              right-to-left\n"
+		"  Power           ^                  right-to-left\n"
+		"  Multiplicative  * /                left-to-right\n"
+		"  Additive        + -                left-to-right\n"
+		"  Relation        > < >= <= >~ <~    left-to-right\n"
+		"  Compare         == != =~ !~        left-to-right\n"
+		"  Logic and       &&                 left-to-right\n"
+		"  Logic xor       ^^                 left-to-right\n"
+		"  Logic or        ||                 left-to-right\n"
+		"  Ternary         ?:                 right-to-left\n"
+		"  Assigment       = += -= *= /= ^=   right-to-left\n"
+		"  Comma           ,                  left-to-right\n";
 }
