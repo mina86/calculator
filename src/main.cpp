@@ -773,16 +773,16 @@ static void listConst() {
 
 static void listOp() {
 	std::cout << "Available operators (from highest priority):\n"
-		"  Prefix          + - !             right-to-left\n"
-		"  Power           ^                 right-to-left\n"
-		"  Multiplicative  * /               left-to-right\n"
-		"  Additive        + -               left-to-right\n"
-		"  Relation        > < >= <=         left-to-right\n"
-		"  Compare         == !=             left-to-right\n"
-		"  Logic and       &&                left-to-right\n"
-		"  Logic xor       ^^                left-to-right\n"
-		"  Logic or        ||                left-to-right\n"
-		"  Ternary         ?:                right-to-left\n"
-		"  Assigment       = += -= *= /= ^=  right-to-left\n"
-		"  Comma           ,                 left-to-right\n";
+		"  Prefix          + - !                  right-to-left\n"
+		"  Power           ^                      right-to-left\n"
+		"  Multiplicative  * /                    left-to-right\n"
+		"  Additive        + -                    left-to-right\n"
+		"  Relation        > < >= <= ~> <~ >~ <~  left-to-right\n"
+		"  Compare         == != ~~ =~ !~         left-to-right\n"
+		"  Logic and       &&                     left-to-right\n"
+		"  Logic xor       ^^                     left-to-right\n"
+		"  Logic or        ||                     left-to-right\n"
+		"  Ternary         ?:                     right-to-left\n"
+		"  Assigment       = += -= *= /= ^=       right-to-left\n"
+		"  Comma           ,                      left-to-right\n";
 }
