@@ -1,13 +1,15 @@
 ##
 ## Makefile
-## $Id: Makefile,v 1.4 2008/02/29 20:51:36 mina86 Exp $
+## $Id: Makefile,v 1.5 2008/05/27 18:11:15 mina86 Exp $
 ##
 
 LDFLAGS		+= -lm
 
+OBJS		:= $(addsuffix .o,$(basename $(wildcard *.cpp))) parser.o
+
 all: main
 
-objs: $(addsuffix .o,$(basename $(wildcard *.cpp))) parser.o
+objs: $(OBJS)
 
 
 parser.o: parser.cpp
@@ -20,7 +22,7 @@ parser.hpp: parser.y
 %.o: %.cpp $(wildcard *.hpp) parser.hpp
 	exec $(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
-main: objs
+main: $(OBJS)
 	exec $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@ *.o
 
 
