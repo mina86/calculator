@@ -11,7 +11,7 @@ COMP=$TEST_SRC/comp
 
 if test "x$1" == "x-h"
 then
-	echo "usage: ./test.sh [option]"
+	echo "usage: $0 [option]"
 	echo "option: -h  Print this messsage"
 	echo "        xx  where xx is number of tests executed"
 	exit
@@ -33,42 +33,29 @@ then
 	TEST_NUM=$1
 fi
 
-echo
-echo "Testing simple expressions..."
-echo
-j=0
-while test $j -lt $TEST_NUM
-do
-	j=`expr $j + 1`
-	printf "%04d/%04d: " $j $TEST_NUM
+set -- "" "simple expressions" "-f" "expressions with math functions" \
+	"-v" "expressions with variables"
 
-	"$BUILD" > test.txt
-	"$CALC" -v < testcalc > cal1
-	"$BC" -l < testbc > cal2
+while [ $# -gt 1 ]; do
+	echo
+	echo "Testing $2..."
+	echo
+	j=0
+	while test $j -lt $TEST_NUM; do
+		j=`expr $j + 1`
+		printf "%04d/%04d: " $j $TEST_NUM
 
-	if "$COMP" cal1 cal2; then
-		echo ok.
-	else
-		exit 1
-	fi
-done
+		"$BUILD" $1 > test.txt
+		"$CALC" -v -q < testcalc > cal1
+		"$BC" -l < testbc | \
+			perl -pe '$_ = substr $_, 0, -2 if m/\\\n$/' > cal2
 
-echo
-echo "Testing expressions with math functions..."
-echo
-j=0
-while test $j -lt $TEST_NUM
-do
-	j=`expr $j + 1`
-	printf "%04d/%04d: " $j $TEST_NUM
+		if "$COMP" cal1 cal2; then
+			echo ok.
+		else
+			exit 1
+		fi
+	done
 
-	"$BUILD" -f > test.txt
-	"$CALC" -v < testcalc > cal1
-	"$BC" -l < testbc > cal2
-
-	if "$COMP" cal1 cal2; then
-		echo ok.
-	else
-		exit 1
-	fi
+	shift 2
 done
