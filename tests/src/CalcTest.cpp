@@ -18,11 +18,11 @@ CalcTest::CalcTest(const int &count, const int &len, const std::string &filename
     functions.push_back("s"    );
     functions.push_back("a"    );
     
-    operators.push_back("+");
-    operators.push_back("-");
-    operators.push_back("*");
-    operators.push_back("/");
-    operators.push_back("^");
+    operators.push_back(" + ");
+    operators.push_back(" - ");
+    operators.push_back(" * ");
+    operators.push_back(" / ");
+    operators.push_back(" ^ ");
     
     srand( time(NULL) );
     
