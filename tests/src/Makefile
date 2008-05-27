@@ -6,3 +6,5 @@ comp: comp.o
 build: build.o CalcTest.o
 	exec $(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) -o build build.o CalcTest.o
 
+clean:
+	rm -f -- *.o build comp
