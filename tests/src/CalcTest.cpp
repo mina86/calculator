@@ -17,15 +17,15 @@ CalcTest::CalcTest(const int &count, const int &len, const std::string &filename
     functions.push_back("c"    );
     functions.push_back("s"    );
     functions.push_back("a"    );
-    
+
     operators.push_back(" + ");
     operators.push_back(" - ");
     operators.push_back(" * ");
     operators.push_back(" / ");
-    operators.push_back(" ^ ");
-    
+    operators.push_back("^");
+
     srand( time(NULL) );
-    
+
     useFunctions = false;
     calcFile = filename1;
     bcFile = filename2;
@@ -49,7 +49,7 @@ std::string CalcTest::getRName()
 	std::string rname;
 	for(int i = 0; i < 4; ++i)
 		rname.push_back((char) rand()%20+65);
-	return rname;		
+	return rname;
 }
 
 std::string CalcTest::getOperator() const
@@ -67,7 +67,7 @@ void CalcTest::generateExpr(int length)
 	int newExpr;
 	std::string strOp;
 	std::string strFunc;
-	
+
 	while(--length >= 0)
 	{
 		if(rand() % 2 == 0)
@@ -101,7 +101,7 @@ void CalcTest::generateExpr(int length)
 		{
 			strOp = getOperator();
 			outStr << strOp;
-			
+
 			while(strOp == "^")
 			{
 				outStr << rand() % MAX_EXPONENT;
@@ -121,7 +121,7 @@ void CalcTest::runTest()
 		generateExpr(length);
 		outStr << std::endl;
 	}
-	
+
 	std::ofstream fcal(calcFile.c_str());
 	std::ofstream fbc(bcFile.c_str());
 	fcal << "define l(x) = ln(x)\n"
@@ -136,10 +136,10 @@ void CalcTest::runTest()
 void CalcTest::variablesCheck()
 {
 	std::string rname;
-	
+
 	std::ofstream fcal(calcFile.c_str());
 	std::ofstream fbc(bcFile.c_str());
-	
+
 	int count = exprCount;
 	while (--count > 0)
 	{
