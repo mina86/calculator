@@ -8,71 +8,59 @@
 
 #define MAX_EXPONENT 10
 
-CalcTest::CalcTest(const int &count, const int &len, const std::string &filename1, const std::string &filename2)
-	: exprCount(count), maxExprLength(len)
+
+std::vector<std::string> CalcTest::functions;
+std::vector<std::string> CalcTest::operators;
+
+void CalcTest::init()
 {
-    functions.push_back("sqrt" );
-    functions.push_back("e"    );
-    functions.push_back("l"    );
-    functions.push_back("c"    );
-    functions.push_back("s"    );
-    functions.push_back("a"    );
+	static bool initialised = false;
+	if (initialised)
+	{
+		return;
+	}
 
-    operators.push_back(" + ");
-    operators.push_back(" - ");
-    operators.push_back(" * ");
-    operators.push_back(" / ");
-    operators.push_back("^");
+	initialised = true;
 
-    srand( time(NULL) );
+	srand( time(NULL) );
 
-    useFunctions = false;
-    calcFile = filename1;
-    bcFile = filename2;
+	functions.reserve(6);
+	functions.push_back("sqrt" );
+	functions.push_back("e"    );
+	functions.push_back("l"    );
+	functions.push_back("c"    );
+	functions.push_back("s"    );
+	functions.push_back("a"    );
+
+	operators.reserve(5);
+	operators.push_back(" + ");
+	operators.push_back(" - ");
+	operators.push_back(" * ");
+	operators.push_back(" / ");
+	operators.push_back("^");
 }
 
-CalcTest::~CalcTest()
-{
-}
-
-double CalcTest::getRValue()
-{
-	double value = (double) rand() / (double) rand();
-	if(useFunctions)
-		return value < 0? -value: value;
-	else
-		return value;
-}
 
 std::string CalcTest::getRName()
 {
 	std::string rname;
-	for(int i = 0; i < 4; ++i)
-		rname.push_back((char) rand()%20+65);
+	for (int i = 0; i < 4; ++i)
+		rname.push_back((char) (rand()%20) + 'a');
 	return rname;
 }
 
-std::string CalcTest::getOperator() const
-{
-	return operators[rand() % operators.size()];
-}
 
-std::string CalcTest::getFunction() const
-{
-	return functions[rand() % functions.size()];
-}
-
-void CalcTest::generateExpr(int length)
-{
+void CalcTest::generateExpr(std::ostream &out, unsigned length,
+                            bool useFunctions) {
 	int newExpr;
 	std::string strOp;
 	std::string strFunc;
 
-	while(--length >= 0)
+	while (length--)
 	{
 		if(rand() % 2 == 0)
 		{
-			outStr << getRValue();
+			out << getRValue();
 		}
 		else {
 			newExpr = rand() % 4;
@@ -81,82 +69,78 @@ void CalcTest::generateExpr(int length)
 				if(rand() % 2 == 0 && useFunctions)
 				{
 					strFunc = getFunction();
-					outStr << strFunc;
+					out << strFunc;
 				}
-				outStr << "( ";
+				out << "( ";
 				if(strFunc == "e")
-					outStr << rand() % MAX_EXPONENT;
+					out << rand() % MAX_EXPONENT;
 				else if(strFunc == "sqrt")
-					outStr << getRValue();
+					out << getRValue();
 				else
-					generateExpr(newExpr);
-				outStr << " )";
+					generateExpr(out, newExpr, useFunctions);
+				out << " )";
 				strFunc = "";
 			}
 			else {
-				outStr << getRValue();
+				out << getRValue();
 			}
 		}
 		if(length > 0)
 		{
 			strOp = getOperator();
-			outStr << strOp;
+			out << strOp;
 
-			while(strOp == "^")
+			if(strOp == "^")
 			{
-				outStr << rand() % MAX_EXPONENT;
-				strOp = operators[rand() % (operators.size()-1)];
-				outStr << strOp;
+				out << rand() % MAX_EXPONENT << getOperator(true);
 			}
 		}
 	}
 }
 
-void CalcTest::runTest()
-{
-	int count = exprCount;
-	while (--count > 0)
-	{
-		int length = rand() % maxExprLength;
-		generateExpr(length);
-		outStr << std::endl;
-	}
 
+void CalcTest::generateTest(unsigned count, unsigned maxLen,
+                            bool useFunctions, bool vars)
+{
 	std::ofstream fcal(calcFile.c_str());
 	std::ofstream fbc(bcFile.c_str());
+
 	fcal << "define l(x) = ln(x)\n"
-			"define s(x) = sin(x)\n"
-			"define c(x) = cos(x)\n"
-			"define a(x) = atan(x)\n";
-	fcal << outStr.str();
-	fbc << outStr.str();
-	std::cout << outStr.str();
-}
+	        "define s(x) = sin(x)\n"
+	        "define c(x) = cos(x)\n"
+	        "define a(x) = atan(x)\n";
 
-void CalcTest::variablesCheck()
-{
-	std::string rname;
+	if (!vars) {
+		std::ostringstream outStr;
 
-	std::ofstream fcal(calcFile.c_str());
-	std::ofstream fbc(bcFile.c_str());
+		while (count--)
+		{
+			generateExpr(outStr, rand() % maxLen + 1, useFunctions);
+			outStr << '\n';
+		}
 
-	int count = exprCount;
-	while (--count > 0)
-	{
-		int length = rand() % maxExprLength;
-		rname = getRName();
-
-		fcal << "define " + rname + "() = ";
-		fbc << "define " + rname + "() { return (";
-		generateExpr(length);
-		fcal << outStr.str() << std::endl;
-		fbc << outStr.str() << "); }\n";
-		outStr.flush();
-		outStr << rname << "=" << rname << "();" << std::endl;
-		outStr << rname << "() !=" << rname << std::endl;
 		fcal << outStr.str();
 		fbc << outStr.str();
-		outStr.flush();
+		std::cout << outStr.str();
+	} else {
+		std::string rname;
+
+		while (count--)
+		{
+			std::ostringstream outStr;
+			rname = getRName();
+			fcal << "define " + rname + "() = ";
+			fbc  << "define " + rname + "() { return (";
+			generateExpr(outStr, rand() % maxLen + 1, useFunctions);
+			fcal << outStr.str() << '\n' ;
+			fbc  << outStr.str() << "); }\n";
+			std::cout << outStr.str() << '\n';
+
+			fcal << rname << "=" << rname << "();\n"
+			     << rname << "() !=" << rname << '\n';
+			fbc  << rname << "=" << rname << "();\n"
+			     << rname << "() !=" << rname << '\n';
+		}
 	}
 }
 

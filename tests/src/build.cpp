@@ -17,7 +17,7 @@ int main (int argc, char *argv[])
 	int maxExpr = DEFAULT_MAXEXPR;
 	bool useFunctions = false;
 	bool varCheck = false;
-	
+
 	int i = 1;
 	for ( ; i < argc && argv[i][0] == '-' && argv[i][1]; ++i)
 	{
@@ -32,8 +32,8 @@ int main (int argc, char *argv[])
 			switch (*ch)
 			{
 			case 'f':
-				useFunctions = true;               
-				break;			
+				useFunctions = true;
+				break;
 			case 'v':
 				varCheck = true;
 				break;
@@ -48,16 +48,8 @@ int main (int argc, char *argv[])
 			}
 		}
 	}
-	
-	CalcTest test(count, maxExpr, "testcalc", "testbc");
 
-	test.setUsingFunctions(useFunctions);
-	
-	if(!varCheck)
-		test.runTest();
-	else
-		test.variablesCheck();
+	CalcTest test("testcalc", "testbc");
+	test.generateTest(count, maxExpr, useFunctions, varCheck);
 	return 0;
 }
-
-
