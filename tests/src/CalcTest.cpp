@@ -5,6 +5,7 @@
 #include <iostream>
 #include "CalcTest.h"
 #include <fstream>
+#include <time.h>
 
 #define MAX_EXPONENT 10
 
