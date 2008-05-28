@@ -16,7 +16,7 @@ goto END
 cd src
 rem Trying to use Bison if available
 bison parser.y
-if not errorlevel 0 goto CPY_PARSER
+if %errorlevel% GTR 0 goto CPY_PARSER
 
 
 :INSTALL
@@ -31,7 +31,8 @@ goto END
 
 
 :CPY_PARSER
-@echo Bison is not installed, trying to compile with own parser.
+cd ..
+@echo Bison is not installed or too old, trying to compile with own parser.
 copy /Y msvc\*.* src
 cd src
 goto INSTALL
@@ -47,6 +48,7 @@ goto END
 @echo Boost libraries are unavailable.
 @echo Please define environment variable BOOST_PATH. Example:
 @echo set BOOST_PATH="C:\Program Files\boost\boost_1_34_1"
+set ERRORLEVEL=1
 goto END
 
 :END

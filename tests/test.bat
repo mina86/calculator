@@ -8,7 +8,7 @@ set BUILD=%TEST_SRC%\build
 set COMP=%TEST_SRC%\comp
 
 if "x%1" == "x-h" goto USAGE
-goto BUILD_ENV
+goto CHECK_CMD
 
 :USAGE
 	echo usage: $0 [option]
@@ -16,24 +16,30 @@ goto BUILD_ENV
 	echo         xx  where xx is number of tests executed
 	goto END
 
+:CHECK_CMD
+if "!TEST_SRC!" == "src" goto BUILD_ENV
+echo Please run first 'cmd /V'. It enables dynamic variable substitution.
+goto END
+	
+	
 :BUILD_ENV
 rem Checking if bc is available
 echo 'bc' is required to run tests.
 echo Checking for 'bc' program...
 echo 2+1 | %BC% -l > nul
-if not ERRORLEVEL 0 goto BCERR
+if %errorlevel% GTR 0 goto BCERR
 
 echo "Building environment"
 
 cd ..
 call make.bat
-if not ERRORLEVEL 0 exit %ERRORLEVEL%
+if %errorlevel% GTR 0 exit %ERRORLEVEL%
 @echo off
 cd tests\src
 call "%VS80COMNTOOLS%vsvars32.bat"
 call "%VS90COMNTOOLS%vsvars32.bat"
 nmake -f make_m8.mak
-if not ERRORLEVEL 0 exit %ERRORLEVEL%
+if %errorlevel% GTR 0 exit %ERRORLEVEL%
 cd ..
 
 echo "Testing correctness of calculating programs, bc and calc."
@@ -49,7 +55,7 @@ set TEST_ARG2=-f
 set TEST_ARG3=-v
 
 rem Running 3 tests...
-set i=0
+set i=1
 :TEST
 echo Testing !TEST_MSG%i%!...
 
@@ -62,8 +68,8 @@ echo %j% / %TEST_NUM%:
 		%BC% -l < testbc > cal2
 
 		%COMP% cal1 cal2
-		if ERRORLEVEL 0 echo ok.
-		if not ERRORLEVEL 0 exit 1
+		if %errorlevel% == 0 echo ok.
+		if %errorlevel% GTR 0 exit 1
 
 if "%j%" == "%TEST_NUM%" goto NEXT_TEST
 set /A j=%j%+1
