@@ -1,6 +1,6 @@
 /** \file
  * Calculator functions implementation.
- * $Id: functions.cpp,v 1.6 2008/05/22 13:45:20 mina86 Exp $
+ * $Id: functions.cpp,v 1.7 2008/05/28 00:52:49 kuba Exp $
  */
 #ifndef H_VARIABLES_HPP
 #define H_VARIABLES_HPP
@@ -8,6 +8,7 @@
 #include "functions.hpp"
 #include "exceptions.hpp"
 #include "math.hpp"
+#include "environment.hpp"
 
 #include <vector>
 
