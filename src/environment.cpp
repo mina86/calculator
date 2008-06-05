@@ -1,6 +1,6 @@
 /** \file
  * Enviroment defintion.
- * $Id: environment.cpp,v 1.6 2008/05/20 21:20:42 mina86 Exp $
+ * $Id: environment.cpp,v 1.7 2008/06/05 20:35:34 mina86 Exp $
  */
 #include "config.hpp"
 
@@ -17,9 +17,8 @@ namespace calc {
 
 Environment::~Environment() {
 	Functions::iterator it = functions().begin(), end = functions().end();
-	while (it != end) {
+	for (; it != end; ++it) {
 		it->second->free();
-		++it;
 	}
 }
 
