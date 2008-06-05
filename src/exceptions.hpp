@@ -1,6 +1,6 @@
 /** \file
  * Exception definitions.
- * $Id: exceptions.hpp,v 1.8 2008/05/22 08:52:25 mina86 Exp $
+ * $Id: exceptions.hpp,v 1.9 2008/06/05 20:36:27 mina86 Exp $
  */
 #ifndef H_EXCEPTIONS_HPP
 #define H_EXCEPTIONS_HPP
@@ -80,15 +80,6 @@ struct NoSuchFunction : public FunctionException {
         : FunctionException("no such function: " + msg) {}
 };
 
-/**
- * Exception thrown when function that is defined by user has same
- * name as bulit-in function.
- */
-struct BuiltInFunctionAmbiguity : public FunctionException {
-	/** Constructors exception. */
-	BuiltInFunctionAmbiguity(const std::string &msg) throw()
-        : FunctionException("ambiguity with built-in function: " + msg) {}
-};
 
 }
 
