@@ -1,6 +1,6 @@
 /** \file
  * User Function class definition.
- * $Id: user-function.cpp,v 1.6 2008/04/26 19:08:28 kuba Exp $
+ * $Id: user-function.cpp,v 1.7 2008/06/05 20:37:59 mina86 Exp $
  */
 
 #include "config.hpp"
@@ -33,13 +33,10 @@ real UserFunction::execute(Environment &env, const Arguments &args) const
 	throwIfArgumentsCountNotOK(args.size());
 
 	std::auto_ptr<Environment::Variables> vars(new Environment::Variables());
-	Names::const_iterator ni(names.begin()), ne(names.end());
-	Arguments::const_iterator it(args.begin());
-	for (; ni != ne; ++ni, ++it) {
-		vars->insert(std::make_pair(*ni, *it));
-	}
-
-	return env.executeInNewScope(expr, vars.release());
+	std::transform(names.begin(), names.end(), args.begin(),
+	               std::inserter(*vars, vars->begin()),
+	               &std::make_pair<const std::string, real>);
+	return env.executeInNewScope(expr, vars);
 }
 
 
@@ -49,13 +46,11 @@ real UserFunction::execute(Environment &env,
 	throwIfArgumentsCountNotOK(args.size());
 
 	std::auto_ptr<Environment::Variables> vars(new Environment::Variables());
-	Names::const_iterator ni(names.begin()), ne(names.end());
-	std::vector<Expression*>::const_iterator it(args.begin());
-	for (; ni != ne; ++ni, ++it) {
-		vars->insert(std::make_pair(*ni, (*it)->execute(env)));
-	}
-
-	return env.executeInNewScope(expr, vars.release());
+	std::transform(names.begin(), names.end(),
+	               Expression::executor_iterator(args.begin(), env),
+	               std::inserter(*vars, vars->begin()),
+	               &std::make_pair<const std::string, real>);
+	return env.executeInNewScope(expr, vars);
 }
 
 }
