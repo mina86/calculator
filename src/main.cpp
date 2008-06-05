@@ -581,10 +581,12 @@ int main(int argc, char **argv) {
 	}
 
 
-	/** Create environment. */
+	/* Create environment. */
 	calc::Environment *env = verbose
 		? new VerboseEnvironment(precision, fprecision)
 		: new calc::Environment(precision, fprecision);
+	/* So we won't have to bother freeing */
+	std::auto_ptr<calc::Environment> _env(env);
 
 
 	/* Register constants */
@@ -668,7 +670,6 @@ int main(int argc, char **argv) {
 
 
 	/* Finish */
-	delete env;
 	return 0;
 }
 
