@@ -1,6 +1,6 @@
 /** \file
  * Calculator functions implementation.
- * $Id: functions.cpp,v 1.7 2008/05/28 00:52:49 kuba Exp $
+ * $Id: functions.cpp,v 1.8 2008/06/05 20:37:20 mina86 Exp $
  */
 #ifndef H_VARIABLES_HPP
 #define H_VARIABLES_HPP
@@ -10,6 +10,7 @@
 #include "math.hpp"
 #include "environment.hpp"
 
+#include <algorithm>
 #include <vector>
 
 namespace calc {
@@ -88,26 +89,14 @@ bool OneOrMoreArgFunction::argumentsCountOK(unsigned count) const {
 
 real min::execute(Environment &env, const Arguments &args) const {
 	Arguments::size_type size = args.size();
-	(void)env; throwIfArgumentsCountNotOK(size); \
-	const real *it = &args[0];
-	real val = *it;
-	while (--size) {
-		const real v = *++it;
-		if (v < val) val = v;
-	}
-	return val;
+	(void)env; throwIfArgumentsCountNotOK(size);
+	return *std::min_element(args.begin(), args.end());
 }
 
 real max::execute(Environment &env, const Arguments &args) const {
 	Arguments::size_type size = args.size();
-	(void)env; throwIfArgumentsCountNotOK(size); \
-	const real *it = &args[0];
-	real val = *it;
-	while (--size) {
-		const real v = *++it;
-		if (v > val) val = v;
-	}
-	return val;
+	(void)env; throwIfArgumentsCountNotOK(size);
+	return *std::max_element(args.begin(), args.end());
 }
 
 real avg::execute(Environment &env, const Arguments &args) const {
