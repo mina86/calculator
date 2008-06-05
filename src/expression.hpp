@@ -1,6 +1,6 @@
 /** \file
  * Expression declarations.
- * $Id: expression.hpp,v 1.10 2008/05/22 09:47:37 mina86 Exp $
+ * $Id: expression.hpp,v 1.11 2008/06/05 20:36:43 mina86 Exp $
  */
 #ifndef H_EXPRESSION_HPP
 #define H_EXPRESSION_HPP
@@ -23,6 +23,56 @@ struct CommaExpression;
 
 /** An abstract expression class. */
 struct Expression {
+	/** Input iterator adatpter executing expressions in given environment. */
+	template<class InputIterator>
+	struct executor_iterator_type {
+		typedef std::input_iterator_tag                 iterator_category;
+		typedef real                                    value_type;
+		typedef typename InputIterator::difference_type difference_type;
+		typedef value_type                             *pointer;
+		typedef value_type                             &reference;
+
+		/**
+		 * Constructor.
+		 * \param i iterator's potision.
+		 * \param e environment to execute expression in.
+		 */
+		executor_iterator_type(const InputIterator &i, Environment &e) :
+			it(i), env(e) { }
+
+		/** Increments iterator. */
+		executor_iterator_type &operator++() { ++it; return *this; }
+		/** Increments iterator. */
+		executor_iterator_type operator++(int) {
+			return executor_iterator_type(it++, env);
+		}
+		/** Executes expression. */
+		real operator*() { return (*it)->execute(env); }
+		/** Compares two iterators. */
+		bool operator==(const executor_iterator_type &i) { return i.it==it; }
+		/** Compares two iterators. */
+		bool operator!=(const executor_iterator_type &i) { return i.it!=it; }
+
+	private:
+		/** Iterator's position. */
+		InputIterator it;
+		/** Environment to execute expression in. */
+		Environment &env;
+	};
+
+	/**
+	 * Returns input iterator adapter executing expressions in given
+	 * environment.
+	 * \param i iterator's potision.
+	 * \param e environment to execute expression in.
+	 */
+	template<class InputIterator>
+	static executor_iterator_type<InputIterator>
+	executor_iterator(const InputIterator &i, Environment &e) {
+		return executor_iterator_type<InputIterator>(i, e);
+	}
+
+
 	/**
 	 * Evaluats expression in given environment.
 	 * \param env environment to execute expression in.
