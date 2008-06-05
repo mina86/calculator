@@ -1,6 +1,6 @@
 /** \file
  * Enviroment declaration.
- * $Id: environment.hpp,v 1.13 2008/05/22 10:32:59 mina86 Exp $
+ * $Id: environment.hpp,v 1.14 2008/06/05 20:35:59 mina86 Exp $
  */
 #ifndef H_ENVIRONMENT_HPP
 #define H_ENVIRONMENT_HPP
@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 #include "exceptions.hpp"
 #include "expression.hpp"
@@ -119,7 +120,7 @@ struct Environment {
 	 * \param scope initial variables in scope; this object will be
 	 *              deleted after function returns or throws exception.
 	 */
-	real executeInNewScope(Expression *expr, Variables *scope) {
+	real executeInNewScope(Expression *expr, std::auto_ptr<Variables> scope) {
 		NewScope local_scope(_stack, scope);
 		return expr->execute(*this);
 	}
@@ -184,13 +185,23 @@ private:
 		/**
 		 * Constructor using given scope as a new local scope on stack.
 		 * \param s stack to create new scope on.
+		 */
+		explicit NewScope(Stack &s) : stack(s) {
+			std::auto_ptr<Variables> vars(new Variables());
+			stack.push_back(vars.get());
+			vars.release();
+		}
+
+		/**
+		 * Constructor using given scope as a new local scope on stack.
+		 * \param s stack to create new scope on.
 		 * \param vars object to use as a new local scope; it will be
 		 *             deleted when object is destroyed or constructor
 		 *             throws exception.
 		 */
-		NewScope(Stack &s, Variables *vars = new Variables()) : stack(s) {
-			try { stack.push_back(vars); }
-			catch (...) { delete vars; throw; }
+		NewScope(Stack &s, std::auto_ptr<Variables> vars) : stack(s) {
+			stack.push_back(vars.get());
+			vars.release();
 		}
 
 		/** Discards top-level scope from the stack. */
