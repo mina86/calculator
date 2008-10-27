@@ -1,0 +1,6 @@
+*.o
+*.hh
+calc
+parser.cpp
+parser.hpp
+parser.output

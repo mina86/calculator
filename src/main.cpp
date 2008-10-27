@@ -138,8 +138,8 @@
  *     <td>z lewej do prawej</td>
  *   </tr>
  *   <tr>
- *     <td>Operator warunkowy</td>
- *     <td><tt>?:</tt></td>
+ *     <td>Operator pêtli i warunkowy</td>
+ *     <td><tt>@: ?:</tt></td>
  *     <td>z prawej do lewej</td>
  *   </tr>
  *   <tr>
@@ -172,6 +172,15 @@
  *
  * Operator <tt>^^</tt> oznacza logiczny XOR i&nbsp;zasadniczo <tt>a
  * ^^ b</tt> jest równowa¿ne <tt>!a != !b</tt>.
+ *
+ * Operator <tt>@:</tt> to operator odpowiadaj±cy instrukcji
+ * <tt>while</tt> z innych jêzyków programowania.  Dopóki pierwsze
+ * wyra¿enie daje warto¶æ prawdziw± wykonywane jest drugie.
+ * Rezultatem wyra¿enia jest wynik trzeciego wyra¿enia.  W trakcie
+ * wyliczania warto¶ci dostêpne s± dwie sta³e: <tt>#it</tt>
+ * okreslaj±ca numer iteracji (licz±c od zera) oraz <tt>#last</tt>
+ * okre¶laj±ca ostatni± wyliczon± warto¶æ wyra¿enia cia³a pêtli (na
+ * pocz±tku inicjowane na zero).
  *
  * Nale¿y zwróciæ uwagê na operatory logiczne oraz operatory, które
  * jako operandy przyjmuj± warto¶ci logiczne.  W&nbsp;kalkulatorze
@@ -271,6 +280,16 @@
  *     <tr>
  *       <td><tt>sqrt1_2</tt></td>
  *       <td>Odwrotno¶æ pierwiastka kwadratowego z&nbsp;dwóch.</td>
+ *     </tr>
+ *     <tr>
+ *       <td><tt>it</tt></td>
+ *       <td>Numer iteracji (licz±c od zera) pêtli -- dostêpne tylko
+ *         wewn±trz instrukcji pêtli.</td>
+ *     </tr>
+ *     <tr>
+ *       <td><tt>last</tt></td>
+ *       <td>Rezultat ostatnio wyliczonego wyra¿nia cia³a pêtli --
+ *         dostêpne tylko wewn±trz instrukcji pêtli.</td>
  *     </tr>
  * </table>
  *
@@ -391,6 +410,20 @@
  *     <tr>
  *       <td><tt>avg(...)</tt></td>
  *       <td>Zwraca ¶redni± arytmtyczn± z&nbsp;argumentów.</td>
+ *     </tr>
+ *     <tr>
+ *       <td><tt>braek(x) break(x, n)</tt></td>
+ *       <td>Ucieka z <tt>n</tt> (domy¶lnie jeden) poziomów instrukcji
+ *         pêtli jako wynik instrukcji daj±c <tt>x</tt>.  Je¿eli
+ *         n jest mniejsze od jednej czwartej po prostu zwraca
+ *         <tt>x</tt>.</td>
+ *     </tr>
+ *     <tr>
+ *       <td><tt>return(x) return(x, n)</tt></td>
+ *       <td>Ucieka z <tt>n</tt> (domy¶lnie jeden) poziomów wywo³añ
+ *         funkcji u¿ytkownika daj±c <tt>x</tt>.  Je¿eli n jest
+ *         mniejsze od jednej czwartej po prostu zwraca
+ *         <tt>x</tt>.</td>
  *     </tr>
  * </table>
  *
@@ -627,29 +660,31 @@ int main(int argc, char **argv) {
 	/* Register functions */
 	{
 		calc::Environment::Functions &funcs = env->functions();
-		funcs["sqrt" ] = calc::builtin::sqrt::get();
-		funcs["cbrt" ] = calc::builtin::cbrt::get();
-		funcs["e"    ] = calc::builtin::exp::get();
-		funcs["exp"  ] = calc::builtin::exp::get();
-		funcs["log"  ] = calc::builtin::log::get();
-		funcs["ln"   ] = calc::builtin::log::get();
-		funcs["log10"] = calc::builtin::log10::get();
-		funcs["log2" ] = calc::builtin::log2::get();
-		funcs["cos"  ] = calc::builtin::cos::get();
-		funcs["sin"  ] = calc::builtin::sin::get();
-		funcs["tan"  ] = calc::builtin::tan::get();
-		funcs["acos" ] = calc::builtin::acos::get();
-		funcs["asin" ] = calc::builtin::asin::get();
-		funcs["atan" ] = calc::builtin::atan::get();
-		funcs["cosh" ] = calc::builtin::cosh::get();
-		funcs["sinh" ] = calc::builtin::sinh::get();
-		funcs["tanh" ] = calc::builtin::tanh::get();
-		funcs["acosh"] = calc::builtin::acosh::get();
-		funcs["asinh"] = calc::builtin::asinh::get();
-		funcs["atanh"] = calc::builtin::atanh::get();
-		funcs["min"  ] = calc::builtin::min::get();
-		funcs["max"  ] = calc::builtin::max::get();
-		funcs["avg"  ] = calc::builtin::avg::get();
+		funcs["sqrt"  ] = calc::builtin::sqrt::get();
+		funcs["cbrt"  ] = calc::builtin::cbrt::get();
+		funcs["e"     ] = calc::builtin::exp::get();
+		funcs["exp"   ] = calc::builtin::exp::get();
+		funcs["log"   ] = calc::builtin::log::get();
+		funcs["ln"    ] = calc::builtin::log::get();
+		funcs["log10" ] = calc::builtin::log10::get();
+		funcs["log2"  ] = calc::builtin::log2::get();
+		funcs["cos"   ] = calc::builtin::cos::get();
+		funcs["sin"   ] = calc::builtin::sin::get();
+		funcs["tan"   ] = calc::builtin::tan::get();
+		funcs["acos"  ] = calc::builtin::acos::get();
+		funcs["asin"  ] = calc::builtin::asin::get();
+		funcs["atan"  ] = calc::builtin::atan::get();
+		funcs["cosh"  ] = calc::builtin::cosh::get();
+		funcs["sinh"  ] = calc::builtin::sinh::get();
+		funcs["tanh"  ] = calc::builtin::tanh::get();
+		funcs["acosh" ] = calc::builtin::acosh::get();
+		funcs["asinh" ] = calc::builtin::asinh::get();
+		funcs["atanh" ] = calc::builtin::atanh::get();
+		funcs["min"   ] = calc::builtin::min::get();
+		funcs["max"   ] = calc::builtin::max::get();
+		funcs["avg"   ] = calc::builtin::avg::get();
+		funcs["break" ] = calc::builtin::Break::get();
+		funcs["return"] = calc::builtin::Return::get();
 	}
 
 
@@ -724,31 +759,35 @@ static void helpSyntax() {
 
 static void listFunc() {
 	std::cout << "Available funxtions:\n"
-		"  sqrt(x)   returns square root of x\n"
-		"  cbrt(x)   returns cube root of x\n"
-		"  e(x)      synonym of exp(x)\n"
-		"  exp(x)    returns e raised to the power of x\n"
-		"  log(x)    returns the natural logarithm of x\n"
-		"  log(x,y)  returns base y logarithm of x\n"
-		"  ln(x)     synonym of log(x)\n"
-		"  log10(x)  returns base 10 logarithm of x\n"
-		"  log2(x)   returns base 2 logarithm of x\n"
-		"  cos(x)    returns cosine of x (given in radians)\n"
-		"  sin(x)    returns sine of x (given in radians)\n"
-		"  tan(x)    returns tangent of x (given in radians)\n"
-		"  acos(x)   returns arc cosine of x (given in radians)\n"
-		"  asin(x)   returns arc sine of x (given in radians)\n"
-		"  atan(x)   returns arc tangent of x (given in radians)\n"
-		"  atan(x,y) returns arc tangent of y/x (given in radians)\n"
-		"  cosh(x)   returns hyperbolic cosine of x\n"
-		"  sinh(x)   returns hyperbolic sine of x\n"
-		"  tanh(x)   returns hyperbolic tangent od x\n"
-		"  acosh(x)  is an inverse of cosh\n"
-		"  asinh(x)  is an inverse of sinh\n"
-		"  atanh(x)  is an inverse of tanh\n"
-		"  min(...)  returns smallest argument\n"
-		"  max(...)  returns biggest argument\n"
-		"  avg(...)  returns average of arguments\n";
+		"  sqrt(x)     returns square root of x\n"
+		"  cbrt(x)     returns cube root of x\n"
+		"  e(x)        synonym of exp(x)\n"
+		"  exp(x)      returns e raised to the power of x\n"
+		"  log(x)      returns the natural logarithm of x\n"
+		"  log(x,y)    returns base y logarithm of x\n"
+		"  ln(x)       synonym of log(x)\n"
+		"  log10(x)    returns base 10 logarithm of x\n"
+		"  log2(x)     returns base 2 logarithm of x\n"
+		"  cos(x)      returns cosine of x (given in radians)\n"
+		"  sin(x)      returns sine of x (given in radians)\n"
+		"  tan(x)      returns tangent of x (given in radians)\n"
+		"  acos(x)     returns arc cosine of x (given in radians)\n"
+		"  asin(x)     returns arc sine of x (given in radians)\n"
+		"  atan(x)     returns arc tangent of x (given in radians)\n"
+		"  atan(x,y)   returns arc tangent of y/x (given in radians)\n"
+		"  cosh(x)     returns hyperbolic cosine of x\n"
+		"  sinh(x)     returns hyperbolic sine of x\n"
+		"  tanh(x)     returns hyperbolic tangent od x\n"
+		"  acosh(x)    an inverse of cosh\n"
+		"  asinh(x)    an inverse of sinh\n"
+		"  atanh(x)    an inverse of tanh\n"
+		"  min(...)    returns smallest argument\n"
+		"  max(...)    returns biggest argument\n"
+		"  avg(...)    returns average of arguments\n"
+		"  break(x)    breaks from a loop with x as expression's value\n"
+		"  break(x,n)  breaks from n loops with x as expression's value\n"
+		"  return(x)   breaks from a function with x as return value\n"
+		"  return(x,n) breaks from n functions with x as return value\n";
 }
 
 
@@ -782,7 +821,7 @@ static void listOp() {
 		"  Logic and       &&                 left-to-right\n"
 		"  Logic xor       ^^                 left-to-right\n"
 		"  Logic or        ||                 left-to-right\n"
-		"  Ternary         ?:                 right-to-left\n"
+		"  Ternary         ?: @:              right-to-left\n"
 		"  Assigment       = += -= *= /= ^=   right-to-left\n"
 		"  Comma           ,                  left-to-right\n";
 }

@@ -1,6 +1,5 @@
 /** \file
  * Exception definitions.
- * $Id: exceptions.hpp,v 1.9 2008/06/05 20:36:27 mina86 Exp $
  */
 #ifndef H_EXCEPTIONS_HPP
 #define H_EXCEPTIONS_HPP

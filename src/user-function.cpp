@@ -1,8 +1,6 @@
 /** \file
  * User Function class definition.
- * $Id: user-function.cpp,v 1.7 2008/06/05 20:37:59 mina86 Exp $
  */
-
 #include "config.hpp"
 
 #include <memory>
@@ -36,7 +34,17 @@ real UserFunction::execute(Environment &env, const Arguments &args) const
 	std::transform(names.begin(), names.end(), args.begin(),
 	               std::inserter(*vars, vars->begin()),
 	               &std::make_pair<const std::string, real>);
-	return env.executeInNewScope(expr, vars);
+
+	try {
+		return env.executeInNewScope(expr, vars);
+	}
+	catch (ReturnException &e) {
+		if (e.end()) {
+			return e.getValue();
+		} else {
+			throw;
+		}
+	}
 }
 
 
@@ -50,7 +58,16 @@ real UserFunction::execute(Environment &env,
 	               Expression::executor_iterator(args.begin(), env),
 	               std::inserter(*vars, vars->begin()),
 	               &std::make_pair<const std::string, real>);
-	return env.executeInNewScope(expr, vars);
+	try {
+		return env.executeInNewScope(expr, vars);
+	}
+	catch (ReturnException &e) {
+		if (e.end()) {
+			return e.getValue();
+		} else {
+			throw;
+		}
+	}
 }
 
 }

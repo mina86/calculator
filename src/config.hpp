@@ -1,7 +1,6 @@
 /** \file
  * A configuration file which should be modified accordingly to host's
  * C++ implementation.
- * $Id: config.hpp,v 1.3 2008/04/12 02:03:34 mina86 Exp $
  */
 
 #ifndef H_CONFIG_HPP

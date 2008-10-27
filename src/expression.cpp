@@ -1,6 +1,5 @@
 /** \file
  * Expression method definitions.
- * $Id: expression.cpp,v 1.10 2008/05/22 08:52:25 mina86 Exp $
  */
 
 #include "config.hpp"
@@ -199,6 +198,83 @@ CommaExpression *CommaExpression::commaExpression() {
 	return this;
 }
 
+
+namespace {
+	/** Saves value of a variable and restores it when object is destroyed. */
+	struct SaveOldValue {
+		/**
+		 * Constructor.
+		 * \param m map object will operate on.
+		 * \param n name of the value.
+		 */
+		SaveOldValue(Environment::Variables &m, const std::string n)
+			: map(m), name(n) {
+			Environment::Variables::iterator it = map.find(name);
+			wasSet = it != map.end();
+			if (wasSet) oldValue = it->second;
+		}
+
+		/** Restores previous state of the variable. */
+		~SaveOldValue() {
+			if (wasSet) {
+				*this = oldValue;
+			} else {
+				map.erase(map.find(name));
+			}
+		}
+
+		/**
+		 * Assigns value to a variable.
+		 * \param val the value.
+		 */
+		real &operator=(real val) {
+			return map[name] = val;
+		}
+
+	private:
+		/** The map to operate on. */
+		Environment::Variables &map;
+		/** Variable's name. */
+		const std::string &name;
+		/** Whether the variable was set. */
+		bool wasSet;
+		/** Old value of the variable. */
+		real oldValue;
+	};
+}
+
+
+WhileExpression::~WhileExpression() {
+	delete cond;
+}
+
+real WhileExpression::execute(Environment &env) const {
+	static const std::string it_name("it");
+	static const std::string last_name("last");
+
+	SaveOldValue it(env.constants(), it_name);
+	SaveOldValue last(env.constants(), last_name);
+
+	last = 0.0;
+	try {
+		for (real i = 0; it = i, cond->boolean(env); i += 1.0) {
+			last = expr1->execute(env);
+		}
+
+		return expr2->execute(env);
+	}
+	catch (BreakException &e) {
+		if (e.end()) {
+			return e.getValue();
+		} else {
+			throw;
+		}
+	}
+}
+
+IfExpression::~IfExpression() {
+	delete cond;
+}
 
 real IfExpression::execute(Environment &env) const {
 	return cond->boolean(env) ? expr1->execute(env) : expr2->execute(env);

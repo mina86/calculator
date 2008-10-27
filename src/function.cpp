@@ -1,6 +1,5 @@
 /** \file
  * Function class virtual methods definitions.
- * $Id: function.cpp,v 1.2 2008/06/05 20:37:04 mina86 Exp $
  */
 #include "function.hpp"
 #include "expression.hpp"

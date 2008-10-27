@@ -1,6 +1,5 @@
 /** \file
  * Calculator functions implementation.
- * $Id: functions.cpp,v 1.8 2008/06/05 20:37:20 mina86 Exp $
  */
 #ifndef H_VARIABLES_HPP
 #define H_VARIABLES_HPP
@@ -110,6 +109,29 @@ real avg::execute(Environment &env, const Arguments &args) const {
 	return val / args.size();
 }
 
+
+
+real Break::execute(Environment &env, const Arguments &args) const {
+	Arguments::size_type size = args.size();
+	(void)env; throwIfArgumentsCountNotOK(size);
+	real levels = size == 1 ? 1 : args[1];
+	if (levels < 0.25) {
+		return args[0];
+	} else {
+		throw BreakException(args[0], size == 1 ? 1 : args[1]);
+	}
+}
+
+real Return::execute(Environment &env, const Arguments &args) const {
+	Arguments::size_type size = args.size();
+	(void)env; throwIfArgumentsCountNotOK(size);
+	real levels = size == 1 ? 1 : args[1];
+	if (levels < 0.25) {
+		return args[0];
+	} else {
+		throw ReturnException(args[0], size == 1 ? 1 : args[1]);
+	}
+}
 
 }
 

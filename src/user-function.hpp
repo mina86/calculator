@@ -1,6 +1,5 @@
 /** \file
  * User Function class declaration.
- * $Id: user-function.hpp,v 1.6 2008/04/26 19:08:28 kuba Exp $
  */
 #ifndef H_USER_FUNCTION_HPP
 #define H_USER_FUNCTION_HPP

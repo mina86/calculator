@@ -1,6 +1,5 @@
 /** \file
  * Lexer reading from FILE stream implementation.
- * $Id: file-lexer.cpp,v 1.12 2008/05/22 10:32:59 mina86 Exp $
  */
 #include "math.hpp"
 #include "exceptions.hpp"

@@ -1,6 +1,5 @@
 /** \file
  * Calculator functions.
- * $Id: functions.hpp,v 1.6 2008/05/22 13:45:20 mina86 Exp $
  */
 #ifndef H_FUNCTIONS_HPP
 #define H_FUNCTIONS_HPP
@@ -54,27 +53,29 @@ struct OneOrMoreArgFunction : public Function {
 		static func *get() { static func singleton; return &singleton; } \
 	}
 
-	CALC_FUNC(sqrt , One);
-	CALC_FUNC(cbrt , One);
-	CALC_FUNC(exp  , One);
-	CALC_FUNC(log  , OneOrTwo);
-	CALC_FUNC(log10, One);
-	CALC_FUNC(log2 , One);
-	CALC_FUNC(cos  , One);
-	CALC_FUNC(sin  , One);
-	CALC_FUNC(tan  , One);
-	CALC_FUNC(cosh , One);
-	CALC_FUNC(sinh , One);
-	CALC_FUNC(tanh , One);
-	CALC_FUNC(acos , One);
-	CALC_FUNC(asin , One);
-	CALC_FUNC(atan , OneOrTwo);
-	CALC_FUNC(acosh, One);
-	CALC_FUNC(asinh, One);
-	CALC_FUNC(atanh, One);
-	CALC_FUNC(min  , OneOrMore);
-	CALC_FUNC(max  , OneOrMore);
-	CALC_FUNC(avg  , OneOrMore);
+	CALC_FUNC(sqrt  , One);
+	CALC_FUNC(cbrt  , One);
+	CALC_FUNC(exp   , One);
+	CALC_FUNC(log   , OneOrTwo);
+	CALC_FUNC(log10 , One);
+	CALC_FUNC(log2  , One);
+	CALC_FUNC(cos   , One);
+	CALC_FUNC(sin   , One);
+	CALC_FUNC(tan   , One);
+	CALC_FUNC(cosh  , One);
+	CALC_FUNC(sinh  , One);
+	CALC_FUNC(tanh  , One);
+	CALC_FUNC(acos  , One);
+	CALC_FUNC(asin  , One);
+	CALC_FUNC(atan  , OneOrTwo);
+	CALC_FUNC(acosh , One);
+	CALC_FUNC(asinh , One);
+	CALC_FUNC(atanh , One);
+	CALC_FUNC(min   , OneOrMore);
+	CALC_FUNC(max   , OneOrMore);
+	CALC_FUNC(avg   , OneOrMore);
+	CALC_FUNC(Break , OneOrTwo);
+	CALC_FUNC(Return, OneOrTwo);
 
 #undef CALC_FUNC
 

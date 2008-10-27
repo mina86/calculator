@@ -1,6 +1,5 @@
 /** \file
  * Expression declarations.
- * $Id: expression.hpp,v 1.11 2008/06/05 20:36:43 mina86 Exp $
  */
 #ifndef H_EXPRESSION_HPP
 #define H_EXPRESSION_HPP
@@ -77,6 +76,8 @@ struct Expression {
 	 * Evaluats expression in given environment.
 	 * \param env environment to execute expression in.
 	 * \return expression's result.
+	 * \throw ReturnException when 'return' pseudofunction was called.
+	 * \throw BreakException  when 'break' pseudofunction was called.
 	 */
 	virtual real execute(Environment &env) const = 0;
 
@@ -85,6 +86,8 @@ struct Expression {
 	 * result as boolean value.
 	 * \param env environment to execute expression in.
 	 * \return expression's result interpreted as boolean value.
+	 * \throw ReturnException when 'return' pseudofunction was called.
+	 * \throw BreakException  when 'break' pseudofunction was called.
 	 */
 	virtual bool boolean(Environment &env) const;
 
@@ -623,6 +626,28 @@ private:
 };
 
 
+/** A trinary @: epxression. */
+struct WhileExpression : public AtLeast2ArgExpression {
+	/**
+	 * Constructor.
+	 * \param c condition expression
+	 * \param e1 expreeession to evaluate while \a c evaluates \c true.
+	 * \param e2 expreeession to evaluate when finally \a c evaluates
+	 *           \c false.
+	 */
+	WhileExpression(Expression *c, Expression *e1, Expression *e2)
+		: AtLeast2ArgExpression(e1, e2), cond(c) { }
+
+	/** Deletes all expressions. */
+	~WhileExpression();
+
+	virtual real execute(Environment &env) const;
+
+private:
+	/** A condition expression. */
+	Expression *cond;
+};
+
 
 /** A trinary ?: epxression. */
 struct IfExpression : public AtLeast2ArgExpression {
@@ -636,9 +661,7 @@ struct IfExpression : public AtLeast2ArgExpression {
 		: AtLeast2ArgExpression(e1, e2), cond(c) { }
 
 	/** Deletes all expressions. */
-	~IfExpression() {
-		delete cond;
-	}
+	~IfExpression();
 
 	virtual real execute(Environment &env) const;
 
@@ -773,6 +796,56 @@ private:
 	Arguments *args;
 };
 
+
+
+
+
+
+
+/**
+ * Exception thrown when breaking out of the loop or returning from
+ * a function.
+ */
+struct EscapeException {
+	/** Returns whether exception's path has ended here. */
+	bool end() { return (levels -= 1.0) <= 0.25; }
+
+	/** Returns value used as a return value. */
+	real getValue() const { return retValue; }
+
+protected:
+	/**
+	 * Constructor
+	 * \param val value used as return value from.
+	 * \param lvl number of loops/functions to escape through.
+	 */
+	EscapeException(real val = 0, real lvl = 1)
+		: retValue(val), levels(lvl) { }
+
+	/**
+	 * Copy constructor.
+	 * \param e object to copy.
+	 */
+	EscapeException(const EscapeException &e)
+		: retValue(e.retValue), levels(e.levels) { }
+
+private:
+	/** Value used as return value. */
+	const real retValue;
+	/** Number of loops/functions to escape through. */
+	real levels;
+};
+
+
+/** Exception thrown when breaking out of the loop. */
+struct BreakException : public EscapeException {
+	BreakException(real val = 0, real lvl = 1) : EscapeException(val, lvl) { }
+};
+
+/** Exception thrown when returning from a function. */
+struct ReturnException : public EscapeException {
+	ReturnException(real val = 0, real lvl = 1) : EscapeException(val, lvl) {}
+};
 
 }
 

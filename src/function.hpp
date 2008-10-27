@@ -1,6 +1,5 @@
 /** \file
  * Function class declaration.
- * $Id: function.hpp,v 1.8 2008/05/20 21:20:42 mina86 Exp $
  */
 #ifndef H_FUNCTION_HPP
 #define H_FUNCTION_HPP
@@ -41,6 +40,8 @@ struct Function {
 	 * \throw InvalidNumberOfArguments if wrong number of arguments
 	 *                                 was given.
 	 * \throw NoSuchFunction if non-existing function was called.
+	 * \throw ReturnException when 'return' pseudofunction was called.
+	 * \throw BreakException  when 'break' pseudofunction was called.
 	 */
 	virtual real execute(Environment &env, const Arguments &args) const = 0;
 
@@ -53,6 +54,8 @@ struct Function {
 	 * \throw InvalidNumberOfArguments if wrong number of arguments
 	 *                                 was given.
 	 * \throw NoSuchFunction if non-existing function was called.
+	 * \throw ReturnException when 'return' pseudofunction was called.
+	 * \throw BreakException  when 'break' pseudofunction was called.
 	 */
 	virtual real execute(Environment &env,
 	                     const std::vector<Expression *> &args) const;

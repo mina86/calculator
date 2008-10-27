@@ -1,6 +1,5 @@
 /** \file
  * Defines an abstract lexer.
- * $Id: lexer.hpp,v 1.1 2008/02/08 21:47:32 mina86 Exp $
  */
 #ifndef H_LEXER_HPP
 #define H_LEXER_HPP

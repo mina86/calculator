@@ -1,6 +1,5 @@
 /** \file
  * Enviroment defintion.
- * $Id: environment.cpp,v 1.7 2008/06/05 20:35:34 mina86 Exp $
  */
 #include "config.hpp"
 
@@ -29,8 +28,13 @@ void Environment::execute(const Expression *expr, bool verbose) {
 			instruction(result);
 		}
 	}
-	catch(ExpressionException &e) {
+	catch (const ExpressionException &e) {
 		error( e.what() );
+	}
+	catch (EscapeException &e) {
+		if (verbose) {
+			instruction(e.getValue());
+		}
 	}
 }
 

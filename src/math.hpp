@@ -1,6 +1,5 @@
 /** \file
  * Wrapper around C mathematical functions.
- * $Id: math.hpp,v 1.7 2008/05/22 13:44:09 mina86 Exp $
  */
 #ifndef H_MATH_HPP
 #define H_MATH_HPP

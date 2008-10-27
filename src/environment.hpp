@@ -1,6 +1,5 @@
 /** \file
  * Enviroment declaration.
- * $Id: environment.hpp,v 1.14 2008/06/05 20:35:59 mina86 Exp $
  */
 #ifndef H_ENVIRONMENT_HPP
 #define H_ENVIRONMENT_HPP

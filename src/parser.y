@@ -80,12 +80,12 @@ int yylex(yy::Parser::semantic_type *yylval,
 
 
 %type	<expr>	assignment_expr additive_expr multiplicative_expr rel_expr
-%type	<expr>	pow_expr prefix_expr simple_expr expression cond_expr
+%type	<expr>	pow_expr prefix_expr simple_expr expression repeat_expr
 %type	<expr>	logic_or_expr logic_and_expr logic_xor_expr cmp_expr
 %type	<var>	var
 %type	<params> formal_arguments non_empty_formal_arguments
 
-%destructor	{ delete $$; } ID expression rel_expr cond_expr cmp_expr
+%destructor	{ delete $$; } ID expression rel_expr repeat_expr cmp_expr
 %destructor	{ delete $$; } assignment_expr additive_expr simple_expr
 %destructor	{ delete $$; } multiplicative_expr pow_expr prefix_expr
 %destructor	{ delete $$; } logic_or_expr logic_and_expr logic_xor_expr
@@ -163,12 +163,16 @@ assignment_expr
 		$$ = $1.setExpression(expr);
 		$3 = 0;
 	}
-	| cond_expr			{ $$ = $1; $1 = 0; }
+	| repeat_expr			{ $$ = $1; $1 = 0; }
 	;
 
-cond_expr
+repeat_expr
 	: logic_or_expr			{ $$ = $1; $1 = 0;}
-	| logic_or_expr '?' expression ':' cond_expr {
+	| logic_or_expr '@' expression ':' repeat_expr {
+		$$ = new calc::WhileExpression($1, $3, $5);
+		$1 = $3 = $5 = 0;
+	}
+	| logic_or_expr '?' expression ':' repeat_expr {
 		$$ = new calc::IfExpression($1, $3, $5);
 		$1 = $3 = $5 = 0;
 	}
