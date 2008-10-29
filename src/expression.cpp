@@ -34,12 +34,8 @@ real NumberExpression::execute(Environment &env) const {
 	return val;
 }
 
-NegExpression::~NegExpression() {
-	delete expr;
-}
-
 real NegExpression::execute(Environment &env) const {
-	return -expr->execute(env);
+	return -exec<0>(env);
 }
 
 real GetLocalExpression::execute(Environment &env) const {
@@ -81,33 +77,28 @@ real SetConstExpression::execute(Environment &env) const {
 
 
 
-AtLeast2ArgExpression::~AtLeast2ArgExpression() {
-	delete expr1;
-	delete expr2;
-}
-
 real AddExpression::execute(Environment &env) const {
-	return expr1->execute(env) + expr2->execute(env);
+	return exec<0>(env) + exec<1>(env);
 }
 
 real SubExpression::execute(Environment &env) const {
-	return expr1->execute(env) - expr2->execute(env);
+	return exec<0>(env) - exec<1>(env);
 }
 
 real MulExpression::execute(Environment &env) const {
-	return expr1->execute(env) * expr2->execute(env);
+	return exec<0>(env) * exec<1>(env);
 }
 
 real DivExpression::execute(Environment &env) const {
-	return expr1->execute(env) / expr2->execute(env);
+	return exec<0>(env) / exec<1>(env);
 }
 
 real ModExpression::execute(Environment &env) const {
-	return m::fmod(expr1->execute(env), expr2->execute(env));
+	return m::fmod(exec<0>(env), exec<1>(env));
 }
 
 real PowExpression::execute(Environment &env) const {
-	return m::pow(expr1->execute(env), expr2->execute(env));
+	return m::pow(exec<0>(env), exec<1>(env));
 }
 
 
@@ -145,12 +136,12 @@ BooleanExpression *BooleanExpression::booleanExpression() {
 }
 
 
-bool ExpressionAsBoolean::_boolean(Environment &env) const {
-	return expr->boolean(env);
-}
-
 ExpressionAsBoolean::~ExpressionAsBoolean() {
 	delete expr;
+}
+
+bool ExpressionAsBoolean::_boolean(Environment &env) const {
+	return expr->boolean(env);
 }
 
 
@@ -249,10 +240,6 @@ namespace {
 }
 
 
-WhileExpression::~WhileExpression() {
-	delete cond;
-}
-
 real WhileExpression::execute(Environment &env) const {
 	static const std::string it_name("it");
 	static const std::string last_name("last");
@@ -262,11 +249,11 @@ real WhileExpression::execute(Environment &env) const {
 
 	last = 0.0;
 	try {
-		for (real i = 0; it = i, cond->boolean(env); i += 1.0) {
-			last = expr1->execute(env);
+		for (real i = 0; it = i, is<0>(env); i += 1.0) {
+			last = exec<1>(env);
 		}
 
-		return expr2->execute(env);
+		return exec<2>(env);
 	}
 	catch (BreakException &e) {
 		if (e.end()) {
@@ -275,10 +262,6 @@ real WhileExpression::execute(Environment &env) const {
 			throw;
 		}
 	}
-}
-
-TimesExpression::~TimesExpression() {
-	delete times;
 }
 
 real TimesExpression::execute(Environment &env) const {
@@ -290,15 +273,15 @@ real TimesExpression::execute(Environment &env) const {
 
 	last = 0.0;
 	try {
-		real i = times->execute(env);
+		real i = exec<0>(env);
 		it = i;
 		while (i >= 0.25) {
-			last = expr1->execute(env);
+			last = exec<1>(env);
 			i -= 1.0;
 			it = i;
 		}
 
-		return expr2->execute(env);
+		return exec<2>(env);
 	}
 	catch (BreakException &e) {
 		if (e.end()) {
@@ -309,12 +292,8 @@ real TimesExpression::execute(Environment &env) const {
 	}
 }
 
-IfExpression::~IfExpression() {
-	delete cond;
-}
-
 real IfExpression::execute(Environment &env) const {
-	return cond->boolean(env) ? expr1->execute(env) : expr2->execute(env);
+	return is<0>(env) ? exec<1>(env) : exec<2>(env);
 }
 
 

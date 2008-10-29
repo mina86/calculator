@@ -69,6 +69,79 @@ private:
 };
 
 
+/** An abstract \a n argument expression. */
+template<unsigned n>
+struct NArgExpression : public Expression {
+	/** Deletes all arguments. */
+	~NArgExpression() {
+		for (unsigned i = 0; i < n; ++i) {
+			delete expressions[i];
+		}
+	}
+
+
+protected:
+	/**
+	 * Constructor when \a n = 1.
+	 * \param e1 first argument.
+	 */
+	explicit NArgExpression(Expression *e1) {
+		typedef int static_assert[n == 1 ? 1 : -1];
+		expressions[0] = e1;
+	}
+
+	/**
+	 * Constructor when \a n = 2.
+	 * \param e1 first argument.
+	 * \param e2 second argument.
+	 */
+	NArgExpression(Expression *e1, Expression *e2) {
+		typedef int static_assert[n == 2 ? 1 : -1];
+		expressions[0] = e1, expressions[1] = e2;
+	}
+
+	/**
+	 * Constructor when \a n = 3.
+	 * \param e1 first argument.
+	 * \param e2 second argument.
+	 * \param e2 third argument.
+	 */
+	NArgExpression(Expression *e1, Expression *e2, Expression *e3) {
+		typedef int static_assert[n == 3 ? 1 : -1];
+		expressions[0] = e1, expressions[1] = e2, expressions[2] = e3;
+	}
+
+
+	/**
+	 * Executes ith argument and returns result.
+	 * \param env environment to execute expression in.
+	 */
+	template<unsigned i>
+	real exec(Environment &env) const {
+		return expressions[i]->execute(env);
+	}
+
+	/**
+	 * Executes ith argument and returns boolean result.
+	 * \param env environment to execute expression in.
+	 */
+	template<unsigned i>
+	bool is(Environment &env) const {
+		return expressions[i]->boolean(env);
+	}
+
+
+private:
+	/** Just a helper. */
+	typedef Expression *ExpressionPtr;
+
+	/** Arguments. */
+	ExpressionPtr expressions[n];
+};
+
+
+
+
 /** A literal number expression. */
 struct NumberExpression : public Expression {
 	/**
@@ -90,23 +163,18 @@ private:
 
 
 /** A negation expression. */
-struct NegExpression : public Expression {
+struct NegExpression : public NArgExpression<1> {
 	/**
 	 * Constructor.
 	 * \param e expression to negate.
 	 */
-	explicit NegExpression(Expression *e) : expr(e) { }
-	/** Deletes expr. */
-	~NegExpression();
+	explicit NegExpression(Expression *e) : NArgExpression<1>(e) { }
+
 	/**
 	 * Returns negated value of expr.
 	 * \param env environment to run expression in.
 	 */
 	virtual real execute(Environment &env) const;
-
-private:
-	/** Expression to negate. */
-	Expression *expr;
 };
 
 
@@ -294,36 +362,15 @@ struct Variable {
 
 
 
-/** Base class for expressions taking at least two arguments. */
-struct AtLeast2ArgExpression : public Expression {
-	/** Deltes expressions. */
-	~AtLeast2ArgExpression();
-
-protected:
-	/** First operand. */
-	Expression *expr1;
-	/** Second operand. */
-	Expression *expr2;
-
-	/**
-	 * Constructor.
-	 * \param e1 first operand.
-	 * \param e2 second operand.
-	 */
-	AtLeast2ArgExpression(Expression *e1, Expression *e2)
-		: expr1(e1), expr2(e2) { }
-};
-
-
 /** An add expression. */
-struct AddExpression : public AtLeast2ArgExpression {
+struct AddExpression : public NArgExpression<2> {
 	/**
 	 * Constructor.
 	 * \param e1 first operand.
 	 * \param e2 second operand.
 	 */
 	AddExpression(Expression *e1, Expression *e2)
-		: AtLeast2ArgExpression(e1, e2) { }
+		: NArgExpression<2>(e1, e2) { }
 
 	/**
 	 * Returns sum of two expressions values.
@@ -333,14 +380,14 @@ struct AddExpression : public AtLeast2ArgExpression {
 };
 
 /** A substraction expression. */
-struct SubExpression : public AtLeast2ArgExpression {
+struct SubExpression : public NArgExpression<2> {
 	/**
 	 * Constructor.
 	 * \param e1 first operand.
 	 * \param e2 second operand.
 	 */
 	SubExpression(Expression *e1, Expression *e2)
-		: AtLeast2ArgExpression(e1, e2) { }
+		: NArgExpression<2>(e1, e2) { }
 
 	/**
 	 * Returns difference of two expressions values.
@@ -350,14 +397,14 @@ struct SubExpression : public AtLeast2ArgExpression {
 };
 
 /** A multipliaction expression. */
-struct MulExpression : public AtLeast2ArgExpression {
+struct MulExpression : public NArgExpression<2> {
 	/**
 	 * Constructor.
 	 * \param e1 first operand.
 	 * \param e2 second operand.
 	 */
 	MulExpression(Expression *e1, Expression *e2)
-		: AtLeast2ArgExpression(e1, e2) { }
+		: NArgExpression<2>(e1, e2) { }
 
 	/**
 	 * Returns product of two expressions values.
@@ -367,14 +414,14 @@ struct MulExpression : public AtLeast2ArgExpression {
 };
 
 /** A division expression. */
-struct DivExpression : public AtLeast2ArgExpression {
+struct DivExpression : public NArgExpression<2> {
 	/**
 	 * Constructor.
 	 * \param e1 first operand.
 	 * \param e2 second operand.
 	 */
 	DivExpression(Expression *e1, Expression *e2)
-		: AtLeast2ArgExpression(e1, e2) { }
+		: NArgExpression<2>(e1, e2) { }
 
 	/**
 	 * Returns quotient of two expressions values.
@@ -384,14 +431,14 @@ struct DivExpression : public AtLeast2ArgExpression {
 };
 
 /** A division modulo expression. */
-struct ModExpression : public AtLeast2ArgExpression {
+struct ModExpression : public NArgExpression<2> {
 	/**
 	 * Constructor.
 	 * \param e1 first operand.
 	 * \param e2 second operand.
 	 */
 	ModExpression(Expression *e1, Expression *e2)
-		: AtLeast2ArgExpression(e1, e2) { }
+		: NArgExpression<2>(e1, e2) { }
 
 	/**
 	 * Returns reminder of two expressions values.
@@ -401,20 +448,67 @@ struct ModExpression : public AtLeast2ArgExpression {
 };
 
 /** An exponentiation expression. */
-struct PowExpression : public AtLeast2ArgExpression {
+struct PowExpression : public NArgExpression<2> {
 	/**
 	 * Constructor.
 	 * \param e1 first operand.
 	 * \param e2 second operand.
 	 */
 	PowExpression(Expression *e1, Expression *e2)
-		: AtLeast2ArgExpression(e1, e2) { }
+		: NArgExpression<2>(e1, e2) { }
 
 	/**
 	 * Returns value of one expression raised to the power of value of
 	 * the second expression.
 	 * \param env Environment to run expression in.
 	 */
+	virtual real execute(Environment &env) const;
+};
+
+
+
+/** A trinary @: epxression. */
+struct WhileExpression : public NArgExpression<3> {
+	/**
+	 * Constructor.
+	 * \param c condition expression
+	 * \param e1 expression to evaluate while \a c evaluates \c true.
+	 * \param e2 expression to evaluate when finally \a c evaluates
+	 *           \c false.
+	 */
+	WhileExpression(Expression *c, Expression *e1, Expression *e2)
+		: NArgExpression<3>(c, e1, e2) { }
+
+	virtual real execute(Environment &env) const;
+};
+
+
+/** A trinary #: epxression. */
+struct TimesExpression : public NArgExpression<3> {
+	/**
+	 * Constructor.
+	 * \param t  expression saying how many times \a eq should be executed.
+	 * \param e1 expression to evaluate \a e1 times.
+	 * \param e2 expression to evaluate at the end.
+	 */
+	TimesExpression(Expression *t, Expression *e1, Expression *e2)
+		: NArgExpression<3>(t, e1, e2) { }
+
+	virtual real execute(Environment &env) const;
+};
+
+
+/** A trinary ?: epxression. */
+struct IfExpression : public NArgExpression<3> {
+	/**
+	 * Constructor.
+	 * \param c condition expression
+	 * \param e1 expression to evaluate if \a c evaluates \c true.
+	 * \param e2 expression to evaluate if \a c evaluates \c false.
+	 */
+	IfExpression(Expression *c, Expression *e1, Expression *e2)
+		: NArgExpression<3>(c, e1, e2) { }
+
 	virtual real execute(Environment &env) const;
 };
 
@@ -461,6 +555,7 @@ protected:
 	virtual bool _boolean(Environment &env) const = 0;
 
 private:
+	/** A "true" value.  If it is \c false results are negated. */
 	bool t;
 };
 
@@ -477,9 +572,6 @@ protected:
 	virtual bool _boolean(Environment &env) const;
 
 private:
-	/** Expression to evaluate. */
-	Expression *expr;
-
 	/**
 	 * Constructos object.
 	 * \param e not a boolean expression.
@@ -487,6 +579,9 @@ private:
 	explicit ExpressionAsBoolean(Expression *e) : expr(e) { }
 
 	friend struct Expression;
+
+	/** Expression. */
+	Expression *expr;
 };
 
 
@@ -590,74 +685,6 @@ protected:
 private:
 	/** Comparison precision. */
 	const real precision;
-};
-
-
-
-/** A trinary @: epxression. */
-struct WhileExpression : public AtLeast2ArgExpression {
-	/**
-	 * Constructor.
-	 * \param c condition expression
-	 * \param e1 expression to evaluate while \a c evaluates \c true.
-	 * \param e2 expression to evaluate when finally \a c evaluates
-	 *           \c false.
-	 */
-	WhileExpression(Expression *c, Expression *e1, Expression *e2)
-		: AtLeast2ArgExpression(e1, e2), cond(c) { }
-
-	/** Deletes all expressions. */
-	~WhileExpression();
-
-	virtual real execute(Environment &env) const;
-
-private:
-	/** A condition expression. */
-	Expression *cond;
-};
-
-
-/** A trinary #: epxression. */
-struct TimesExpression : public AtLeast2ArgExpression {
-	/**
-	 * Constructor.
-	 * \param t  expression saying how many times \a eq should be executed.
-	 * \param e1 expression to evaluate \a e1 times.
-	 * \param e2 expression to evaluate at the end.
-	 */
-	TimesExpression(Expression *t, Expression *e1, Expression *e2)
-		: AtLeast2ArgExpression(e1, e2), times(t) { }
-
-	/** Deletes all expressions. */
-	~TimesExpression();
-
-	virtual real execute(Environment &env) const;
-
-private:
-	/** A condition expression. */
-	Expression *times;
-};
-
-
-/** A trinary ?: epxression. */
-struct IfExpression : public AtLeast2ArgExpression {
-	/**
-	 * Constructor.
-	 * \param c condition expression
-	 * \param e1 expression to evaluate if \a c evaluates \c true.
-	 * \param e2 expression to evaluate if \a c evaluates \c false.
-	 */
-	IfExpression(Expression *c, Expression *e1, Expression *e2)
-		: AtLeast2ArgExpression(e1, e2), cond(c) { }
-
-	/** Deletes all expressions. */
-	~IfExpression();
-
-	virtual real execute(Environment &env) const;
-
-private:
-	/** A condition expression. */
-	Expression *cond;
 };
 
 
