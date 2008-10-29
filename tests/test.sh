@@ -4,7 +4,7 @@
 TEST_SRC=./src
 MAIN_SRC=../src
 BC=bc
-CALC=$MAIN_SRC/main
+CALC=$MAIN_SRC/calc
 BUILD=$TEST_SRC/build
 COMP=$TEST_SRC/comp
 
