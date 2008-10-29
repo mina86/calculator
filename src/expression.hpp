@@ -53,7 +53,7 @@ struct Expression {
 
 
 	/** Virtual destructor. */
-	virtual ~Expression();
+	virtual ~Expression() = 0;
 
 protected:
 	/** Empty default constructor (so it is available for derived
@@ -70,8 +70,8 @@ private:
 
 
 /** An abstract \a n argument expression. */
-template<unsigned n>
-struct NArgExpression : public Expression {
+template<unsigned n, class BaseExpression = Expression>
+struct NArgExpression : public BaseExpression {
 	/** Deletes all arguments. */
 	~NArgExpression() {
 		for (unsigned i = 0; i < n; ++i) {
@@ -91,11 +91,35 @@ protected:
 	}
 
 	/**
+	 * Constructor when \a n = 1.
+	 * \param e1 first argument.
+	 * \param val additional argument for base constructor.
+	 */
+	template<class T>
+	explicit NArgExpression(Expression *e1, T val) : BaseExpression(val) {
+		typedef int static_assert[n == 1 ? 1 : -1];
+		expressions[0] = e1;
+	}
+
+	/**
 	 * Constructor when \a n = 2.
 	 * \param e1 first argument.
 	 * \param e2 second argument.
 	 */
 	NArgExpression(Expression *e1, Expression *e2) {
+		typedef int static_assert[n == 2 ? 1 : -1];
+		expressions[0] = e1, expressions[1] = e2;
+	}
+
+	/**
+	 * Constructor when \a n = 2.
+	 * \param e1 first argument.
+	 * \param e2 second argument.
+	 * \param val additional argument for base constructor.
+	 */
+	template<class T>
+	NArgExpression(Expression *e1, Expression *e2, T val)
+		: BaseExpression(val) {
 		typedef int static_assert[n == 2 ? 1 : -1];
 		expressions[0] = e1, expressions[1] = e2;
 	}
@@ -107,6 +131,20 @@ protected:
 	 * \param e2 third argument.
 	 */
 	NArgExpression(Expression *e1, Expression *e2, Expression *e3) {
+		typedef int static_assert[n == 3 ? 1 : -1];
+		expressions[0] = e1, expressions[1] = e2, expressions[2] = e3;
+	}
+
+	/**
+	 * Constructor when \a n = 3.
+	 * \param e1 first argument.
+	 * \param e2 second argument.
+	 * \param e2 third argument.
+	 * \param val additional argument for base constructor.
+	 */
+	template<class T>
+	NArgExpression(Expression *e1, Expression *e2, Expression *e3, T val)
+		: BaseExpression(val) {
 		typedef int static_assert[n == 3 ? 1 : -1];
 		expressions[0] = e1, expressions[1] = e2, expressions[2] = e3;
 	}
@@ -253,21 +291,15 @@ struct GetConstExpression : public GetExpression {
 
 
 /** Abstract class for expressions setting variable's value. */
-struct SetExpression : public NameExpression {
-	/** Deletes expr. */
-	~SetExpression();
-
+struct SetExpression : public NArgExpression<1, NameExpression> {
 protected:
-	/** Expression to evaluate to set variable's value to. */
-	Expression *expr;
-
 	/**
 	 * Constructor.
 	 * \param n variable's name.
 	 * \param e expression to set variables value to value of.
 	 */
 	SetExpression(const std::string &n, Expression *e)
-		: NameExpression(n), expr(e) { }
+		: NArgExpression<1, NameExpression>(e, n) { }
 };
 
 
@@ -555,7 +587,7 @@ protected:
 	virtual bool _boolean(Environment &env) const = 0;
 
 private:
-	/** A "true" value.  If it is \c false results are negated. */
+	/** A value of truth.  If it is \c false results are negated. */
 	bool t;
 };
 
@@ -564,7 +596,7 @@ private:
  * Interpretes expression's value as a boolean.  It is used to
  * make negations.
  */
-struct ExpressionAsBoolean : public BooleanExpression {
+struct ExpressionAsBoolean : public NArgExpression<1, BooleanExpression> {
 	/** Deletes expression. */
 	~ExpressionAsBoolean();
 
@@ -576,37 +608,12 @@ private:
 	 * Constructos object.
 	 * \param e not a boolean expression.
 	 */
-	explicit ExpressionAsBoolean(Expression *e) : expr(e) { }
+	explicit ExpressionAsBoolean(Expression *e)
+		: NArgExpression<1, BooleanExpression>(e) { }
 
 	friend struct Expression;
-
-	/** Expression. */
-	Expression *expr;
 };
 
-
-
-/** Base class for boolean expressions taking at least two arguments. */
-struct AtLeast2ArgBooleanExpression : public BooleanExpression {
-	/** Deltes expressions. */
-	~AtLeast2ArgBooleanExpression();
-
-protected:
-	/** First operand. */
-	Expression *expr1;
-	/** Second operand. */
-	Expression *expr2;
-
-	/**
-	 * Constructor.
-	 * \param e1 first operand.
-	 * \param e2 second operand.
-	 * \param _t if \c false result of expression will be negated
-	 */
-	AtLeast2ArgBooleanExpression(Expression *e1, Expression *e2,
-	                             bool _t = true)
-		: BooleanExpression(_t), expr1(e1), expr2(e2) { }
-};
 
 
 /**
@@ -614,7 +621,7 @@ protected:
  * a expression which represents situation when two numbers are not
  * equal give \c false as a 3rd constructor arguemnt.
  */
-struct EqualExpression : public AtLeast2ArgBooleanExpression {
+struct EqualExpression : public NArgExpression<2, BooleanExpression> {
 	/**
 	 * Constructor.
 	 * \param e1 first operand.
@@ -624,11 +631,11 @@ struct EqualExpression : public AtLeast2ArgBooleanExpression {
 	 */
 	EqualExpression(Expression *e1, Expression *e2, bool _t = true,
 	                real p = 0)
-		: AtLeast2ArgBooleanExpression(e1, e2, _t), precision(p) { }
+		: NArgExpression<2, BooleanExpression>(e1, e2, _t), precision(p) { }
 
 	/** \copydoc EqualExpression(Expression*, Expression*, bool, real) */
 	EqualExpression(Expression *e1, Expression *e2, real p, bool _t = true)
-		: AtLeast2ArgBooleanExpression(e1, e2, _t), precision(p) { }
+		: NArgExpression<2, BooleanExpression>(e1, e2, _t), precision(p) { }
 
 protected:
 	virtual bool _boolean(Environment &env) const;
@@ -649,7 +656,7 @@ private:
  * equal is negation of lower thus it's enough to switch arguemnts and
  * give \c false as 3rd argument.
  */
-struct GreaterExpression : public AtLeast2ArgBooleanExpression {
+struct GreaterExpression : public NArgExpression<2, BooleanExpression> {
 	/**
 	 * Constructor.
 	 * \param e1 first operand.
@@ -659,12 +666,12 @@ struct GreaterExpression : public AtLeast2ArgBooleanExpression {
 	 */
 	GreaterExpression(Expression *e1, Expression *e2, bool _t = true,
 	                  real p = 0)
-		: AtLeast2ArgBooleanExpression(e1, e2, _t), precision(p) { }
+		: NArgExpression<2, BooleanExpression>(e1, e2, _t), precision(p) { }
 
 	/** \copydoc GreaterExpression(Expression*, Expression*, bool, real) */
 	GreaterExpression(Expression *e1, Expression *e2, real p,
 	                  bool _t = true)
-		: AtLeast2ArgBooleanExpression(e1, e2, _t), precision(p) { }
+		: NArgExpression<2, BooleanExpression>(e1, e2, _t), precision(p) { }
 
 	/**
 	 * Constructor.
@@ -676,7 +683,7 @@ struct GreaterExpression : public AtLeast2ArgBooleanExpression {
 	 */
 	GreaterExpression(Expression *e1, Expression *e2, bool sw, bool _t,
 	                  real p = 0)
-		: AtLeast2ArgBooleanExpression(sw ? e2 : e1, sw ? e1 : e2, _t),
+		: NArgExpression<2, BooleanExpression>(sw ? e2 : e1, sw ? e1 : e2,_t),
 		  precision(p) { }
 
 protected:
@@ -689,14 +696,14 @@ private:
 
 
 /** A logical OR expression. */
-struct LogicalOrExpression : AtLeast2ArgBooleanExpression {
+struct LogicalOrExpression : public NArgExpression<2, BooleanExpression> {
 	/**
 	 * Constructos a logical expression.
 	 * \param e1 first sub-expression.
 	 * \param e2 second sub-expression.
 	 */
 	LogicalOrExpression(Expression *e1, Expression *e2)
-		: AtLeast2ArgBooleanExpression(e1, e2) { }
+		: NArgExpression<2, BooleanExpression>(e1, e2) { }
 
 protected:
 	virtual bool _boolean(Environment &env) const;
@@ -704,14 +711,14 @@ protected:
 
 
 /** A logical AND expression. */
-struct LogicalAndExpression : AtLeast2ArgBooleanExpression {
+struct LogicalAndExpression : public NArgExpression<2, BooleanExpression> {
 	/**
 	 * Constructos a logical expression.
 	 * \param e1 first sub-expression.
 	 * \param e2 second sub-expression.
 	 */
 	LogicalAndExpression(Expression *e1, Expression *e2)
-		: AtLeast2ArgBooleanExpression(e1, e2) { }
+		: NArgExpression<2, BooleanExpression>(e1, e2) { }
 
 protected:
 	virtual bool _boolean(Environment &env) const;
@@ -719,14 +726,14 @@ protected:
 
 
 /** A logical XOR expression. */
-struct LogicalXorExpression : AtLeast2ArgBooleanExpression {
+struct LogicalXorExpression : public NArgExpression<2, BooleanExpression> {
 	/**
 	 * Constructos a logical expression.
 	 * \param e1 first sub-expression.
 	 * \param e2 second sub-expression.
 	 */
 	LogicalXorExpression(Expression *e1, Expression *e2)
-		: AtLeast2ArgBooleanExpression(e1, e2) { }
+		: NArgExpression<2, BooleanExpression>(e1, e2) { }
 
 protected:
 	virtual bool _boolean(Environment &env) const;

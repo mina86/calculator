@@ -26,8 +26,6 @@ CommaExpression *Expression::commaExpression() {
 	return new CommaExpression(this);
 }
 
-Expression::~Expression() { }
-
 
 real NumberExpression::execute(Environment &env) const {
 	(void)env;
@@ -51,25 +49,17 @@ real GetConstExpression::execute(Environment &env) const {
 }
 
 
-SetExpression::~SetExpression() {
-	delete expr;
-}
-
 real SetLocalExpression::execute(Environment &env) const {
-	real val = expr->execute(env);
-	return env.local()[name] = val;
+	return env.local()[name] = exec<0>(env);
 }
 
 real SetGlobalExpression::execute(Environment &env) const {
-	real val = expr->execute(env);
-	return env.global()[name] = val;
+	return env.global()[name] = exec<0>(env);
 }
 
 real SetConstExpression::execute(Environment &env) const {
-	real val = expr->execute(env);
-	std::pair<Environment::Variables::iterator, bool> ret =
-		env.constants().insert(std::make_pair(name, val));
-	if (!ret.second) {
+	real val = exec<0>(env);
+	if (!env.constants().insert(std::make_pair(name, val)).second) {
 		throw ConstAlreadyDefined();
 	}
 	return val;
@@ -136,40 +126,30 @@ BooleanExpression *BooleanExpression::booleanExpression() {
 }
 
 
-ExpressionAsBoolean::~ExpressionAsBoolean() {
-	delete expr;
-}
-
 bool ExpressionAsBoolean::_boolean(Environment &env) const {
-	return expr->boolean(env);
-}
-
-
-AtLeast2ArgBooleanExpression::~AtLeast2ArgBooleanExpression() {
-	delete expr1;
-	delete expr2;
+	return is<0>(env);
 }
 
 
 bool EqualExpression::_boolean(Environment &env) const {
-	return m::abs(expr1->execute(env) - expr2->execute(env)) <= precision;
+	return m::abs(exec<0>(env) - exec<1>(env)) <= precision;
 }
 
 bool GreaterExpression::_boolean(Environment &env) const {
-	return expr1->execute(env) > expr2->execute(env) + precision;
+	return exec<0>(env) > exec<1>(env) + precision;
 }
 
 
 bool LogicalOrExpression::_boolean(Environment &env) const {
-	return expr1->boolean(env) || expr2->boolean(env);
+	return is<0>(env) || is<1>(env);
 }
 
 bool LogicalAndExpression::_boolean(Environment &env) const {
-	return expr1->boolean(env) && expr2->boolean(env);
+	return is<0>(env) && is<1>(env);
 }
 
 bool LogicalXorExpression::_boolean(Environment &env) const {
-	return expr1->boolean(env) != expr2->boolean(env);
+	return is<0>(env) != is<1>(env);
 }
 
 
