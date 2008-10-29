@@ -128,7 +128,7 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 	}
 
 	/* # or #= */
-	if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+	if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '%') {
 		int c = getchar();
 		if (c != '=') {
 			ungetchar(c);
@@ -136,21 +136,14 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 		}
 
 		switch (ch) {
-		case '+':
-			value.setop = yy::Parser::semantic_type::SET_ADD;
-			return yy::Parser::token::SET_OP;
-		case '-':
-			value.setop = yy::Parser::semantic_type::SET_SUB;
-			return yy::Parser::token::SET_OP;
-		case '*':
-			value.setop = yy::Parser::semantic_type::SET_MUL;
-			return yy::Parser::token::SET_OP;
-		case '/':
-			value.setop = yy::Parser::semantic_type::SET_DIV;
-			return yy::Parser::token::SET_OP;
-		default:
-			assert(0);
+		case '+': value.setop = yy::Parser::semantic_type::SET_ADD; break;
+		case '-': value.setop = yy::Parser::semantic_type::SET_SUB; break;
+		case '*': value.setop = yy::Parser::semantic_type::SET_MUL; break;
+		case '/': value.setop = yy::Parser::semantic_type::SET_DIV; break;
+		case '%': value.setop = yy::Parser::semantic_type::SET_MOD; break;
+		default : assert(0);
 		}
+		return yy::Parser::token::SET_OP;
 	}
 
 	/* Logical operator? */
@@ -163,6 +156,16 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 		switch (ch) {
 		case '|': return yy::Parser::token::OR;
 		case '&': return yy::Parser::token::AND;
+		}
+	}
+
+	/* #, ## or #! */
+	if (ch == '#') {
+		int c = getchar();
+		switch (c) {
+		case '#': return yy::Parser::token::IT;
+		case '!': return yy::Parser::token::LAST;
+		default : ungetchar(c); return ch;
 		}
 	}
 

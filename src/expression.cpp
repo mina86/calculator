@@ -12,6 +12,7 @@
 
 namespace calc {
 
+
 bool Expression::boolean(Environment &env) const {
 	/* The next line may produce "comparing floating point with == or
 	   != is unsafe" warning; ignore it, we know that. */
@@ -176,58 +177,40 @@ CommaExpression *CommaExpression::commaExpression() {
 
 namespace {
 	/** Saves value of a variable and restores it when object is destroyed. */
+	template<class T>
 	struct SaveOldValue {
 		/**
 		 * Constructor.
-		 * \param m map object will operate on.
-		 * \param n name of the value.
+		 * \param v reference to the variable.
 		 */
-		SaveOldValue(Environment::Variables &m, const std::string n)
-			: map(m), name(n) {
-			Environment::Variables::iterator it = map.find(name);
-			wasSet = it != map.end();
-			if (wasSet) oldValue = it->second;
-		}
+		SaveOldValue(T &v) : value(v), old(v) { }
 
 		/** Restores previous state of the variable. */
 		~SaveOldValue() {
-			if (wasSet) {
-				*this = oldValue;
-			} else {
-				map.erase(map.find(name));
-			}
+			value = old;
 		}
 
 		/**
 		 * Assigns value to a variable.
 		 * \param val the value.
 		 */
-		real &operator=(real val) {
-			return map[name] = val;
+		T &operator=(T val) {
+			return value = val;
 		}
 
-
 	private:
-		/** The map to operate on. */
-		Environment::Variables &map;
-		/** Variable's name. */
-		const std::string &name;
-		/** Whether the variable was set. */
-		bool wasSet;
+		/** Reference to the variable. */
+		T &value;
 		/** Old value of the variable. */
-		real oldValue;
+		T old;
 	};
 }
 
 
 real WhileExpression::execute(Environment &env) const {
-	static const std::string it_name("it");
-	static const std::string last_name("last");
+	SaveOldValue<real> it  (env.iteration_value());
+	SaveOldValue<real> last(env.last_value     ());
 
-	SaveOldValue it(env.constants(), it_name);
-	SaveOldValue last(env.constants(), last_name);
-
-	last = 0.0;
 	try {
 		for (real i = 0; it = i, is<0>(env); i += 1.0) {
 			last = exec<1>(env);
@@ -245,20 +228,13 @@ real WhileExpression::execute(Environment &env) const {
 }
 
 real TimesExpression::execute(Environment &env) const {
-	static const std::string it_name("it");
-	static const std::string last_name("last");
+	SaveOldValue<real> it  (env.iteration_value());
+	SaveOldValue<real> last(env.last_value     ());
 
-	SaveOldValue it(env.constants(), it_name);
-	SaveOldValue last(env.constants(), last_name);
-
-	last = 0.0;
 	try {
-		real i = exec<0>(env);
-		it = i;
-		while (i >= 0.25) {
-			last = exec<1>(env);
-			i -= 1.0;
+		for (real n = exec<0>(env), i = 0; i < n; i += 1.0) {
 			it = i;
+			last = exec<1>(env);
 		}
 
 		return exec<2>(env);

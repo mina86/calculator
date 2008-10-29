@@ -15,16 +15,50 @@
 
 /** \mainpage Kalkulator
  *
- * <h2>Tre¶æ zadania</h2>
+ * <h2>Wymagania</h2>
  *
- * Napisaæ program kalkulatora dla liczb rzeczywistych.  Dzia³ania:
- * dodawanie, odejmowanie, mno¿enie, dzielenie, podnoszenie do potêgi,
- * funkcje trygonometryczne, funkcje logarytmiczne.  Priorytety
- * operacji naturalne (tzn. mno¿enie przed dodawaniem). Istnieje
- * mo¿liwo¶æ u¿ycia nawiasów do zmiany priorytetów.  Mo¿liwo¶æ
- * deklarowania i&nbsp;u¿ywania zmiennych oraz definiowania funkcji.
- * Dane czytane ze strumienia wej¶ciowego.  Wynikiem jest warto¶æ
- * u¿ytych zmiennych.
+ * <h3>Wymagania funkcjonalne</h3>
+ * <ol>
+ *   <li>Kalkulator bêdzie wykonywa³ obliczenia arytmetyczne na
+ *     liczbach zmiennopozycyjnych.</li>
+ *   <li> Kalkulator bêdzie akceptowa³ wyra¿enia w postaci wrostkowej
+ *     (tj. np. 2 * 5) z uwzglêdnieniem priorytetów dzia³añ oraz
+ *     nawiasowania.</li>
+ *   <li>Kalkulator bêdzie posiada³ operator negacji, dodawania,
+ *     odejmowania, mno¿enia, dzielenia, porównywania (równy, ró¿ny,
+ *     mniejszy/wiêkszy (równy)), a tak¿e operator warunkowy
+ *     i pêtli.</li>
+ *   <li>Kalkulator bêdzie posiada³ zestaw wbudowanych funkcji
+ *     matematycznych takich jak sinus, cosinus itp.</li>
+ *   <li> Kalkulator bêdzie pozwala³ na definiowanie zmiennych
+ *     i sta³ych.</li>
+ *   <li>Kalkulator bêdzie pozwala³ na definiowanie funkcji
+ *     u¿ytkownika, takich ¿e:
+ *     <ul>
+ *       <li>ka¿da funkcja bêdzie posiada³a w³asn± przestrzeñ
+ *         zmiennych lokalnych,</li>
+ *       <li>funkcje u¿ytkownika bêd± mog³y wywo³ywaæ inne funkcje
+ *         w tym inne funkcje u¿ytkownika,</li>
+ *       <li>funkcje bêd± mog³y wo³aæ siê rekurencyjnie (bezpo¶rednio
+ *         lub po¶rednio).</li>
+ *     </ul>
+ *   </li>
+ * </ol>
+ *
+ * <h3>Wymagania niefunkcjonalne</h3>
+ * <ol>
+ *   <li>Kalkulator bêdzie pozwala³ na zdefiniowanie co najmniej
+ *     tysi±ca funkcji.</li>
+ *   <li>Kalkulator bêdzie umo¿liwia³ zdefiniowanie co najmniej
+ *     tysi±ca zmiennych w ka¿dej przestrzeni zmiennych lokalnych oraz
+ *     zmiennych globalnych.</li>
+ *   <li>Kalkulator bêdzie umo¿liwia³ zdefiniowanie co najmniej stu
+ *     argumentów formalnych funkcji.</li>
+ *   <li>Kalkulator bêdzie obs³ugiwa³ stos wywo³añ funkcji
+ *     o g³êboko¶ci co najmniej dziesiêciu tysiêcy.</li>
+ *   <li>Kalkulator bêdzie akceptowa³ wyra¿enia sk³adaj±ce siê
+ *     z tysi±ca lub mniej operacji.</li>
+ * </ol>
  *
  * <h2>Opis u¿ycia</h2>
  *
@@ -47,10 +81,9 @@
  * <tt>-p</tt> i&nbsp;<tt>-P</tt> mo¿na ustawiæ dok³adno¶æ z jak±
  * operatory "niewyra¼nego" (prze³±cznik <tt>-p</tt>; domy¶lnie
  * <tt>1e-9</tt>) lub zwyk³ego (prze³±cznik <tt>-P</tt>; domy¶lnie 0)
- * bêd± porównywaæ zmienne.  Domy¶lnie dok³adno¶ci± jest zero,
- * tzn. dwie warto¶ci "s± sobie równe" je¿eli "s± sobie równe".
- * Prze³±czniki te wp³ywa równie¿ na operatory relacji, ale nie
- * wp³ywaj± na konwersje liczby na warto¶æ logiczn±.</p>
+ * porównania bêd± porównywaæ zmienne.  Prze³±czniki te wp³ywa równie¿
+ * na operatory relacji, ale nie wp³ywaj± na konwersje liczby na
+ * warto¶æ logiczn±.</p>
  *
  * Informacje o&nbsp;opcjach oraz dzia³aniu aplikacji mo¿na uzyskaæ
  * uruchamiaj±c go z&nbsp;opcj± <tt>-h</tt>.
@@ -66,8 +99,8 @@
  * koñczy ma znaczenie, je¿eli podana zosta³a opcja <tt>-v</tt>.
  *
  * Instrukcj± mo¿e byæ albo wyra¿enie, które jest wyliczane
- * natychmiast po wczytaniu, albo <a href="#define_function">funkcj±
- * u¿ytkownika</a>.
+ * natychmiast po wczytaniu, albo definicja <a
+ * href="#define_function">funkcji u¿ytkownika</a>.
  *
  * Wyra¿enia zapisywane s± w&nbsp;formacie infiksowej (tzn. naturalnym
  * zapisie z&nbsp;operatorem pomiêdzy operandami).
@@ -76,9 +109,42 @@
  * wypisanie odpowiedniego komunikatu b³êdu.  B³êdy w&nbsp;trakcie
  * wykonywania wyra¿enia (np. przypisanie warto¶ci do istniej±cej
  * sta³ej, wo³anie nieistniej±cej funkcji) powoduj± wypisanie
- * komunikatu, ale równie¿ i¿ stan ¶rodowiska jest niezdefiniowany,
+ * komunikatu, ale równie¿, i¿ stan ¶rodowiska jest niezdefiniowany,
  * tzn. nie jest okre¶lone, które z&nbsp;wyra¿eñ zosta³y wykonane,
  * a&nbsp;które nie.
+ *
+ * <h4>Gramatyka</h4>
+ *
+ * <pre>
+ *input           ::= { instruction } ;
+ *instruction     ::= [ define-instruction | expression ] ( ";" | "\n" ) ;
+ *define-instruction::= "define" id formal-arguments "=" expression ;
+ *formal-arguments::= "(" [ { id "," } id ] ")" ;
+ *expression      ::= [ expression "," ] assignment-expr ;
+ *assignment-expr ::= [ { variable assignment-op } ] repeat-expr ;
+ *assignment-op   ::= "=" | "+=" | "-=" | "*=" | "/=" | "^=" ;
+ *repeat-expr     ::= logic-or-expr [ rep-op expression ":" cond-expr ] ;
+ *rep-op          ::= "?" | "@" | "#"
+ *logic-or-expr   ::= [ logic-or-expr  "||" ] logic-xor-expr ;
+ *logic-xor-expr  ::= [ logic-xor-expr "^^" ] logic-and-expr ;
+ *logic-and-expr  ::= [ logic-and-expr "&&" ] cmp-expr ;
+ *cmp-expr        ::= [ cmp-expr ( "==" | "!=" ) ] rel-expr ;
+ *rel-expr        ::= [ rel-expr ( "<" | "<=" | ">" | ">=" ) ] additive-expr ;
+ *additive-expr   ::= [ additive-expr ( "+" | "-" ) ] multiplicative-expr ;
+ *multiplicative-expr::= [ multiplicative-expr mul-op ] power-expr ;
+ *mul-op          ::= "*" | "/" | "%"
+ *power-expr      ::= prefix-expr [ "^" power-expr ] ;
+ *prefix-expr     ::= ( "+" | "-" | "!" ) prefix-expr | simple-expr ;
+ *simple-expr     ::= number | "(" expr ")" | variable | id arguments ;
+ *arguments       ::= "(" [ { assignment-expr "," } assignment-expr ] ")" ;
+ *variable        ::= [ "$" | "#" ] id | "##" | "#!" ;
+ *
+ *number          ::= [ [ int ] "." ] int [ "e" [ "+" | "-" ] int ] ;
+ *int             ::= { digit } ;
+ *id              ::= ( letter | "_" ) { letter | "_" | digit }
+ *digit           ::= ? any decimal digit ?
+ *letter          ::= ? any lowercase or uppercase letter ? ;
+ * </pre>
  *
  * <h4>Operatory</h4>
  *
@@ -104,7 +170,7 @@
  *   </tr>
  *   <tr>
  *     <td>Mno¿enie/dzielenie</td>
- *     <td><tt>* /</tt></td>
+ *     <td><tt>* / %</tt></td>
  *     <td>z lewej do prawej</td>
  *   </tr>
  *   <tr>
@@ -139,12 +205,12 @@
  *   </tr>
  *   <tr>
  *     <td>Operator pêtli i warunkowy</td>
- *     <td><tt>@: ?:</tt></td>
+ *     <td><tt>#: @: ?:</tt></td>
  *     <td>z prawej do lewej</td>
  *   </tr>
  *   <tr>
  *     <td>Przypisanie</td>
- *     <td><tt>= += -= *= /= ^=</tt></td>
+ *     <td><tt>= += -= *= /= %= ^=</tt></td>
  *     <td>z prawej do lewej</td>
  *   </tr>
  *   <tr>
@@ -173,14 +239,16 @@
  * Operator <tt>^^</tt> oznacza logiczny XOR i&nbsp;zasadniczo <tt>a
  * ^^ b</tt> jest równowa¿ne <tt>!a != !b</tt>.
  *
- * Operator <tt>@:</tt> to operator odpowiadaj±cy instrukcji
- * <tt>while</tt> z innych jêzyków programowania.  Dopóki pierwsze
- * wyra¿enie daje warto¶æ prawdziw± wykonywane jest drugie.
- * Rezultatem wyra¿enia jest wynik trzeciego wyra¿enia.  W trakcie
- * wyliczania warto¶ci dostêpne s± dwie sta³e: <tt>#it</tt>
- * okreslaj±ca numer iteracji (licz±c od zera) oraz <tt>#last</tt>
- * okre¶laj±ca ostatni± wyliczon± warto¶æ wyra¿enia cia³a pêtli (na
- * pocz±tku inicjowane na zero).
+ * Operatory <tt>#:</tt> i <tt>@:</tt> s± operatorami
+ * pêtli. <tt>@:</tt> odpowiada instrukcji <tt>while</tt> z innych
+ * jêzyków programowania.  Dopóki pierwsze wyra¿enie daje warto¶æ
+ * prawdziw± wykonywane jest drugie.  Natomiast pierwszy argument
+ * operatora <tt>#:</tt> odpowiada ile razy ma byæ wykonane drugie
+ * wyra¿enie.  Rezultatem tych operatorów jest wynik trzeciego
+ * wyra¿enia.  W trakcie wyliczania warto¶ci dostêpne s± dwie sta³e:
+ * <tt>##</tt> okreslaj±ca numer iteracji (licz±c od zera) oraz
+ * <tt>#!</tt> okre¶laj±ca ostatni± wyliczon± warto¶æ wyra¿enia cia³a
+ * pêtli.
  *
  * Nale¿y zwróciæ uwagê na operatory logiczne oraz operatory, które
  * jako operandy przyjmuj± warto¶ci logiczne.  W&nbsp;kalkulatorze
@@ -282,14 +350,12 @@
  *       <td>Odwrotno¶æ pierwiastka kwadratowego z&nbsp;dwóch.</td>
  *     </tr>
  *     <tr>
- *       <td><tt>it</tt></td>
- *       <td>Numer iteracji (licz±c od zera) pêtli -- dostêpne tylko
- *         wewn±trz instrukcji pêtli.</td>
+ *       <td><tt>#</tt></td>
+ *       <td>Numer iteracji (licz±c od zera) pêtli.</td>
  *     </tr>
  *     <tr>
- *       <td><tt>last</tt></td>
- *       <td>Rezultat ostatnio wyliczonego wyra¿nia cia³a pêtli --
- *         dostêpne tylko wewn±trz instrukcji pêtli.</td>
+ *       <td><tt>!</tt></td>
+ *       <td>Rezultat ostatnio wyliczonego wyra¿nia cia³a pêtli.</td>
  *     </tr>
  * </table>
  *
@@ -814,14 +880,14 @@ static void listOp() {
 	std::cout << "Available operators (from highest priority):\n"
 		"  Prefix          + - !              right-to-left\n"
 		"  Power           ^                  right-to-left\n"
-		"  Multiplicative  * /                left-to-right\n"
+		"  Multiplicative  * / %              left-to-right\n"
 		"  Additive        + -                left-to-right\n"
 		"  Relation        > < >= <= >~ <~    left-to-right\n"
 		"  Compare         == != =~ !~        left-to-right\n"
 		"  Logic and       &&                 left-to-right\n"
 		"  Logic xor       ^^                 left-to-right\n"
 		"  Logic or        ||                 left-to-right\n"
-		"  Ternary         ?: @:              right-to-left\n"
+		"  Ternary         ?: @: #:           right-to-left\n"
 		"  Assigment       = += -= *= /= ^=   right-to-left\n"
 		"  Comma           ,                  left-to-right\n";
 }

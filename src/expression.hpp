@@ -53,7 +53,7 @@ struct Expression {
 
 
 	/** Virtual destructor. */
-	virtual ~Expression() = 0;
+	virtual ~Expression() { }
 
 protected:
 	/** Empty default constructor (so it is available for derived
@@ -597,9 +597,6 @@ private:
  * make negations.
  */
 struct ExpressionAsBoolean : public NArgExpression<1, BooleanExpression> {
-	/** Deletes expression. */
-	~ExpressionAsBoolean();
-
 protected:
 	virtual bool _boolean(Environment &env) const;
 

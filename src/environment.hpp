@@ -43,7 +43,10 @@ struct Environment {
 	 * \param fp precision for fuzzy comparison operators.
 	 */
 	explicit Environment(real p = 0, real fp = 1.0e-9)
-		: _precision(p), _fuzzy_precision(fp), global_scope(_stack) { }
+		: _precision(p), _fuzzy_precision(fp), global_scope(_stack),
+		  _iteration(_constants["#"]), _last(_constants["!"]) {
+		_iteration = _last = 0;
+	}
 
 
 	/** An empty virtual destructor. */
@@ -97,6 +100,19 @@ struct Environment {
 
 	/** Returns constants. */
 	const Variables &constants() const { return _constants; }
+
+	/** Returns reference to ## constant's value. */
+	real &iteration_value() { return _iteration; }
+
+	/** Returns reference to ## constant's value. */
+	const real &iteration_value() const { return _iteration; }
+
+	/** Returns reference to #! constant's value. */
+	real &last_value() { return _last; }
+
+	/** Returns reference to #! constant's value. */
+	const real &last_value() const { return _last; }
+
 
 
 	/**
@@ -175,7 +191,6 @@ private:
 	/** Precision for fuzzy comparison oeprators. */
 	real _fuzzy_precision;
 
-
 	/**
 	 * A private class for running expressions in their own scope.
 	 * It's constructor creates new scope and destructor removes it.
@@ -223,13 +238,18 @@ private:
 	NewScope global_scope;
 
 
+	/** Reference to ## constant's value. */
+	real &_iteration;
+	/** Reference to #! constant's value. */
+	real &_last;
+
+
 	/**
 	 * Copying not allowed (yet).
-	 * \param env object to copy.
+	 * \param e object to copy.
 	 */
-	Environment(const Environment &env) : global_scope(_stack) {
-		(void)env;
-	}
+	Environment(const Environment &e)
+		: global_scope(_stack), _iteration(e._iteration), _last(e._last) {}
 };
 
 }

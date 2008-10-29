@@ -1,5 +1,3 @@
-                (* In the following part white space characters
-                   between symbols are ignored *)
 input           ::= { instruction } ;
 instruction     ::= [ define-instruction | expression ] ( ";" | "\n" ) ;
 define-instruction::= "define" id formal-arguments "=" expression ;
@@ -7,22 +5,22 @@ formal-arguments::= "(" [ { id "," } id ] ")" ;
 expression      ::= [ expression "," ] assignment-expr ;
 assignment-expr ::= [ { variable assignment-op } ] repeat-expr ;
 assignment-op   ::= "=" | "+=" | "-=" | "*=" | "/=" | "^=" ;
-repeat-expr     ::= logic-or-expr [ ( "?" | "@" ) expression ":" cond-expr ] ;
+repeat-expr     ::= logic-or-expr [ rep-op expression ":" cond-expr ] ;
+rep-op          ::= "?" | "@" | "#"
 logic-or-expr   ::= [ logic-or-expr  "||" ] logic-xor-expr ;
 logic-xor-expr  ::= [ logic-xor-expr "^^" ] logic-and-expr ;
 logic-and-expr  ::= [ logic-and-expr "&&" ] cmp-expr ;
 cmp-expr        ::= [ cmp-expr ( "==" | "!=" ) ] rel-expr ;
 rel-expr        ::= [ rel-expr ( "<" | "<=" | ">" | ">=" ) ] additive-expr ;
 additive-expr   ::= [ additive-expr ( "+" | "-" ) ] multiplicative-expr ;
-multiplicative-expr::= [ multiplicative-expr ( "*" | "/" ) ] power-expr ;
+multiplicative-expr::= [ multiplicative-expr mul-op ] power-expr ;
+mul-op          ::= "*" | "/" | "%"
 power-expr      ::= prefix-expr [ "^" power-expr ] ;
 prefix-expr     ::= ( "+" | "-" | "!" ) prefix-expr | simple-expr ;
 simple-expr     ::= number | "(" expr ")" | variable | id arguments ;
 arguments       ::= "(" [ { assignment-expr "," } assignment-expr ] ")" ;
-variable        ::= [ "$" | "#" ] id ;
+variable        ::= [ "$" | "#" ] id | "##" | "#!" ;
 
-                (* In the following part white space between symbols
-                   are not ignored *)
 number          ::= [ [ int ] "." ] int [ "e" [ "+" | "-" ] int ] ;
 int             ::= { digit } ;
 id              ::= ( letter | "_" ) { letter | "_" | digit }

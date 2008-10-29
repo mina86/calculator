@@ -41,7 +41,7 @@ enum {
 	/** Flags used with relation and equal operator. */
 	unsigned                             flags;
 	/** An assignment operator type. */
-	enum { SET_ADD, SET_SUB, SET_MUL, SET_DIV, SET_POW } setop;
+	enum { SET_ADD, SET_SUB, SET_MUL, SET_DIV, SET_POW, SET_MOD } setop;
 };
 
 %parse-param { calc::Lexer       &lexer }
@@ -77,6 +77,8 @@ int yylex(yy::Parser::semantic_type *yylval,
 %token		OR		"||"
 %token		AND		"&&"
 %token		XOR		"^^"
+%token		IT		"##"
+%token		LAST		"#!"
 
 
 %type	<expr>	assignment_expr additive_expr multiplicative_expr rel_expr
@@ -159,6 +161,8 @@ assignment_expr
 			expr = new calc::DivExpression(expr, $3); break;
 		case semantic_type::SET_POW:
 			expr = new calc::PowExpression(expr, $3); break;
+		case semantic_type::SET_MOD:
+			expr = new calc::ModExpression(expr, $3); break;
 		}
 		$$ = $1.setExpression(expr);
 		$3 = 0;
@@ -298,6 +302,12 @@ var	: ID				{
 	}
 	| '#' ID			{
 		$$.name = $2; $$.scope = '#'; $2 = 0;
+	}
+	| IT				{
+		$$.name = new std::string("#"); $$.scope = '#';
+	}
+	| LAST				{
+		$$.name = new std::string("!"); $$.scope = '#';
 	}
 	;
 
