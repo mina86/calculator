@@ -168,6 +168,10 @@ assignment_expr
 
 repeat_expr
 	: logic_or_expr			{ $$ = $1; $1 = 0;}
+	| logic_or_expr '#' expression ':' repeat_expr {
+		$$ = new calc::TimesExpression($1, $3, $5);
+		$1 = $3 = $5 = 0;
+	}
 	| logic_or_expr '@' expression ':' repeat_expr {
 		$$ = new calc::WhileExpression($1, $3, $5);
 		$1 = $3 = $5 = 0;
@@ -238,6 +242,10 @@ multiplicative_expr
 	}
 	| multiplicative_expr '/' pow_expr	{
 		$$ = new calc::DivExpression($1, $3);
+		$1 = $3 = 0;
+	}
+	| multiplicative_expr '%' pow_expr	{
+		$$ = new calc::ModExpression($1, $3);
 		$1 = $3 = 0;
 	}
 	| pow_expr			{ $$ = $1; $1 = 0; }

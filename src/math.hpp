@@ -35,6 +35,10 @@ namespace m {
 #if HAVE_LONG_DOUBLE_FUNCTIONS
 	static inline long double abs  (long double x) { return ::fabsl (x); }
 
+	static inline long double fmod (long double x, long double y) {
+		return ::fmodl (x, y);
+	}
+
 	static inline long double pow  (long double x, long double y) {
 		return ::powl  (x, y);
 	}
@@ -113,6 +117,7 @@ namespace m {
 
 	static inline double abs  (double x) { return ::fabs  (x); }
 
+	static inline double fmod (double x, double y) { return ::fmod (x, y); }
 	static inline double pow  (double x, double y) { return ::pow  (x, y); }
 	static inline double sqrt (double x) { return ::sqrt  (x); }
 	static inline double exp  (double x) { return ::exp   (x); }

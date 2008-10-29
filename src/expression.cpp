@@ -102,6 +102,10 @@ real DivExpression::execute(Environment &env) const {
 	return expr1->execute(env) / expr2->execute(env);
 }
 
+real ModExpression::execute(Environment &env) const {
+	return m::fmod(expr1->execute(env), expr2->execute(env));
+}
+
 real PowExpression::execute(Environment &env) const {
 	return m::pow(expr1->execute(env), expr2->execute(env));
 }
@@ -231,6 +235,7 @@ namespace {
 			return map[name] = val;
 		}
 
+
 	private:
 		/** The map to operate on. */
 		Environment::Variables &map;
@@ -259,6 +264,38 @@ real WhileExpression::execute(Environment &env) const {
 	try {
 		for (real i = 0; it = i, cond->boolean(env); i += 1.0) {
 			last = expr1->execute(env);
+		}
+
+		return expr2->execute(env);
+	}
+	catch (BreakException &e) {
+		if (e.end()) {
+			return e.getValue();
+		} else {
+			throw;
+		}
+	}
+}
+
+TimesExpression::~TimesExpression() {
+	delete times;
+}
+
+real TimesExpression::execute(Environment &env) const {
+	static const std::string it_name("it");
+	static const std::string last_name("last");
+
+	SaveOldValue it(env.constants(), it_name);
+	SaveOldValue last(env.constants(), last_name);
+
+	last = 0.0;
+	try {
+		real i = times->execute(env);
+		it = i;
+		while (i >= 0.25) {
+			last = expr1->execute(env);
+			i -= 1.0;
+			it = i;
 		}
 
 		return expr2->execute(env);

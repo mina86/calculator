@@ -22,56 +22,6 @@ struct CommaExpression;
 
 /** An abstract expression class. */
 struct Expression {
-	/** Input iterator adatpter executing expressions in given environment. */
-	template<class InputIterator>
-	struct executor_iterator_type {
-		typedef std::input_iterator_tag                 iterator_category;
-		typedef real                                    value_type;
-		typedef typename InputIterator::difference_type difference_type;
-		typedef value_type                             *pointer;
-		typedef value_type                             &reference;
-
-		/**
-		 * Constructor.
-		 * \param i iterator's potision.
-		 * \param e environment to execute expression in.
-		 */
-		executor_iterator_type(const InputIterator &i, Environment &e) :
-			it(i), env(e) { }
-
-		/** Increments iterator. */
-		executor_iterator_type &operator++() { ++it; return *this; }
-		/** Increments iterator. */
-		executor_iterator_type operator++(int) {
-			return executor_iterator_type(it++, env);
-		}
-		/** Executes expression. */
-		real operator*() { return (*it)->execute(env); }
-		/** Compares two iterators. */
-		bool operator==(const executor_iterator_type &i) { return i.it==it; }
-		/** Compares two iterators. */
-		bool operator!=(const executor_iterator_type &i) { return i.it!=it; }
-
-	private:
-		/** Iterator's position. */
-		InputIterator it;
-		/** Environment to execute expression in. */
-		Environment &env;
-	};
-
-	/**
-	 * Returns input iterator adapter executing expressions in given
-	 * environment.
-	 * \param i iterator's potision.
-	 * \param e environment to execute expression in.
-	 */
-	template<class InputIterator>
-	static executor_iterator_type<InputIterator>
-	executor_iterator(const InputIterator &i, Environment &e) {
-		return executor_iterator_type<InputIterator>(i, e);
-	}
-
-
 	/**
 	 * Evaluats expression in given environment.
 	 * \param env environment to execute expression in.
@@ -433,6 +383,23 @@ struct DivExpression : public AtLeast2ArgExpression {
 	virtual real execute(Environment &env) const;
 };
 
+/** A division modulo expression. */
+struct ModExpression : public AtLeast2ArgExpression {
+	/**
+	 * Constructor.
+	 * \param e1 first operand.
+	 * \param e2 second operand.
+	 */
+	ModExpression(Expression *e1, Expression *e2)
+		: AtLeast2ArgExpression(e1, e2) { }
+
+	/**
+	 * Returns reminder of two expressions values.
+	 * \param env Environment to run expression in.
+	 */
+	virtual real execute(Environment &env) const;
+};
+
 /** An exponentiation expression. */
 struct PowExpression : public AtLeast2ArgExpression {
 	/**
@@ -626,13 +593,14 @@ private:
 };
 
 
+
 /** A trinary @: epxression. */
 struct WhileExpression : public AtLeast2ArgExpression {
 	/**
 	 * Constructor.
 	 * \param c condition expression
-	 * \param e1 expreeession to evaluate while \a c evaluates \c true.
-	 * \param e2 expreeession to evaluate when finally \a c evaluates
+	 * \param e1 expression to evaluate while \a c evaluates \c true.
+	 * \param e2 expression to evaluate when finally \a c evaluates
 	 *           \c false.
 	 */
 	WhileExpression(Expression *c, Expression *e1, Expression *e2)
@@ -649,13 +617,35 @@ private:
 };
 
 
+/** A trinary #: epxression. */
+struct TimesExpression : public AtLeast2ArgExpression {
+	/**
+	 * Constructor.
+	 * \param t  expression saying how many times \a eq should be executed.
+	 * \param e1 expression to evaluate \a e1 times.
+	 * \param e2 expression to evaluate at the end.
+	 */
+	TimesExpression(Expression *t, Expression *e1, Expression *e2)
+		: AtLeast2ArgExpression(e1, e2), times(t) { }
+
+	/** Deletes all expressions. */
+	~TimesExpression();
+
+	virtual real execute(Environment &env) const;
+
+private:
+	/** A condition expression. */
+	Expression *times;
+};
+
+
 /** A trinary ?: epxression. */
 struct IfExpression : public AtLeast2ArgExpression {
 	/**
 	 * Constructor.
 	 * \param c condition expression
-	 * \param e1 expreeession to evaluate if \a c evaluates \c true.
-	 * \param e2 expreeession to evaluate if \a c evaluates \c false.
+	 * \param e1 expression to evaluate if \a c evaluates \c true.
+	 * \param e2 expression to evaluate if \a c evaluates \c false.
 	 */
 	IfExpression(Expression *c, Expression *e1, Expression *e2)
 		: AtLeast2ArgExpression(e1, e2), cond(c) { }

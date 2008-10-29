@@ -54,10 +54,11 @@ real UserFunction::execute(Environment &env,
 	throwIfArgumentsCountNotOK(args.size());
 
 	std::auto_ptr<Environment::Variables> vars(new Environment::Variables());
-	std::transform(names.begin(), names.end(),
-	               Expression::executor_iterator(args.begin(), env),
-	               std::inserter(*vars, vars->begin()),
-	               &std::make_pair<const std::string, real>);
+	std::vector<Expression*>::const_iterator it(args.begin()),end(args.end());
+	Names::const_iterator n(names.begin());
+	for (; it != end; ++it, ++n) {
+		vars->insert(std::make_pair(*n, (*it)->execute(env)));
+	}
 	try {
 		return env.executeInNewScope(expr, vars);
 	}
