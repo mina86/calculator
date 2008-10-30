@@ -139,7 +139,7 @@ namespace yy
 	/** Flags used with relation and equal operator. */
 	unsigned                             flags;
 	/** An assignment operator type. */
-	enum { SET_ADD, SET_SUB, SET_MUL, SET_DIV, SET_POW } setop;
+	enum { SET_ADD, SET_SUB, SET_MUL, SET_DIV, SET_POW, SET_MOD } setop;
 }
 /* Line 35 of lalr1.cc.  */
 #line 146 "parser.hpp"
@@ -155,14 +155,17 @@ namespace yy
       /* Tokens.  */
    enum yytokentype {
      ID = 258,
-     DEFINE = 259,
-     NUMBER = 260,
-     SET_OP = 261,
-     REL_OP = 262,
-     CMP_OP = 263,
-     OR = 264,
-     AND = 265,
-     XOR = 266
+     STRING = 259,
+     DEFINE = 260,
+     NUMBER = 261,
+     SET_OP = 262,
+     REL_OP = 263,
+     CMP_OP = 264,
+     OR = 265,
+     AND = 266,
+     XOR = 267,
+     IT = 268,
+     LAST = 269
    };
 
     };

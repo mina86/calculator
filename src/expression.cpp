@@ -37,6 +37,12 @@ real NegExpression::execute(Environment &env) const {
 	return -exec<0>(env);
 }
 
+real StringExpression::execute(Environment &env) const {
+	(void)env;
+	std::cout << name;
+	return 1.0;
+}
+
 real GetLocalExpression::execute(Environment &env) const {
 	return Environment::get(env.local(), name);
 }

@@ -133,6 +133,15 @@ real Return::execute(Environment &env, const Arguments &args) const {
 	}
 }
 
+
+real print::execute(Environment &env, const Arguments &args) const {
+	Arguments::size_type size = args.size();
+	(void)env; throwIfArgumentsCountNotOK(size); \
+	std::cout << args[0];
+	return args[0];
+}
+
+
 }
 
 }

@@ -69,6 +69,7 @@ int yylex(yy::Parser::semantic_type *yylval,
 
 
 %token	<var.name>	ID
+%token	<var.name>	STRING
 %token		DEFINE		"define"
 %token	<num>	NUMBER
 %token	<setop>	SET_OP		"#="
@@ -91,6 +92,7 @@ int yylex(yy::Parser::semantic_type *yylval,
 %destructor	{ delete $$; } assignment_expr additive_expr simple_expr
 %destructor	{ delete $$; } multiplicative_expr pow_expr prefix_expr
 %destructor	{ delete $$; } logic_or_expr logic_and_expr logic_xor_expr
+%destructor	{ delete $$; } STRING
 %destructor	{ delete $$.name; } var
 %destructor	{ delete $$; } formal_arguments non_empty_formal_arguments
 
@@ -280,6 +282,9 @@ prefix_expr
 simple_expr
 	: NUMBER			{
 		$$ = new calc::NumberExpression($1);
+	}
+	| STRING			{
+		$$ = new calc::StringExpression(*$1);
 	}
 	| '(' expression ')'		{ $$ = $2; $2 = 0; }
 	| var				{

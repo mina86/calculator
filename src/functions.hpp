@@ -76,6 +76,7 @@ struct OneOrMoreArgFunction : public Function {
 	CALC_FUNC(avg   , OneOrMore);
 	CALC_FUNC(Break , OneOrTwo);
 	CALC_FUNC(Return, OneOrTwo);
+	CALC_FUNC(print , One);
 
 #undef CALC_FUNC
 

@@ -230,6 +230,21 @@ protected:
 	explicit NameExpression(const std::string &n) : name(n) { }
 };
 
+/** An expression which prints a string and returns one. */
+struct StringExpression : public NameExpression {
+	/**
+	 * Constructor.
+	 * \param str string to print.
+	 */
+	StringExpression(const std::string &str) : NameExpression(str) { }
+
+	/**
+	 * Prints string and returns one.
+	 * \param env Environment to read variable's value from.
+	 */
+	virtual real execute(Environment &env) const;
+};
+
 
 /** Abstract class for expressions accessing variable's value. */
 struct GetExpression : public NameExpression {

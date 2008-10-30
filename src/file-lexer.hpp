@@ -71,12 +71,14 @@ private:
 	static FILE *openFile(const char *filename);
 
 	/** Returns next character from file and updates location. */
-	int getchar();
+	int getChar();
+	/** Reads a string character preceeded by "\" and returns it. */
+	char getDecodedChar();
 	/**
 	 * "Ungets" character from file and updates location.
 	 * \param ch character to unget.
 	 */
-	void ungetchar(int ch);
+	void ungetChar(int ch);
 
 	/** Name of a standard input stream. */
 	static const std::string stdin_filename;

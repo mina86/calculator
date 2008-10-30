@@ -28,7 +28,7 @@ FILE *FILELexer::openFile(const char *filename) {
 }
 
 
-int FILELexer::getchar() {
+int FILELexer::getChar() {
 	int ch = ::getc(stream);
 	previous.line = current.line;
 	previous.column = current.column;
@@ -41,7 +41,61 @@ int FILELexer::getchar() {
 	return ch;
 }
 
-void FILELexer::ungetchar(int ch) {
+/** Returns \c true iff \a ch is an octal digit. */
+static inline bool isodigit(int ch) {
+	return ch != EOF && isdigit(ch) && ch != '8' && ch != '9';
+}
+
+char FILELexer::getDecodedChar() {
+	int ch = getChar();
+	switch (ch) {
+	case EOF: return 0;
+
+	case 'a': return '\a';
+	case 'b': return '\b';
+	case 'f': return '\f';
+	case 'n': return '\n';
+	case 'r': return '\r';
+	case 't': return '\t';
+	case 'v': return '\v';
+
+	case 'c':
+		ch = getChar();
+		return ch != EOF ? ch & 0x1f : 0;
+
+	case 'x': {
+		char buf[3] = { 0, 0, 0 };
+		unsigned i = 0;
+		while (i < 2 && isxdigit(ch = getChar())) {
+			buf[i++] = ch;
+		}
+		if (i != 2) {
+			ungetChar(ch);
+		}
+		return i ? strtol(buf, 0, 16) : 0;
+	}
+
+	case '0': case '1': case '2': case '3':
+	case '4': case '5': case '6': case '7': {
+		char buf[4] = { 0, 0, 0, 0 };
+		unsigned i = 0;
+		while (i < 3 && isodigit(ch = getChar())) {
+			buf[i++] = ch;
+		}
+		if (i != 3) {
+			ungetChar(ch);
+		}
+		return i ? strtol(buf, 0, 8) & 0xff : 0;
+	}
+
+
+	default:
+		return ch;
+	}
+}
+
+
+void FILELexer::ungetChar(int ch) {
 	if (ch != EOF) {
 		current.line = previous.line;
 		current.column = previous.column;
@@ -55,25 +109,25 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 	int ch;
 
 	for(;;){
-		while ((ch = getchar()) != EOF && ch != '\n' && isspace(ch)) /*nop*/;
+		while ((ch = getChar()) != EOF && ch != '\n' && isspace(ch)) /*nop*/;
 		location.begin = previous;
 
 		if (ch != '\\') break;
-		ch = getchar();
+		ch = getChar();
 		if (ch != '\n') {
 			location.end = current;
 			return ch;
 		}
 	}
 
-	/* Identifier or 'e' */
+	/* Identifier */
 	if (isalpha(ch) || ch == '_') {
 		std::string id;
 		do {
 			id += (char)ch;
-		} while ((ch = getchar()) == '_' || isalpha(ch) || isdigit(ch));
+		} while ((ch = getChar()) == '_' || isalpha(ch) || isdigit(ch));
 
-		ungetchar(ch);
+		ungetChar(ch);
 		location.end = current;
 
 		if (id == "inf") {
@@ -89,37 +143,37 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 
 	/* ^, ^= or ^^ */
 	if (ch == '^') {
-		switch (ch = getchar()) {
+		switch (ch = getChar()) {
 		case '=': /* ^= */
 			value.setop = yy::Parser::semantic_type::SET_POW;
 			return yy::Parser::token::SET_OP;
 		case '^': /* ^^ */
 			return yy::Parser::token::XOR;
 		default:
-			ungetchar(ch);
+			ungetChar(ch);
 			return '^';
 		}
 	}
 
 	/* >, <, >=, <=, >~ or <~ */
 	if (ch == '>' || ch == '<') {
-		int c = getchar();
+		int c = getChar();
 		value.flags = ch == '<' ? yy::REL_SWITCH : 0;
 		switch (c) {
 		case '~': value.flags |= yy::REL_FUZZY; break;
 		case '=': value.flags ^= yy::REL_SWITCH | yy::REL_NOT; break;
-		default : ungetchar(c); break;
+		default : ungetChar(c); break;
 		}
 		return yy::Parser::token::REL_OP;
 	}
 
 	/* =, !, ==, !=, =~ or !~ */
 	if (ch == '=' || ch == '!') {
-		int c = getchar();
+		int c = getChar();
 		switch (c) {
 		case '~': value.flags = yy::CMP_FUZZY; break;
 		case '=': value.flags = 0; break;
-		default : ungetchar(c); return ch;
+		default : ungetChar(c); return ch;
 		}
 		if (ch == '!') {
 			value.flags |= yy::CMP_NOT;
@@ -129,9 +183,9 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 
 	/* # or #= */
 	if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '%') {
-		int c = getchar();
+		int c = getChar();
 		if (c != '=') {
-			ungetchar(c);
+			ungetChar(c);
 			return ch;
 		}
 
@@ -148,9 +202,9 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 
 	/* Logical operator? */
 	if (ch == '&' || ch == '|') {
-		int c = getchar();
+		int c = getChar();
 		if (c != ch) {
-			ungetchar(c);
+			ungetChar(c);
 			return ch;
 		}
 		switch (ch) {
@@ -161,12 +215,24 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 
 	/* #, ## or #! */
 	if (ch == '#') {
-		int c = getchar();
+		int c = getChar();
 		switch (c) {
 		case '#': return yy::Parser::token::IT;
 		case '!': return yy::Parser::token::LAST;
-		default : ungetchar(c); return ch;
+		default : ungetChar(c); return ch;
 		}
+	}
+
+	/* String */
+	if (ch == '"' || ch == '\'') {
+		int end = ch;
+		std::string str;
+		while ((ch = getChar()) != end && ch != EOF) {
+			str += ch == '\\' ? getDecodedChar() : (char)ch;
+		}
+
+		value.var.name = new std::string(str);
+		return yy::Parser::token::STRING;
 	}
 
 	/* Not a number */
@@ -174,16 +240,16 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 		location.end = current;
 		if (ch == ',') {
 			int c;
-			while ((c = getchar()) != EOF && isspace(c)) /*nop*/;
-			ungetchar(c);
+			while ((c = getChar()) != EOF && isspace(c)) /*nop*/;
+			ungetChar(c);
 		}
 		return ch;
 	}
 
 	std::string str;
 	if (ch == '.') {
-		ch = getchar();
-		ungetchar(ch);
+		ch = getChar();
+		ungetChar(ch);
 		if (!isdigit(ch)) {
 			return '.';
 		}
@@ -191,19 +257,19 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 		ch = '.';
 	} else {
 		str += ch;
-		for (ch = getchar(); isdigit(ch) || ch == '_'; ch = getchar()) {
+		for (ch = getChar(); isdigit(ch) || ch == '_'; ch = getChar()) {
 			if (ch != '_') str += ch;
 		}
 	}
 
 	/* Fractional part */
 	if (ch == '.') {
-		ch = getchar();
+		ch = getChar();
 		if (isdigit(ch)) {
 			str += '.';
 			do {
 				if (ch != '_') str += ch;
-			} while(isdigit(ch = getchar()) || ch == '_');
+			} while(isdigit(ch = getChar()) || ch == '_');
 		}
 	}
 
@@ -211,21 +277,21 @@ int FILELexer::nextToken(yy::Parser::semantic_type &value,
 	if (ch == 'e' || ch == 'E') {
 		str += ch;
 		do {
-			ch = getchar();
+			ch = getChar();
 		} while (ch == '_');
 
 		if (ch == '+' || ch == '-') {
 			str += ch;
-			ch = getchar();
+			ch = getChar();
 		}
 
-		for (str += '0'; isdigit(ch) || ch == '_'; ch = getchar()) {
+		for (str += '0'; isdigit(ch) || ch == '_'; ch = getChar()) {
 			if (ch != '_') str += ch;
 		}
 	}
 
 	/* Return number */
-	ungetchar(ch);
+	ungetChar(ch);
 	location.end = current;
 	value.num = calc::m::ator(str.c_str());
 	return yy::Parser::token::NUMBER;

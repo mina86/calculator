@@ -135,7 +135,7 @@
  *mul-op          ::= "*" | "/" | "%"
  *power-expr      ::= prefix-expr [ "^" power-expr ] ;
  *prefix-expr     ::= ( "+" | "-" | "!" ) prefix-expr | simple-expr ;
- *simple-expr     ::= number | "(" expr ")" | variable | id arguments ;
+ *simple-expr     ::= number | "(" expr ")" | variable | id arguments | STRING ;
  *arguments       ::= "(" [ { assignment-expr "," } assignment-expr ] ")" ;
  *variable        ::= [ "$" | "#" ] id | "##" | "#!" ;
  *
@@ -491,6 +491,12 @@
  *         mniejsze od jednej czwartej po prostu zwraca
  *         <tt>x</tt>.</td>
  *     </tr>
+ *     <tr>
+ *       <td><tt>print(x) p(x)</ttt></td>
+ *       <td>Wypisuje na standardowe wyj¶cie warto¶æ <tt>x</tt>
+ *         i&nbsp;zwraca j±.  Warto¶æ jest wypisana bez jakichkolwiek
+ *         bia³ych znaków wokó³ niej.</td>
+ *     </tr>
  * </table>
  *
  * <h4>Wywo³ywanie funkcji</h4>
@@ -691,7 +697,6 @@ int main(int argc, char **argv) {
 	/* Register constants */
 	{
 		calc::Environment::Variables &consts = env->constants();
-#if HAVE_LONG_DOUBLE
 		consts["e"]         = 2.7182818284590452353602874713526625l;
 		consts["log2e"]     = 1.4426950408889634073599246810018921l;
 		consts["log10e"]    = 0.4342944819032518276511289189166051l;
@@ -705,21 +710,6 @@ int main(int argc, char **argv) {
 		consts["_2_sqrtpi"] = 1.1283791670955125738961589031215452l;
 		consts["sqrt2"]     = 1.4142135623730950488016887242096981l;
 		consts["sqrt1_2"]   = 0.7071067811865475244008443621048490l;
-#else
-		consts["e"]         = 2.7182818284590452354;
-		consts["log2e"]     = 1.4426950408889634074;
-		consts["log10e"]    = 0.4342944819032518276;
-		consts["ln2"]       = 0.6931471805599453094;
-		consts["ln10"]      = 2.3025850929940456840;
-		consts["pi"]        = 3.1415926535897932384;
-		consts["pi_2"]      = 1.5707963267948966192;
-		consts["pi_4"]      = 0.7853981633974483096;
-		consts["_1_pi"]     = 0.3183098861837906715;
-		consts["_2_pi"]     = 0.6366197723675813430;
-		consts["_2_sqrtpi"] = 1.1283791670955125739;
-		consts["sqrt2"]     = 1.4142135623730950488;
-		consts["sqrt1_2"]   = 0.7071067811865475244;
-#endif
 	}
 
 
@@ -751,6 +741,8 @@ int main(int argc, char **argv) {
 		funcs["avg"   ] = calc::builtin::avg::get();
 		funcs["break" ] = calc::builtin::Break::get();
 		funcs["return"] = calc::builtin::Return::get();
+		funcs["print" ] = calc::builtin::print::get();
+		funcs["p"     ] = calc::builtin::print::get();
 	}
 
 
@@ -819,7 +811,10 @@ static void helpSyntax() {
 "\n"
 "If you call a non-existant function or assign value to already defined\n"
 "constant an error is triggered and the state of the enviroment is\n"
-"undefined (ie. parts of the expressions may have been executed).\n";
+"undefined (ie. parts of the expressions may have been executed).\n"
+"\n"
+"You can put a string surrounded by quotes or apostrophes.  Such\n"
+"a string is printed and evaluates to one.\n";
 }
 
 
