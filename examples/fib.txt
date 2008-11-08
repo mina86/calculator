@@ -2,6 +2,9 @@ define fib_rec(x) = x >= 2 ? fib_rec(x-1) + fib_rec(x-2) : 1
 define fib_itr(x) = \
 	a = b = 1,
 	x # c = a + b, a = b, b = c : a
+"Script calculating fibonacci numbers using recursion and iteration\n"
 
-rec = fib_rec(10)
-itr = fib_itr(10)
+("(zero finishes) n = ", (_n = r()) !~ 0) @ \
+	"rec = ", p(fib_rec(_n)), ", ",
+	"itr = ", p(fib_itr(_n)), "\n" \
+	: 0;

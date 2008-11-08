@@ -3,4 +3,7 @@ define tab(x, y) = \
 		x #	p(a), " ", a += b : 0,
 		"\n" \
 	  : 0
-tab(10, 10)
+
+"Columns = "; _c = r();
+"Rows = "; _r = r();
+_c >~ 0 && _r >~ 0 ? tab(_c, _r) : 0;
