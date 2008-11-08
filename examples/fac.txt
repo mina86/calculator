@@ -1,0 +1,6 @@
+define fac_rec(x) = x > 2 ? x * fac_rec(x-1) : x
+define fac_itr(x) = r = 1, x - 1 # r *= ## + 2 : r
+define fac_cnd(x) = r = 1, i = 2, i <= x @ r *= i, i += 1 : r
+rec = fac_rec(5)
+itr = fac_itr(5)
+cnd = fac_cnd(5)
