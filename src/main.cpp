@@ -64,10 +64,12 @@
  *
  * <h3>Sposób uruchomienia</h3>
  *
- * Program wczytuje wyra¿enia ze standardowego wej¶cia i&nbsp;wypisuje
- * wyniki na standardowe wyj¶cie.  Przy domy¶lnych opcjach milczy, a¿
- * do momentu, gdy dane wej¶ciowe siê zakoñcz± i&nbsp;wówczas wypisuje
- * warto¶ci wszystkich zmiennych i&nbsp;koñczy dzia³anie.
+ * Program wczytuje wyra¿enia ze standardowego wej¶cia (rzecz jasna
+ * strumieñ wej¶ciowy mo¿na przekierowaæ tak, aby program odczytywa³
+ * dane z pliku) i&nbsp;wypisuje wyniki na standardowe wyj¶cie.  Przy
+ * domy¶lnych opcjach milczy, a¿ do momentu, gdy dane wej¶ciowe siê
+ * zakoñcz± i&nbsp;wówczas wypisuje warto¶ci wszystkich zmiennych
+ * globalnych i&nbsp;koñczy dzia³anie.
  *
  * Dodanie prze³±cznika <tt>-v</tt> powoduje, i¿ kalkulator wypisuje
  * wynik ka¿dej z instrukcji, o&nbsp;ile nie jest ona zakoñczona
@@ -95,14 +97,17 @@
  * jest kombinacja backslash-przej¶cie do nowej linii która traktowana
  * jest jak zwyk³a spacja oraz operator przecinek, który "zjada"
  * wszystkie bia³e znaki (wraz ze znakami przej¶cia do nowej linii),
- * które znajduj± siê za nim.  To w&nbsp;jaki sposób instrukcja siê
- * koñczy ma znaczenie, je¿eli podana zosta³a opcja <tt>-v</tt>.
+ * które znajduj± siê za nim, dziêki czemu mo¿na pisaæ d³ugie, rozbite
+ * na wiele linii sekwencjie wyra¿en jako pojedyncza instrukcja.  To
+ * w&nbsp;jaki sposób instrukcja siê koñczy (czy za pomoc± ¶rednika
+ * czy znaku przej¶cia do nowej linii) ma znaczenie, je¿eli podana
+ * zosta³a opcja <tt>-v</tt>.
  *
  * Instrukcj± mo¿e byæ albo wyra¿enie, które jest wyliczane
  * natychmiast po wczytaniu, albo definicja <a
  * href="#define_function">funkcji u¿ytkownika</a>.
  *
- * Wyra¿enia zapisywane s± w&nbsp;formacie infiksowej (tzn. naturalnym
+ * Wyra¿enia zapisywane s± w&nbsp;formacie infiksowym (tzn. naturalnym
  * zapisie z&nbsp;operatorem pomiêdzy operandami).
  *
  * B³êdy w&nbsp;sk³adni w&nbsp;odczytywanych instrukcjach powoduj±
@@ -111,7 +116,10 @@
  * sta³ej, wo³anie nieistniej±cej funkcji) powoduj± wypisanie
  * komunikatu, ale równie¿, i¿ stan ¶rodowiska jest niezdefiniowany,
  * tzn. nie jest okre¶lone, które z&nbsp;wyra¿eñ zosta³y wykonane,
- * a&nbsp;które nie.
+ * a&nbsp;które nie (przyk³adowo, je¿eli sta³a <var>foo</var> nie
+ * zosta³a zdefiniowana, to po wywo³aniu instrukcji: <tt>\#foo = 1,
+ * max(bar = 1, \#foo = 2)</tt> nie wiadomo czy zmienna <var>bar</var>
+ * zosta³a zmodyfikowana czy nie).
  *
  * <h4>Gramatyka</h4>
  *
@@ -135,7 +143,7 @@
  *mul-op          ::= "*" | "/" | "%"
  *power-expr      ::= prefix-expr [ "^" power-expr ] ;
  *prefix-expr     ::= ( "+" | "-" | "!" ) prefix-expr | simple-expr ;
- *simple-expr     ::= number | "(" expr ")" | variable | id arguments | STRING ;
+ *simple-expr     ::= number | "(" expr ")" | variable | id arguments | string ;
  *arguments       ::= "(" [ { assignment-expr "," } assignment-expr ] ")" ;
  *variable        ::= [ "$" | "#" ] id | "##" | "#!" ;
  *
@@ -144,6 +152,7 @@
  *id              ::= ( letter | "_" ) { letter | "_" | digit }
  *digit           ::= ? any decimal digit ?
  *letter          ::= ? any lowercase or uppercase letter ? ;
+ *string          ::= ? a sequence of characters souranded by " or ' ?
  * </pre>
  *
  * <h4>Operatory</h4>
@@ -204,7 +213,7 @@
  *     <td>z lewej do prawej</td>
  *   </tr>
  *   <tr>
- *     <td>Operator pêtli i warunkowy</td>
+ *     <td>Pêtle i operator warunkowy</td>
  *     <td><tt>#: @: ?:</tt></td>
  *     <td>z prawej do lewej</td>
  *   </tr>
@@ -227,7 +236,7 @@
  * wystêpuj±cych w&nbsp;jêzyku C&nbsp;wszystkie one maj± takie same
  * dzia³anie jak te znane z&nbsp;jêzyka C.
  *
- * Operator <tt>^</tt> oraz <tt>^=</tt> s± to operatory potêgowe.
+ * Operator <tt>^</tt> oraz <tt>^=</tt> to operatory potêgowe.
  *
  * Operatory <tt>=~</tt>, <tt>!~</tt>, <tt>~&gt;</tt>, <tt>~&lt;</tt>,
  * <tt>&gt;~</tt> oraz <tt>&lt;~</tt> s± "niewyra¼nymi" (ang. fuzzy)
@@ -248,12 +257,15 @@
  * wyra¿enia.  W trakcie wyliczania warto¶ci dostêpne s± dwie sta³e:
  * <tt>##</tt> okreslaj±ca numer iteracji (licz±c od zera) oraz
  * <tt>#!</tt> okre¶laj±ca ostatni± wyliczon± warto¶æ wyra¿enia cia³a
- * pêtli.
+ * pêtli. (Aby uzyskaæ efekt pêtli do-while mo¿na, pomijaj±c
+ * rozwi±zanie oczywiste polegaj±ce na powtórzeniu cia³a przed
+ * instrukcj±, w warunku przyrównaæ sta³± <tt>##</tt> do zera, np.:
+ * <tt>## == 0 || warunek @ cialo : wynik</tt>.)
  *
  * Nale¿y zwróciæ uwagê na operatory logiczne oraz operatory, które
  * jako operandy przyjmuj± warto¶ci logiczne.  W&nbsp;kalkulatorze
  * zmienna ma warto¶æ logiczn± fa³sz wtedy i&nbsp;tylko wtedy, gdy
- * jest równa zero.  Trzeba zwróciæ uwagê, ¿e to co "wygl±da jak zero"
+ * jest równa zero.  Istotne jest, ¿e to co "wygl±da jak zero"
  * niekoniecznie "jest równe zero", zatem je¿eli w&nbsp;wyniku
  * wykonania jakiej¶ operacji otrzymamy wynik "zero" mo¿e siê on
  * okazaæ liczb± o&nbsp;bardzo ma³ym (ale ró¿nym od zera) module
@@ -276,11 +288,10 @@
  * sta³ej powoduje b³±d.  Odczyt z&nbsp;niezdefiniowanej zmiennej
  * zwraca warto¶æ zero.
  *
- * Zmienne lokalne i&nbsp;globalne zaczynaj± mieæ znaczenie dopiero
- * przy definiowaniu funkcji, je¿eli wpisujemy wyra¿enia bezpo¶rednio
- * s± one uto¿samiane.  O&nbsp;zmiennych lokalnych wiêcej
- * w&nbsp;dziale po¶wiêconym <a href="#define_function">funkcjom
- * u¿ytkownika</a>.
+ * Podzia³ na zmienne lokalne i&nbsp;globalne zaczynaj± mieæ znaczenie
+ * dopiero przy definiowaniu funkcji.  O&nbsp;zmiennych lokalnych
+ * wiêcej w&nbsp;dziale po¶wiêconym <a
+ * href="#define_function">funkcjom u¿ytkownika</a>.
  *
  * Warto zauwa¿yæ, i¿ przestrzenie nazw zmiennych i sta³ych s±
  * roz³±czne.  Ponadto ka¿de wywo³anie <a
@@ -492,7 +503,7 @@
  *         <tt>x</tt>.</td>
  *     </tr>
  *     <tr>
- *       <td><tt>print(x) p(x)</ttt></td>
+ *       <td><tt>print(x) p(x)</tt></td>
  *       <td>Wypisuje na standardowe wyj¶cie warto¶æ <tt>x</tt>
  *         i&nbsp;zwraca j±.  Warto¶æ jest wypisana bez jakichkolwiek
  *         bia³ych znaków wokó³ niej.</td>
@@ -512,7 +523,7 @@
  *
  * Funkcje definiuje siê za pomoc± konstrukcji <tt>define
  * nazwa(argumenty) = wyra¿enie</tt>, gdzie <tt>argumenty</tt> to
- * lista (mo¿e byæ pósta) nazw argumentów funkcji oddzielonych
+ * lista (mo¿e byæ pusta) nazw argumentów funkcji oddzielonych
  * przecinkami, a&nbsp;wyra¿enie, to operacje jakie maj± siê wykonaæ
  * w&nbsp;momencie wywo³ania funkcji, np.:
  *
@@ -560,38 +571,113 @@
  *
  * <h2>Implementacja</h2>
  *
- * Kalkulator korzysta z programu <tt>bison</tt> do wygenerowania, na
- * podstawie stworzonego pliku z&nbsp;opisem gramatyki, parsera wyra¿eñ.
- * Korzysta on z&nbsp;klasy FILELexer s³u¿±cej do dzielenia wczytywanych
- * danych na tokeny (klasa ta dziedziczy po klasie Lexer dziêki czemu
- * stosunkowo prosto mo¿na napisaæ inne leksery).
+ * <h3>¦rodowisko</h3>
  *
- * W&nbsp;trakcie odczytu danych budowane jest drzewo dzia³añ, którego
- * ka¿dy wêze³ jest obiektem klasy dziedzicz±cej po klasie Expression.
- * Klasa ta deiniuje (miêdzy innymi) abstrakcyjn± metodê wirtualn±
- * Expression::execute(), która implementowana przez konkretne klasy
- * wykonuje odpowiednie operacje na operandach.
+ * ¦rodowisko (ang. \link calc::Environment Environment\endlink)
+ * przechowuje zdefiniowane zmienne, sta³e i funkcje oraz nadzoruje
+ * wykonywanie wyra¿eñ (tzn. obs³uguje ewentualne wyj±tki, które
+ * wyra¿enie mo¿e rzuciæ oraz udostêpnia wyra¿eniom metody dostêpu do
+ * zmiennych, sta³ych i funkcji).  Klasa ta odpowiada równie¿ za
+ * tworzenie nowych przestrzeni zmiennych lokalnych.
  *
- * Operacje wykonywane s± wewn±trz ¶rodowiska definiowanego przez klasê
- * Environment.  Klasa ta przechowuje listê sta³ych
- * (Environment::_constants), funkcji (Environment::_functions) oraz
- * przestrzeni nazw zmiennych (Environment::_stack).  Taka klasa
- * umo¿liwia, aby w&nbsp;jednym programie istnia³o kilka ¶rodowisk
- * i&nbsp;¿eby to samo wyra¿enie mog³o byæ wykonywane w&nbsp;kilku
- * ró¿nych ¶rodowiskach.
+ * <h3>Wyra¿enia</h3>
  *
- * Klasa Environment definiuje kilka metod wirtualnych dziêki czemu
- * u¿ytkownik mo¿e napisaæ w³asne metody formatuj±ce wypisywane dane.
- * W&nbsp;ten w³a¶nie sposób zosta³ zaimplementowany
- * prze³±cznik <tt>-v</tt> (zale¿nie czy jest on obecny czy nie tworzony
- * jest obiekt jednej z&nbsp;dwóch klas).
+ * Wszystkie wyra¿enia dziedzicz± po abstrakcyjnej klasie \link
+ * calc::Expression Expression\endlink i udostêpniaj± metodê \link
+ * calc::Expression::execute() execute()\endlink, która wykonuje ona
+ * dane wyra¿enie w kontek¶cie danego ¶rodowiska.  Zasadniczo ka¿dy
+ * operator posiada odpowiadaj±c± mu klasê \link calc::Expression
+ * Expression\endlink.
  *
- * Funkcje kalkulatora s± obiektami klasy pochodnej od klasy Function,
- * która definiuje (miêdzy innymi) abstrakcyjn± metodê wirtualn±
- * Funcion::execute(Environment &env, const Arguments &args), która
- * powoduje wyliczenie jej warto¶ci.  Funkcje wbudowana dziedzicz± po
- * klasie BuiltInFunction, a&nbsp;funkcje u¿ytkownika s± obiektami klasy
- * UserFunction.
+ * <h3>Funkcje</h3>
+ *
+ * Funkcje dziedzicz± po klasie \link calc::Function Function\endlink,
+ * która udostêpnia metodê \link calc::Function::execute()
+ * execute()\endlink s³u¿±c± do wykonania funkcji w kontek¶cie danego
+ * ¶rodowiska z danymi argumentami.  Funkcje wbudowane nie wprowadzaj±
+ * nowej przestrzeni nazw, gdy¿ wykonywane s± w kodzie C++, jednak
+ * funkcje u¿ytkownika (dziedzicz±ce po klasie \link
+ * calc::UserFunction UserFunction\endlink) tworz±, gdy¿ sprowadzaj±
+ * siê do zwyk³ego wywo³ania wyra¿enie w nowym kontek¶cie.
+ *
+ * <h3>Lekser</h3>
+ *
+ * Konkretna instancja leksera dziedziczy po abstrakcyjnej klasie
+ * \link calc::Lexer Lexer\endlink (idea jest taka, ¿e w ten sposób
+ * mo¿na definiowaæ ró¿ne leksery pobieraj±ce dane z ró¿nych ¼róde³).
+ * W programie zdefiniowany jest tylko jedna taka klasa: \link
+ * calc::FILELexer FILELexer\endlink.  Czyta ona dane z pliku (lub
+ * standardowego wej¶cia).
+ *
+ * Metod±, która zwraca kolejne tokeny jest \link
+ * calc::Lexer::nextToken() nextToken()\endlink.  Dla tokenów
+ * jednoznakowych zwraca kod ASCII danego znaku, a dla bardziej
+ * z³o¿onych jedn± z warto¶ci definiowanych w typie \link
+ * yy::Parser::token::yytokentype Parser::token::yytokentype\endlink.
+ *
+ * Informacje towarzysz±ce tokenom takim jak \link
+ * yy::Parser::token::ID ID\endlink (identyfikator), \link
+ * yy::Parser::token::STRING STRING\endlink (ci±g znaków), \link
+ * yy::Parser::token::NUMBER NUMBER\endlink (liczba), a tak¿e \link
+ * yy::Parser::token::SET_OP SET_OP\endlink (operatory przypisania),
+ * \link yy::Parser::token::REL_OP REL_OP\endlink (operatory relacji)
+ * i \link yy::Parser::token::CMP_OP CMP_OP\endlink (operatory
+ * przyrównania) przekazywane s± poprzez uniê \link
+ * yy::Parser::semantic_type Parser::semantic_type\endlink.
+ *
+ * Dodatkowo, lekser zapisuje w strukturze typu \link yy::location
+ * location\endlink po³o¿enie w strumieniu wej¶ciowym, gdzie dany
+ * token zosta³ napotkany, co jest przydatne g³ównie przy wypisywaniu
+ * komunikatów b³êdów.
+ *
+ * Przyk³adowo, gdyby lekser napotka³ ci±g <tt>define seven() = 1 + 2
+ * * 3</tt> wygenerowa³by nastêpuj±ce tokeny: \link
+ * yy::Parser::token::DEFINE DEFINE\endlink, \link
+ * yy::Parser::token::ID ID\endlink z warto¶ci± <tt>seven</tt>, '(',
+ * ')', '=', \link yy::Parser::token::NUMBER NUMBER\endlink
+ * z warto¶ci± <tt>1</tt>, '+', \link yy::Parser::token::NUMBER
+ * NUMBER\endlink z warto¶ci± <tt>2</tt>, '*' oraz \link
+ * yy::Parser::token::NUMBER NUMBER\endlink z warto¶ci± <tt>3</tt>.
+ *
+ * <h3>Parser</h3>
+ *
+ * Parser budowany jest za pomoc± programu <tt>bison</tt>.  W trakcie
+ * odczytywania wyra¿enia tworzy on odpowiednie obiekty klas
+ * z hierarchii rozpoczynaj±cej siê od klasy \link calc::Expression
+ * Expression\endlink.  Gdy wyra¿enie takie ma zostaæ wykonane
+ * wywo³ywana jest metoda \link calc::Environment::execute()
+ * Environment::execute()\endlink, która wo³a metodê \link
+ * calc::Expression::execute() Expression::execute()\endlink,
+ * obs³uguje rzucone wyj±tki itp.
+ *
+ * Je¿eli parser napotka na definicjê funkcji u¿ytkownika, wywo³uje
+ * metodê \link calc::Environment::addUserFunction()
+ * Environment::addUserFunction()\endlink, która dodaje odpowiedni
+ * wpis w mapie funkcji zdefiniowanych w ¶rodowisku.
+ *
+ * Przyk³adowo, je¿eli parser napotka na ci±g <tt>1 + 2 * 3</tt>,
+ * w kolejnych krokach bêd± budowane nastêpuj±ce obiekty:
+ *
+ * <ul>
+ *   <li><tt>_1 = new \link calc::NumberExpression NumberExpression\endlink(1)</tt></li>
+ *   <li><tt>_2 = new \link calc::NumberExpression NumberExpression\endlink(2)</tt></li>
+ *   <li><tt>_3 = new \link calc::NumberExpression NumberExpression\endlink(3)</tt></li>
+ *   <li><tt>_m = new \link calc::MulExpression MulExpression\endlink(_2, _3)</tt></li>
+ *   <li><tt>_a = new \link calc::AddExpression AddExpression\endlink(_1, _m)</tt></li>
+ * </ul>
+ *
+ * Gdyby takie wyra¿enie mia³o zostaæ wykonane (tzn. po tym nast±pi³by
+ * znak przej¶cia do nowej linii lub ¶rednik) parser wywo³a³by metodê
+ * \link calc::Environment::execute() Environment::execute()\endlink
+ * z podanym jako argumentem wyra¿eniem <tt>_a</tt>.
+ *
+ * Gdyby jednak tekst ten by³ poprzedzony ci±giem <tt>define seven()
+ * =</tt> zosta³aby zdefiniowana funkcja u¿ytkownika poprzez wywo³anie
+ * <tt>\link calc::Environment::addUserFunction
+ * Environment::addUserFunction\endlink("seven", _argument_names,
+ * _a)</tt> (gdzie <tt>_arguments</tt> by³oby pustym wektorem (funkcja
+ * nie posiada argumentów)).
+ *
  */
 
 

@@ -128,7 +128,7 @@ protected:
 	 * Constructor when \a n = 3.
 	 * \param e1 first argument.
 	 * \param e2 second argument.
-	 * \param e2 third argument.
+	 * \param e3 third argument.
 	 */
 	NArgExpression(Expression *e1, Expression *e2, Expression *e3) {
 		typedef int static_assert[n == 3 ? 1 : -1];
@@ -139,7 +139,7 @@ protected:
 	 * Constructor when \a n = 3.
 	 * \param e1 first argument.
 	 * \param e2 second argument.
-	 * \param e2 third argument.
+	 * \param e3 third argument.
 	 * \param val additional argument for base constructor.
 	 */
 	template<class T>
