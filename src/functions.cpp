@@ -8,6 +8,7 @@
 #include "exceptions.hpp"
 #include "math.hpp"
 #include "environment.hpp"
+#include "lexer.hpp"
 
 #include <algorithm>
 #include <vector>
@@ -139,6 +140,38 @@ real print::execute(Environment &env, const Arguments &args) const {
 	(void)env; throwIfArgumentsCountNotOK(size); \
 	std::cout << args[0];
 	return args[0];
+}
+
+
+bool read::argumentsCountOK(unsigned count) const {
+	return count == 0;
+}
+
+real read::execute(Environment &env, const Arguments &args) const {
+	calc::Lexer *l = env.getReadLexer();
+	if (!l) {
+		return 0;
+	}
+	yy::Parser::semantic_type value;
+	yy::location location;
+	bool minus = false;
+	for(;;) {
+		int token = l->nextToken(value, location);
+		switch (token) {
+		case yy::Parser::token::NUMBER:
+			return minus ? - value.num : value.num;
+		case '\n':
+			break;
+		case '-':
+			if (!minus) {
+				minus = true;
+				break;
+			}
+		default:
+			env.error(location.end, "read: expected number");
+			return 0;
+		}
+	}
 }
 
 

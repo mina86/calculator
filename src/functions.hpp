@@ -81,6 +81,14 @@ struct OneOrMoreArgFunction : public Function {
 #undef CALC_FUNC
 
 
+struct read : public _::Function {
+	virtual bool argumentsCountOK(unsigned count) const;
+	real execute(Environment &env, const Arguments &args) const;
+	static read *get() { static read singleton; return &singleton; }
+};
+
+
+
 }
 
 }

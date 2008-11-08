@@ -736,6 +736,7 @@ static calc::real parsePrecision(int argc, char **argv, int &i, char *&ch) {
 int main(int argc, char **argv) {
 	bool verbose = false, quiet = false, finish = false;
 	calc::real precision = 0, fprecision = 1e-9;
+	char *filename = 0;
 
 	int i = 1;
 	for (; i < argc && argv[i][0] == '-' && argv[i][1]; ++i) {
@@ -762,8 +763,11 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	if (i < argc) {
-		std::cerr << "unexpected argument: " << argv[i] << '\n';
+	switch (argc - i) {
+	case 1: filename = argv[i];
+	case 0: break;
+	default:
+		std::cerr << "unexpected argument: " << argv[i+1] << '\n';
 		return 1;
 	}
 
@@ -829,13 +833,21 @@ int main(int argc, char **argv) {
 		funcs["return"] = calc::builtin::Return::get();
 		funcs["print" ] = calc::builtin::print::get();
 		funcs["p"     ] = calc::builtin::print::get();
+		funcs["read"  ] = calc::builtin::read::get();
+		funcs["r"     ] = calc::builtin::read::get();
 	}
 
 
 	/* Run */
-	calc::FILELexer lexer;
+	calc::FILELexer lexer(filename);
+	env->setReadLexer(filename ? new calc::FILELexer() : &lexer);
 	yy::Parser parser(lexer, *env);
 	parser.parse();
+
+	if (env->getReadLexer() != &lexer) {
+		delete env->getReadLexer();
+	}
+	env->setReadLexer(0);
 
 
 	/* Print variables */
@@ -843,7 +855,9 @@ int main(int argc, char **argv) {
 		calc::Environment::Variables::const_iterator
 			it = env->global().begin(), end = env->global().end();
 		for (; it != end; ++it) {
-			std::cout << it->first << " = " << it->second << '\n';
+			if (it->first[0] != '_') {
+				std::cout << it->first << " = " << it->second << '\n';
+			}
 		}
 	}
 
@@ -856,7 +870,7 @@ int main(int argc, char **argv) {
 
 static void help() {
 	std::cout <<
-		"usage: ./calc [-vqhsofc]\n"
+		"usage: ./calc [-vqhsofc] [filename]\n"
 		"  -v     print result of each instruction terminated with a new line\n"
 		"  -q     do not print values of all global variables at the end\n"
 		"  -p<p>  set fuzzy comparison precision to <p>; default 1e-9\n"
@@ -934,7 +948,11 @@ static void listFunc() {
 		"  break(x)    breaks from a loop with x as expression's value\n"
 		"  break(x,n)  breaks from n loops with x as expression's value\n"
 		"  return(x)   breaks from a function with x as return value\n"
-		"  return(x,n) breaks from n functions with x as return value\n";
+		"  return(x,n) breaks from n functions with x as return value\n"
+		"  print(x)    prints x\n"
+		"  p(x)        synonym od print(x)\n"
+		"  read()      reads a number from standard input (experimental)\n"
+		"  r()         synonym of read()\n";
 }
 
 

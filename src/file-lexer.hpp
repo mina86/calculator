@@ -7,6 +7,7 @@
 #include "config.hpp"
 
 #include <stdio.h>
+#include <string.h>
 
 #include "lexer.hpp"
 
@@ -24,36 +25,17 @@ struct FILELexer : public Lexer {
 	 * otherwise it will use \a stream_ as input stream and assume
 	 * filename_ is corresponding file name.
 	 *
-	 * \param filename_ file name.
+	 * \param filename_ file name, NULL means standard input.
 	 * \param stream_ input stream to read from or \c NULL.
 	 * \throw IOException if file could not be opened.
 	 */
-	explicit FILELexer(const char *filename_, FILE *stream_ = 0)
-		: Lexer(filename_), stream(stream_ ? stream_ : openFile(filename_)),
-		  closeStream(stream), previous(current) { }
+	explicit FILELexer(const char *filename_ = 0, FILE *stream_ = 0)
+		: Lexer (filename_ ? filename_ : stdin_filename),
+		  stream(stream_ ?stream_ : (filename_? openFile(filename_) : stdin)),
+		  closeStream(!stream_ && filename_), previous(current) { }
 
 	/**
-	 * Creates lexer reading from a file.  If \a stream_ is \c NULL
-	 * constructor will try to open file specified by \a filename_,
-	 * otherwise it will use \a stream_ as input stream and assume
-	 * filename_ is corresponding file name.
-	 *
-	 * \param filename_ file name.
-	 * \param stream_ input stream to read from or \c NULL.
-	 * \throw IOException if file could not be opened.
-	 */
-	explicit FILELexer(const std::string &filename_, FILE *stream_ = 0)
-		: Lexer(filename_),
-		  stream(stream_ ? stream_ : openFile(filename_.c_str())),
-		  closeStream(stream), previous(current) { }
-
-	/** Creates lexer reading from standard input.  */
-	FILELexer() : Lexer(stdin_filename), stream(stdin),
-	              closeStream(true), previous(current) { }
-
-
-	/**
-	 * Closes stream unless it was specified directly in constructor.
+	 * Closes stream unless it was given directly in constructor.
 	 */
 	~FILELexer();
 

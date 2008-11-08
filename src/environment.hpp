@@ -11,15 +11,15 @@
 #include <map>
 #include <memory>
 
-#include "exceptions.hpp"
 #include "expression.hpp"
 #include "function.hpp"
-#include "user-function.hpp"
 #include "position.hh"
 #include "location.hh"
 
 namespace calc {
 
+
+struct Lexer;
 
 
 
@@ -179,6 +179,21 @@ struct Environment {
 	}
 
 
+
+	/** Returns lexer used by read calculator function. */
+	Lexer *getReadLexer() const {
+		return readLexer;
+	}
+
+	/**
+	 * Sets lexer used by read calculator function.
+	 * \param lexer new lexer;
+	 */
+	void setReadLexer(Lexer *lexer) {
+		readLexer = lexer;
+	}
+
+
 private:
 	/** Execution stack. */
 	Stack _stack;
@@ -190,6 +205,8 @@ private:
 	real _precision;
 	/** Precision for fuzzy comparison oeprators. */
 	real _fuzzy_precision;
+	/** Lexer used by read calculator function. */
+	Lexer *readLexer;
 
 	/**
 	 * A private class for running expressions in their own scope.
