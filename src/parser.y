@@ -22,7 +22,7 @@
 %defines
 %define "parser_class_name" "Parser"
 
-%{
+%code requires {
 #include "config.hpp"
 
 #include <string>
@@ -45,7 +45,7 @@ enum {
 };
 }
 
-%}
+}
 
 %union {
 	/** A literal number. */
@@ -138,7 +138,7 @@ define_instruction
 	;
 
 formal_arguments
-	: /* empty */ { $$ = new calc::UserFunction::Names() }
+	: /* empty */ { $$ = new calc::UserFunction::Names(); }
 	| non_empty_formal_arguments { $$ = $1; $1 = 0; }
 	;
 
